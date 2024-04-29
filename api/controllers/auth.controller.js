@@ -20,6 +20,7 @@ export const register = async (req, res, next) => {
   }
 };
 export const login = async (req, res, next) => {
+  console.log("ngvhvgf", req.body.username, req.body.password, res);
   try {
     const user = await User.findOne({ username: req.body.username });
 

@@ -1,5 +1,5 @@
 import Word from "../models/word.model.js";
-import BaWord from "../models/BaWord.model.js";
+import BaWord from "../models/baWord.model.js";
 import Dictionary from "../models/dictionary.model.js";
 
 export const createWord = async (req, res, next) => {

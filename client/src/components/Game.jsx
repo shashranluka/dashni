@@ -7,7 +7,7 @@ import Dictionary from "./Dictionary/Dictionary";
 // import PartOfSpeech from "../components/PartsOfSpeech";
 
 import Settings from "../components/GameSettings";
-import Results from "../components/Results";
+import Results from "./Results/Results";
 import About from "../components/About";
 import about from "../about.json";
 // import GuessPicture from "../components/GuessPicture";
@@ -39,7 +39,7 @@ function Game(props) {
   const iSentence = useRef();
   const marksAmount = useRef(0);
   const wordsFromLexicon = props.wordsForGame;
-  console.log(wordsFromLexicon,props);
+  console.log(wordsFromLexicon, props);
   // const wordsForDictionary = useMemo(() =>
   //   lexicon.filter((wordData) =>
   //     wordData.theWord.toString().includes(searchWord)

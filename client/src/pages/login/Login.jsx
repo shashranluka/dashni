@@ -11,11 +11,13 @@ function Login() {
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
+    console.log(e, "e");
     e.preventDefault();
     try {
       const res = await newRequest.post("/auth/login", { username, password });
+      console("res", res);
       localStorage.setItem("currentUser", JSON.stringify(res.data));
-      navigate("/")
+      navigate("/");
     } catch (err) {
       setError(err.response.data);
     }
