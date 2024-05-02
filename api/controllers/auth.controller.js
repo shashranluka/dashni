@@ -16,11 +16,11 @@ export const register = async (req, res, next) => {
     res.status(201).send("User has been created.");
   } catch (err) {
     next(err);
-    console.log("ერორი", err);
+    // console.log("ერორი", err);
   }
 };
 export const login = async (req, res, next) => {
-  console.log("ngvhvgf", req.body.username, req.body.password, res);
+  console.log("ngvhvgf", req.body.username, req.body.password);
   try {
     const user = await User.findOne({ username: req.body.username });
 
@@ -45,6 +45,7 @@ export const login = async (req, res, next) => {
       })
       .status(200)
       .send(info);
+    console.log(res,"res")
   } catch (err) {
     next(err);
   }

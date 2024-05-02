@@ -39,15 +39,10 @@ function Navbar() {
       <div className="container">
         <div className="logo">
           <Link className="link" to="/">
-            <span className="text">fiverr</span>
+            <span className="text">დაშნი</span>
           </Link>
-          <span className="dot">.</span>
         </div>
         <div className="links">
-          <span>Fiverr Business</span>
-          <span>Explore</span>
-          <span>English</span>
-          {!currentUser?.isSeller && <span>Become a Seller</span>}
           {currentUser ? (
             <div className="user" onClick={() => setOpen(!open)}>
               <img src={currentUser.img || "/img/noavatar.jpg"} alt="" />

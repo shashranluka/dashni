@@ -1,0 +1,18 @@
+.myRoom {
+  height: 100vh;
+  margin: 0.5em;
+  padding: 1em;
+  background-color: rgb(144, 144, 144);
+  .title{
+    // background-color: red;
+    display: flex;
+    justify-content: space-between;
+  }
+  .link{
+    // color: red;
+    .video-item{
+      padding: 1em;
+      border-radius: 1em;
+    }
+  }
+}

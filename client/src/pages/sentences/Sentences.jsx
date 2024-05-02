@@ -147,7 +147,7 @@ function Sentences() {
     <div className="sentences">
       <div className="container">
         <div className="start-button">
-          <div className="choose-sentences flex">
+          <div className="choose-sentences">
             <div className="">
               <label>წინადადებების რაოდენობა</label>
               <input
