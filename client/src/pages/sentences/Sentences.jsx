@@ -123,6 +123,7 @@ function Sentences() {
         (value, index, self) => self.indexOf(value) === index
       );
       const lang = "ba";
+      console.log("გაეშვა");
       newRequest
         .get(`/words`, {
           params: {
@@ -131,12 +132,13 @@ function Sentences() {
           },
         })
         .then((res) => {
-          // console.log("დაბრუნდა", res);
+          console.log("დაბრუნდა", res);
           setGameData({
             wordsFromLexicon: res.data,
             chosenSentences: chosenSentences,
             wordsFromSentences: wordsToTranslate,
           });
+          console.log("დაბრუნდა", res);
           setGameDataCollected(true);
         });
     }
