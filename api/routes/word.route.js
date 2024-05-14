@@ -8,7 +8,7 @@ const router = express.Router();
 // router.post("/", verifyToken, createWord);
 
 // console.log("test");
-router.get("/", verifyToken, getWords);
+router.get("/", getWords);
 router.post("/", verifyToken, createWord);
 
 // router.delete("/:id", verifyToken, deleteSentence);

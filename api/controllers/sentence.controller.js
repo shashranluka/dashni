@@ -25,9 +25,11 @@ export const createSentence = async (req, res, next) => {
 //   //   return next(createError(403, "Only sellers can create a gig!"));
 // };
 export const deleteSentence = async (req, res, next) => {
+  console.log("dwadwa");
   try {
+    console.log("dwadwa");
     const sentence = await Sentence.findById(req.params.id);
-    if (gig.userId !== req.userId)
+    if (sentence.userId !== req.userId)
       return next(createError(403, "You can delete only your gig!"));
 
     await Sentence.findByIdAndDelete(req.params.id);

@@ -14,19 +14,29 @@ function MyRoom() {
     queryKey: ["myGigs"],
     refetchOnWindowFocus: false,
     queryFn: () =>
-      newRequest.get(`/videodatas?userId=${currentUser._id}`).then((res) => {
+      newRequest.get(`sentences/?userId=${currentUser._id}`).then((res) => {
         console.log(res.data);
         return res.data;
       }),
   });
+
+  // const { isLoadingRoom, error, roomData } = useQuery({
+  //   queryKey: ["myGigs"],
+  //   refetchOnWindowFocus: false,
+  //   queryFn: () =>
+  //     newRequest.get(`/videodatas?userId=${currentUser._id}`).then((res) => {
+  //       console.log(res.data);
+  //       return res.data;
+  //     }),
+  // });
   console.log(data);
 
   const mutation = useMutation({
     mutationFn: (id) => {
-      return newRequest.delete(`/videodatas/${id}`);
+      return newRequest.delete(`/sentences/${id}`);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(["myGigs"]);
+      queryClient.invalidateQueries(["mySentences"]);
     },
   });
 
@@ -52,11 +62,42 @@ function MyRoom() {
             </div>
             {currentUser.isSeller && (
               <Link to="/addvideodata">
-                <button>ახალი ვიდეოს მონაცემების დამატება</button>
+                <button>ახალი მონაცემების დამატება</button>
               </Link>
             )}
           </div>
           <table>
+            <tr>
+              <th>Image</th>
+              <th>Title</th>
+              <th>Language</th>
+              <th>Price</th>
+              <th>Sales</th>
+              <th>Action</th>
+            </tr>
+            {data.map((gig) => (
+              <tr key={gig._id}>
+                <td>
+                  <img className="image" src={gig.cover} alt="" />
+                </td>
+                <td>
+                  <Link to={`/video/${gig._id}`}>{gig.sentence}</Link>
+                </td>
+                <td>{gig.language}</td>
+                <td>{gig.price}</td>
+                <td>{gig.sales}</td>
+                <td>
+                  <img
+                    className="delete"
+                    src="./img/delete.png"
+                    alt=""
+                    onClick={() => handleDelete(gig._id)}
+                  />
+                </td>
+              </tr>
+            ))}
+          </table>
+          {/* <table>
             <tr>
               <th>Image</th>
               <th>Title</th>
@@ -86,7 +127,7 @@ function MyRoom() {
                 </td>
               </tr>
             ))}
-          </table>
+          </table> */}
         </div>
       )}
     </div>
