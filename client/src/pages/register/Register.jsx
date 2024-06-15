@@ -48,24 +48,24 @@ function Register() {
     <div className="register">
       <form onSubmit={handleSubmit}>
         <div className="left">
-          <h1>Create a new account</h1>
-          <label htmlFor="">Username</label>
+          <h1>ახალი ანგარიშის შექმნა</h1>
+          <label htmlFor="">მომხმარებლის სახელი</label>
           <input
             name="username"
             type="text"
-            placeholder="johndoe"
+            // placeholder="johndoe"
             onChange={handleChange}
           />
-          <label htmlFor="">Email</label>
+          <label htmlFor="">ელექტრონული ფოსტა</label>
           <input
             name="email"
             type="email"
             placeholder="email"
             onChange={handleChange}
           />
-          <label htmlFor="">Password</label>
+          <label htmlFor="">პაროლი</label>
           <input name="password" type="password" onChange={handleChange} />
-          <label htmlFor="">Profile Picture</label>
+          {/* <label htmlFor="">Profile Picture</label>
           <input type="file" onChange={(e) => setFile(e.target.files[0])} />
           <label htmlFor="">Country</label>
           <input
@@ -73,10 +73,10 @@ function Register() {
             type="text"
             placeholder="Usa"
             onChange={handleChange}
-          />
+          /> */}
           <button type="submit">Register</button>
         </div>
-        <div className="right">
+        {/* <div className="right">
           <h1>I want to become a seller</h1>
           <div className="toggle">
             <label htmlFor="">Activate the seller account</label>
@@ -101,7 +101,7 @@ function Register() {
             rows="10"
             onChange={handleChange}
           ></textarea>
-        </div>
+        </div> */}
       </form>
     </div>
   );
