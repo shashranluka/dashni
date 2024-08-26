@@ -172,10 +172,10 @@ function Sentences() {
               <input ref={methodRef} type="string" placeholder="method" />
               <label for="cars">Choosing method:</label>
               <select id="cars" name="carlist" form="carform" ref={methodRef}>
-                <option value="volvo">Volvo</option>
+                {/* <option value="volvo">Volvo</option>
                 <option value="saab">Saab</option>
                 <option value="opel">Opel</option>
-                <option value="audi">Audi</option>
+                <option value="audi">Audi</option> */}
               </select>
             </div>
             <div className="">

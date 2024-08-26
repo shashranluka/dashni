@@ -2,7 +2,7 @@ import Gig from "../models/gig.model.js";
 import createError from "../utils/createError.js";
 
 export const createGig = async (req, res, next) => {
-  console.log("createGigdwada");
+  console.log("createGigdwada",req.body);
   if (!req.isSeller)
     return next(createError(403, "Only sellers can create a gig!"));
 
@@ -10,7 +10,7 @@ export const createGig = async (req, res, next) => {
     userId: req.userId,
     ...req.body,
   });
-  // console.log(newGig);
+  console.log(newGig,"ahali");
   try {
     const savedGig = await newGig.save();
     res.status(201).json(savedGig);
@@ -31,7 +31,7 @@ export const deleteGig = async (req, res, next) => {
   }
 };
 export const getGig = async (req, res, next) => {
-  console.log("kog");
+  // console.log("kog",req.body);
   try {
     const gig = await Gig.findById(req.params.id);
     if (!gig) next(createError(404, "Gig not found!"));

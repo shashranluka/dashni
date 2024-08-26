@@ -27,7 +27,8 @@ export const createSentence = async (req, res, next) => {
 export const deleteSentence = async (req, res, next) => {
   try {
     const sentence = await Sentence.findById(req.params.id);
-    if (gig.userId !== req.userId)
+    console.log(req.params, "sentence",sentence,"/////////",sentence.userId, "     ", req.userId)
+    if (sentence.userId !== req.userId)
       return next(createError(403, "You can delete only your gig!"));
 
     await Sentence.findByIdAndDelete(req.params.id);
@@ -47,22 +48,25 @@ export const getSentence = async (req, res, next) => {
 };
 export const getSentences = async (req, res, next) => {
   const q = req.query;
-  console.log("req", req, "res", res);
+  const ids = {_id: req.query.Ids}
+  console.log("hello from getSentences");
   const filters = {
+    ...(ids._id && { _id: ids._id }),
     ...(q.userId && { userId: q.userId }),
     ...(q.cat && { cat: q.cat }),
-    ...((q.min || q.max) && {
-      price: {
-        ...(q.min && { $gt: q.min }),
-        ...(q.max && { $lt: q.max }),
-      },
-    }),
+    // ...((q.min || q.max) && {
+    //   price: {
+    //     ...(q.min && { $gt: q.min }),
+    //     ...(q.max && { $lt: q.max }),
+    //   },
+    // }),
     ...(q.search && { title: { $regex: q.search, $options: "i" } }),
   };
+  // console.log(filters,"filters")
   try {
     const sentences = await Sentence.find(filters).sort({ [q.sort]: -1 });
     res.status(200).send(sentences);
-    console.log("getSentences", sentences, "getSentences");
+    // console.log("getSentences", sentences, "getSentences");
   } catch (err) {
     next(err);
   }

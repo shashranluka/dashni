@@ -2,13 +2,43 @@
   //   position: -webkit-sticky;
   position: sticky;
   bottom: 0;
-  top: 0;
+  // top: 10px;
+  left: 100%;
   padding: 5px;
+  width: fit-content;
+  max-width: 100%;
   background-color: #cae8ca;
   border: 2px solid #4caf50;
 
+  .keyboard-key {
+    background-color: blue;
+    color: white;
+    position: sticky;
+    width: fit-content;
+    padding: .5em;
+    // bottom: 100px;
+    top: 10px;
+    left: 100%;
+    cursor: pointer;
+  }
+  .keyboard-card {
+    background-color: rgb(190, 190, 247);
+    margin: .3em;
+    padding: .3em;
+    border-radius: .3em;
+    font-size: 1.5em;
+    cursor: pointer;
+
+    h3{
+      background-color: red;
+      // padding-left: 10%;
+      width: 2em;
+
+    }
+  }
   .letters {
     display: flex;
+    flex-wrap: wrap;
 
     .letter {
       font-family: "Times New Roman", Times, serif;

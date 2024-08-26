@@ -1,7 +1,9 @@
 .add-data {
   .container {
-    width: 1400px;
-    padding: 50px 0px;
+    // width: 1400px;
+    // padding: 50px 0px;
+    box-sizing: border-box;
+    // padding: .3em;
 
     h1 {
       width: max-content;

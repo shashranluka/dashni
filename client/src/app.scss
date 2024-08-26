@@ -1,18 +1,28 @@
 * {
+  .app {
+    min-height: 100vh;
+    background-color: rgb(173, 202, 192);
+    // margin: auto;
+    // width: 100%;
+    // padding: .5em;
+
+  }
+  // .app {
+  // }
+
   .link {
     text-decoration: none;
     color: inherit;
   }
+
   .cntn {
     // background-color: rgb(1, 93, 1);
   }
-  .app {
-    margin: auto;
-    width: 100%;
-  }
-  @media only screen and (min-width: 600px) {
+
+
+  @media only screen and (min-width: 670px) {
     .app {
-      width: 90%;
+      // width: 90%;
     }
   }
 }

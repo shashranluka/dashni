@@ -13,6 +13,7 @@ import About from "../About";
 import about from "../../about.json";
 
 function Game(props) {
+  console.log(props)
   const [point, setPoint] = useState(0);
   const [tries, setTries] = useState(0);
   const [partOfGame, setPartOfGame] = useState(0);

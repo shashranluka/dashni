@@ -1,7 +1,8 @@
 import "./app.scss";
 import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
-import React from "react";
+import React, {useState} from "react";
 import Navbar from "./components/navbar/Navbar";
+import KeyboardRare from "./components/keyboard/KeyboardRare";
 import Footer from "./components/footer/Footer";
 import Home from "./pages/home/Home";
 import Gigs from "./pages/gigs/Gigs";
@@ -22,14 +23,18 @@ import Game from "./pages/Game";
 // <<<<<<< HEAD
 import Sentences from "./pages/sentences/Sentences";
 import MySentences from "./pages/mySentences/MySentences";
+import MySentencesTest from "./pages/mySentences/MySentencesTest";
+import MyRoom from "./pages/myRoom/MyRoom";
 // =======
 import AddVideoData from "./pages/addVideoData/AddVideoData";
 import MyVideoDatas from "./pages/myVideoDatas.copy/MyVideoDatas";
 import VideoData from "./pages/videoData/VideoData";
 import MyVideos from "./pages/myVideos/MyVideos";
 import GameTushetians from "./pages/gameTushetians/GameTushetians";
+import MyClass from "./pages/MyClass/MyClass";
 function App() {
   const queryClient = new QueryClient();
+  const [keyboardChosenLetter, setKeyboardChosenLetter] = useState(null);
 
   const Layout = () => {
     return (
@@ -38,7 +43,8 @@ function App() {
           <QueryClientProvider client={queryClient}>
             <Navbar />
             <Outlet />
-            <Footer />
+            {/* <KeyboardRare setLetter={setKeyboardChosenLetter} /> */}
+            {/* <Footer /> */}
           </QueryClientProvider>
         </div>
       </div>
@@ -81,8 +87,18 @@ function App() {
         {
           path: "/myVideos",
           element: <MyVideos />,
+        },
+        {
           path: "/mySentences",
           element: <MySentences />,
+        },
+        {
+          path: "/mySentencesTest",
+          element: <MySentencesTest />,
+        },
+        {
+          path: "/myRoom",
+          element: <MyRoom />,
         },
         {
           path: "/orders",
@@ -103,6 +119,10 @@ function App() {
         {
           path: "/gig/:id",
           element: <Gig />,
+        },
+        {
+          path: "/myClass/:id",
+          element: <MyClass />,
         },
         {
           path: "/videodata/:id",

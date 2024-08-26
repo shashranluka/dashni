@@ -1,31 +1,31 @@
-.container {
+.myRoom {
   // display: flex;
   // justify-content: center;
   color: #555;
-  .classes-to-choose{
-    background-color: aliceblue;
-    display: flex;
-    // justify-content: space-around;
-    flex-wrap: wrap;
-    
-    .classroom-card {
-      background-color: #1dbf73;
-      margin: .3em;
-      padding: .3em;
-      cursor: pointer;
-      // justify-content: space-around;
-      
-    }
+  
+  .class-box{
+    background-color: #1dbf73;
+    margin: .3em;
+    padding: .3em;
+    // width: ;
+    cursor: pointer;
   }
 
-  
-  .sentences-table {
-    max-width: 100%;
+  .shelf-button {
+    padding: 2em;
+    background-color: #1dbf73;
+  margin: 2em;
+  border-radius: 1em;
+  }
+
+  .container {
+    width: 1400px;
     padding: 50px 0px;
-    
+
     .title {
       display: flex;
       justify-content: space-between;
+
 
       button {
         background-color: #1dbf73;
@@ -38,25 +38,21 @@
     }
 
     table {
-      // width: 100%;
-      box-sizing: border-box;
-      
+      width: 100%;
+
       tr {
         height: 50px;
-        box-sizing: border-box;
         th {
           text-align: left;
-          // width: 100%;
         }
         td {
-          width: auto;
 
           sup{
-            // font-size: 12px;
+            font-size: 12px;
           }
           
           .image {
-            // width: 50px;
+            width: 50px;
             height: 25px;
             object-fit: cover;
           }

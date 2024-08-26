@@ -58,7 +58,7 @@ export const getWords = async (req, res, next) => {
         : none;
 
     res.status(200).send(videoDatas);
-    console.log("დასაწყისი", req.query, req.params, "videodatas", "word");
+    // console.log("დასაწყისი", req.query, req.params, "videodatas", "word");
   } catch (err) {
     next(err);
   }

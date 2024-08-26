@@ -44,7 +44,7 @@ export default function Video() {
       }),
     enabled: !!userId,
   });
-  // console.log(data, isLoading);
+  console.log(data, isLoading);
   function clickHandler(index) {
     // console.log("test", wordsToChoose[index], click, index);
     if (wordsToChoose[index].selected) {
@@ -201,16 +201,16 @@ export default function Video() {
             {isStarted ? <Game wordsForGame={gameData} /> : null}
           </div>
           <div className="video-palyer">
-            {/* <iframe
-              // width="1600"
-              // height="900"
-              // src={videoUrl}
+             <iframe
+              width="800"
+              height="450"
+              src={data.shortTitle}
               // src="https://www.youtube.com/embed/zOBzNmM9ylw"
-              // title='#12 Walter Block   -  Author of "Defending The Undefendable", Loyola University Professor'
+              title='#12 Walter Block   -  Author of "Defending The Undefendable", Loyola University Professor'
               frameborder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
               allowfullScreen="true"
-            ></iframe> */}
+            ></iframe>
           </div>
           {/* <input
             value={searchWord}

@@ -10,8 +10,8 @@ function Register() {
     username: "",
     email: "",
     password: "",
-    // img: "",
-    // country: "",
+    img: "",
+    country: "",
     isSeller: false,
     desc: "",
   });
@@ -37,7 +37,7 @@ function Register() {
       console.log(user);
       await newRequest.post("/auth/register", {
         ...user,
-        // img: url,
+        img: url,
       });
       navigate("/");
     } catch (err) {
@@ -48,49 +48,35 @@ function Register() {
     <div className="register">
       <form onSubmit={handleSubmit}>
         <div className="left">
-          <h1>ახალი ანგარიშის შექმნა</h1>
-          <label htmlFor="">მომხმარებლის სახელი</label>
+          <h1>Create a new account</h1>
+          <label htmlFor="">Username</label>
           <input
             name="username"
             type="text"
             placeholder="johndoe"
             onChange={handleChange}
           />
-          <label htmlFor="">მომხმარებლის ელ. ფოსტა</label>
+          <label htmlFor="">Email</label>
           <input
             name="email"
             type="email"
             placeholder="email"
             onChange={handleChange}
           />
-          <label htmlFor="">პაროლი</label>
+          <label htmlFor="">Password</label>
           <input name="password" type="password" onChange={handleChange} />
-          <div className="toggle">
-            <label htmlFor="">მენტორი</label>
-            <label className="switch">
-              <input type="checkbox" onChange={handleSeller} />
-              <span className="slider round"></span>
-            </label>
-          </div>
-          <label htmlFor="">ტელეფონის ნომერი</label>
+          <label htmlFor="">Profile Picture</label>
+          <input type="file" onChange={(e) => setFile(e.target.files[0])} />
+          <label htmlFor="">Country</label>
           <input
-            name="phone"
+            name="country"
             type="text"
-            placeholder="598 36 36 36"
+            placeholder="Usa"
             onChange={handleChange}
           />
-          <label htmlFor="">დამატებითი ინფორმაცია</label>
-          <textarea
-            placeholder=""
-            name="desc"
-            id=""
-            cols="30"
-            rows="10"
-            onChange={handleChange}
-          ></textarea>
           <button type="submit">Register</button>
         </div>
-        {/* <div className="right">
+        <div className="right">
           <h1>I want to become a seller</h1>
           <div className="toggle">
             <label htmlFor="">Activate the seller account</label>
@@ -115,7 +101,7 @@ function Register() {
             rows="10"
             onChange={handleChange}
           ></textarea>
-        </div> */}
+        </div>
       </form>
     </div>
   );

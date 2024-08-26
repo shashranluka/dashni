@@ -10,10 +10,11 @@ export const register = async (req, res, next) => {
       ...req.body,
       password: hash,
     });
-    console.log(newUser);
+    console.log(newUser,"ახალი მომხმარებელი");
 
     await newUser.save();
     res.status(201).send("User has been created.");
+    console.log(newUser,"ახალი მომხმარებელი2");
   } catch (err) {
     next(err);
     console.log("ერორი", err);

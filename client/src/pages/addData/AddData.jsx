@@ -10,6 +10,7 @@ import upload from "../../utils/upload";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import newRequest from "../../utils/newRequest";
 import { useNavigate } from "react-router-dom";
+// import Keyboardnew from "../../components/keyboard/Keyboard_classes_dont works";
 import KeyboardRare from "../../components/keyboard/KeyboardRare";
 import Select from "react-select";
 
@@ -17,6 +18,8 @@ export default function AddData() {
   const [keyboardChosenLetter, setKeyboardChosenLetter] = useState(null);
   const [singleFile, setSingleFile] = useState(undefined);
   const [files, setFiles] = useState([]);
+  const [inputName, setInputName] = useState("");
+  const [inputValue, setInputValue] = useState("");
   const [uploading, setUploading] = useState(false);
 
   const [sentenceState, dispatchSentence] = useReducer(
@@ -29,15 +32,21 @@ export default function AddData() {
   );
   const [wordsFromSentence, setWordsFromSentence] = useState([]);
   const [chosenToFill, setChosenToFill] = useState([]);
-  console.log(keyboardChosenLetter);
+  console.log(sentenceState);
   const ref = useRef(null);
 
-  const handleClick = () => {
-    ref.current.focus();
+  const handleInputClick = (e) => {
+    // ref.current.focus();
+    setInputName(e.target.name)
+    setInputValue(e.target.value)
+
+    console.log("dwadwa",e.target)
   };
-  const keyboardEvent = () => {};
+  console.log("d", inputName,inputValue)
+  const keyboardEvent = () => { };
   const handleSentencePartChange = (e) => {
-    // console.log("handleChange", e.target);
+    // setInputText(e.target.value)
+    console.log("handleChange", e.target);
     dispatchSentence({
       type: "CHANGE_INPUT",
       payload: { name: e.target.name, value: e.target.value },
@@ -99,7 +108,7 @@ export default function AddData() {
       queryClient.invalidateQueries(["myGigs"]);
     },
   });
-  console.log(sentenceState, wordsState, "dawdwa", wordsFromSentence);
+  // console.log(sentenceState, wordsState, "dawdwa", wordsFromSentence);
   //იძახებს mutationს და გადაჰყავს სხვა გვერდზე
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -123,25 +132,30 @@ export default function AddData() {
             <div className="sentence-info">
               <label htmlFor="">წინადადება</label>
               <input
-                ref={ref}
-                value={keyboardChosenLetter}
+                // ref={ref}
+                value={sentenceState.originalSentence}
                 type="text"
                 name="originalSentence"
                 placeholder=""
                 onChange={handleSentencePartChange}
+                onClick={handleInputClick}
                 //   (e) =>
-                //   dispatchSentence({
-                //     type: "CHANGE_INPUT",
-                //     payload: { name: e.target.name, value: e.target.value },
-                //   })
-                // }
+              //   dispatchSentence({
+              //     type: "CHANGE_INPUT",
+              //     payload: { name: e.target.name, value: e.target.value },
+              //   })
+              // }
               />
+
+              {/* <input type="text" id="fname" name="fname" value="John" /> */}
               <label htmlFor="">ქართულად თარგმნილი</label>
               <input
                 type="text"
                 name="translation"
+                value={sentenceState.translation}
                 placeholder=""
                 onChange={handleSentencePartChange}
+                onClick={handleInputClick}
               />
               <label htmlFor="">
                 დამატებითი ინფორმაცია წინადადების შესახებ
@@ -151,23 +165,26 @@ export default function AddData() {
                 id=""
                 placeholder="Brief descriptions to introduce your service to customers"
                 cols="0"
+                value={sentenceState.desc}
                 // rows="16"
                 onChange={handleSentencePartChange}
-              ></textarea>
+                onClick={handleInputClick}
+                ></textarea>
               <div className="images">
-                <label htmlFor="">Upload Images</label>
-                <input
+                {/* <label htmlFor="">ატვირთეთ სურათი</label> */}
+                {/* <input
                   type="text"
                   name="url's of images"
+                  placeholder=""
                   multiple
                   onChange={
                     handleSentencePartChange
                     // console.log("onchange", e.target.files)
                     // setFiles(e.target.files);
                   }
-                />
+                /> */}
                 <button onClick={handleUpload}>
-                  {uploading ? "uploading" : "Upload"}
+                  {uploading ? "იტვირთება" : "სურათის ატვირთვა"}
                 </button>
               </div>
             </div>
@@ -233,12 +250,12 @@ export default function AddData() {
                   </div>
                 ))}
               </div>
-              <button onClick={handleSubmit}>Create</button>
+              <button onClick={handleSubmit}>დამატება</button>
             </div>
           </div>
         </div>
       </div>
-      <KeyboardRare setLetter={setKeyboardChosenLetter} />
+      <KeyboardRare inputName={inputName} inputValue={inputValue} setLetter={setKeyboardChosenLetter} sentenceState={sentenceState} dispatchSentence={dispatchSentence} />
     </div>
   );
 }
