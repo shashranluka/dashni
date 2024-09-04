@@ -6,8 +6,13 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import newRequest from "../../utils/newRequest";
 
 function MyRoom() {
-  const [addSpaceState, setAddSpaceState] = useState(false)
-  const [nameOfClass, setNameOfClass] = useState()
+  const [addSpaceState, setAddSpaceState] = useState(false);
+  const [addStudentSpaceState, setAddStudentSpaceState] = useState(false);
+  const [students, setStudents] = useState([]);
+  const [nameOfClass, setNameOfClass] = useState();
+  const [nameOfStudent, setNameOfStudent] = useState();
+  const [chosenClassIndex, setChosenClassIndex] = useState();
+  const [chosenClass, setChosenClass] = useState();
   const currentUser = getCurrentUser();
   console.log(currentUser);
   const queryClient = useQueryClient();
@@ -45,8 +50,9 @@ function MyRoom() {
     mutation.mutate(id);
   };
 
-  function handleClick() {
-    // console.log("click,კლიკი")
+  function classClickHandler(gig, index) {
+    setChosenClassIndex(index)
+    setChosenClass(gig)
   }
   function handleAdd() {
     const test = {
@@ -56,7 +62,19 @@ function MyRoom() {
     // console.log("add");
     newRequest.post(`/classes`, test).then((res => console.log(res)))
   }
+  function handleAddStudent() {
+    setStudents([...students, nameOfStudent])
+  }
+  function handleStudentsSubmit() {
+    const userId = currentUser._id;
+    console.log(chosenClass)
+    const classId = chosenClass._id;
+    const type = "students"
 
+    newRequest.put(`/classes/single/${classId}`, { type, students, userId }).then((res => console.log(res)))
+    newRequest.put(`/classes/single/${classId}`, { type, students, userId }).then((res => console.log(res)))
+  }
+  console.log(students,chosenClass)
   return (
     <div className="myRoom">
       <div className="classes">
@@ -66,15 +84,14 @@ function MyRoom() {
           "error"
         ) : (
           <div className="">
-
             {classData.map((gig, index) =>
-              <div className="">{
+              <div className="class-box">
+                <div className={chosenClassIndex == index ? "classroom-card chosen-class" : "classroom-card"}
+                  onClick={() => classClickHandler(gig, index)}>{gig.name}</div>
                 <Link to={`/myClass/${gig._id}`}>
-                  <div className="class-box" onClick={() => handleClick(index)}>
-                    {gig.name}
-                  </div>
+                  <div className="class-link">გადასვლა</div>
                 </Link>
-              }</div>)}
+              </div>)}
           </div>
         )}
       </div>
@@ -110,6 +127,38 @@ function MyRoom() {
           )
         }
       </div>
+
+      <div className="">
+        <div className="">
+          <button className="show-space-button" onClick={() => setAddStudentSpaceState(!addStudentSpaceState)}>{addStudentSpaceState ? ("-") : ("+")}</button>
+          <label>
+            კლასში მოსწავლეების დამატება
+          </label>
+        </div>
+        {addStudentSpaceState ?
+          (<div className="">
+            <div className="form">
+              <input type="text" name="nameOfClass"
+                onChange={(e) => setNameOfStudent(e.target.value)} />
+            </div>
+            <div className="add-button">
+              <button onClick={() => handleAddStudent()}>
+                დამატება
+              </button>
+            </div>
+          </div>) : (
+            <div className=""></div>
+          )
+        }
+      </div>
+
+      <div className="">
+        <h3>დასამატებელი მოსწავლეები</h3>
+        {students.map((studentName) => (
+          <div className="">{studentName}</div>
+        ))}
+      </div>
+      <button onClick={handleStudentsSubmit}>დაამატე მოსწავლეები</button>
       {/* {isLoading ? (
         "loading"
       ) : error ? (

@@ -14,14 +14,13 @@ function MySentences() {
   const [checkedState, setCheckedState] = useState([]);
   const [checkedAll, setCheckedAll] = useState(false);
   const [chosenClass, setChosenClass] = useState([]);
+  const [chosenClassIndex, setChosenClassIndex] = useState();
 
-  console.log("start")
   const { isLoading: classLoading, error: classError, data: classData } = useQuery({
     queryKey: ["classes"],
     refetchOnWindowFocus: false,
     queryFn: () =>
       newRequest.get(`/classes?userId=${currentUser._id}`).then((res) => {
-        console.log("clasebi mova", res)
         return res.data;
       }),
   });
@@ -30,18 +29,15 @@ function MySentences() {
     refetchOnWindowFocus: false,
     queryFn: () =>
       newRequest.get(`/sentences?userId=${currentUser._id}`).then((res) => {
-        console.log("winada mova", res.data)
         return res.data;
       }),
   });
-  console.log(sentenceData)
   // const [data1,data2] = useQueries([
   //   {
   //     queryKey: ["classes"],
   //     refetchOnWindowFocus: false,
   //     queryFn: () =>
   //       newRequest.get(`/classes?userId=${currentUser._id}`).then((res) => {
-  //         console.log("clasebi mova", res)
   //         return res.data;
   //       })
   //   },
@@ -50,20 +46,15 @@ function MySentences() {
   //     refetchOnWindowFocus: false,
   //     queryFn: () =>
   //       newRequest.get(`/sentences?userId=${currentUser._id}`).then((res) => {
-  //         console.log("clasebi mova", res)
   //         return res.data;
   //       })
   //   }
   // ]);
-  console.log("dwafdß")
   const loadingRef = useRef(true);
-  // console.log(isLoading)
   if (!sentenceLoading && loadingRef.current) {
     loadingRef.current = false;
-    // console.log(isLoading,loadingRef)
     setCheckedState(new Array(sentenceData.length).fill(false))
   }
-  // console.log(data,checkedState,loadingRef);
 
   const mutation = useMutation({
     mutationFn: (id) => {
@@ -78,13 +69,11 @@ function MySentences() {
     mutation.mutate(id);
   };
   // ////////////////////////////////////////////////
-  // console.log(data);
 
   // const [checkedState, setCheckedState] = useState(
   //   new Array(5).fill(false)
   // );
   const [total, setTotal] = useState(0);
-  // console.log(checkedState)
 
   // const handleOnChange = (position) => {
   //   const updatedCheckedState = checkedState.map((item, index) =>
@@ -93,22 +82,16 @@ function MySentences() {
   // }
 
   const handleOnChange = (position) => {
-  console.log(sentenceData[0]._id)
-
     const updatedCheckedState = checkedState.map((item, index) => {
-
-      // console.log("map", index,position,item,index === position)
       return index === position ? !item : item
     }
 
     );
-    // console.log(updatedCheckedState)
 
     setCheckedState(updatedCheckedState);
 
     const totalPrice = updatedCheckedState.reduce(
       (sum, currentState, index) => {
-        // console.log(sum,currentState,index)
 
         if (currentState === true) {
           return sum + sentenceData[index].price;
@@ -123,7 +106,6 @@ function MySentences() {
 
   // function handleAdd() {
   //   // const chosenForShare = checkedState.map((item,index)=>{
-  //   //   console.log(item,index)
   //   //   if(item){
   //   //     return index
   //   //   }else{
@@ -140,36 +122,34 @@ function MySentences() {
   //     userId: currentUser._id,
   //     name: "first class"
   //   }
-  //   console.log("add");
   //   newRequest.post(`/classes`, test).then((res => console.log(res)))
   // }
-  console.log(checkedState)
-  function classClickHandler(gig) {
+  function classClickHandler(gig,index) {
+    setChosenClassIndex(index)
     setChosenClass(gig)
   }
   function handleSubmit() {
-    const chosenForShare = checkedState.reduce((a, c, i) => {
+    // checkedState-დან მონიშნული წინადადებების ID-ებს ერთად კრებს
+    const sentences = checkedState.reduce((a, c, i) => {
       if (c) {
-        console.log(sentenceData[i]._id)
         a.push(sentenceData[i]._id);
       }
       return a;
     }, []);
+    const userId = currentUser._id;
     const classId = chosenClass._id;
-    console.log("submit", chosenForShare, classData, chosenClass);
-    newRequest.put(`/classes/single/${currentUser._id}`, { share: chosenForShare, classId, classData }).then((res => console.log(res)))
-  }
-  useEffect(() => {
-    console.log("useEffect")
 
-  })
-  function handleChangAll(){
+    console.log("submit", sentences, chosenClass,"chosenClass",currentUser._id);
+    // მონიშნული კლასის update 
+    const type = "sentences"
+    newRequest.put(`/classes/single/${classId}`, { type, sentences, userId }).then((res => console.log(res)))
+  }
+
+  function handleChangAll() {
     const updatedAllState = checkedState.map((item, index) => !checkedAll)
-  console.log(updatedAllState)
-  setCheckedState(updatedAllState)
+    setCheckedState(updatedAllState)
     setCheckedAll(!checkedAll)
   }
-  console.log(checkedState)
 
   // ////////////////////////////////////////////////
   return (
@@ -182,7 +162,8 @@ function MySentences() {
         ) : (
           <div className="classes-to-choose">
             {classData.map((gig, index) =>
-              <div className="classroom-card" onClick={() => classClickHandler(gig)}>{gig.name}</div>)}
+              <div className={chosenClassIndex == index ? "classroom-card chosen-class" : "classroom-card"}
+                onClick={() => classClickHandler(gig,index)}>{gig.name}</div>)}
           </div>
         )}
       </div>
@@ -233,7 +214,8 @@ function MySentences() {
                   <input type="checkbox" className="checkbox" checked={checkedState[index]}
                     onChange={() => {
                       // console.log("ischecked?", checkedState[index])
-                      handleOnChange(index)}}
+                      handleOnChange(index)
+                    }}
                   // onChange={e => {
                   //   gig.isChecked = false
                   //   console.log("dwafscd",gig.isChecked)
