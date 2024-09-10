@@ -1,6 +1,8 @@
 import Sentence from "../models/sentence.model.js";
 import LearningClass from "../models/LearningClass.model.js";
 import createError from "../utils/createError.js";
+import User from "../models/user.model.js";
+// import { getUsers, updateUser } from "./user.controller.js";
 
 export const createLearningClass = async (req, res, next) => {
   // console.log("createGigdwada", req.body);
@@ -45,9 +47,9 @@ export const getLearningClass = async (req, res, next) => {
     // const filters = {...(ids._id && { _id: ids._id }),}
     const sentences = await Sentence.find(filters).sort({ [ids.sort]: -1 });
     // console.log("kog",filters,sentences);
-    
+
     if (!learningClass) next(createError(404, "Gig not found!"));
-    res.status(200).send([learningClass,sentences]);
+    res.status(200).send([learningClass, sentences]);
   } catch (err) {
     next(err);
   }
@@ -85,7 +87,7 @@ export const getLearningClasses = async (req, res, next) => {
 };
 
 export const updateLearningClass = async (req, res, next) => {
-  console.log(req.body, "უპდატე",req.params,"params")
+  // console.log(req.body, "უპდატე", req.params, "params")
   const classId = req.params.id
   // const nameOfClass = req.body.share.name
   try {
@@ -94,25 +96,44 @@ export const updateLearningClass = async (req, res, next) => {
     // ბაზიდან კლასის ინფორმაციის ამოღება
     const learningClass = await LearningClass.findById(classId);
 
-    console.log("უპდატე3",learningClass)
+    // console.log("უპდატე3", learningClass)
     if (learningClass.userId !== req.body.userId)
       return next(createError(403, "You can delete only your gig!"));
-    console.log(learningClass, "dwadwa")
+    // console.log(learningClass, "dwadwa")
+    const names = {}
+    if (req.body.type == "students") {
+      console.log("დასაწყისი", req.body, "body", req.params, "params")
+      // console.log("dafa", q)
+      // const filters = {
+      const names = req.body.students;
+      // console.log("dafa", names, "query", req.query)
 
-    if(req.body.type=="students"){
-      console.log("students")
+      const q = { username: names };
       
-      const updatedResult = await LearningClass.findByIdAndUpdate(
+      const filters = {
+        ...(q.username && { username: q.username }),
+      };
+      
+      const studentsInfo = await User.find(filters)
+      for(var i = 0;i<studentsInfo.length;i++){
+        console.log(studentsInfo[i])
+        const updatedStudentsInfo = User.findByIdAndUpdate({ _id: studentsInfo[i]._id },{classes: [...new Set([...studentsInfo[i].classes, classId])]})
+        console.log(studentsInfo[i],"სდწადაწლმ,მაკნკდჯნწაკჯბსკჯბდჯწაბჯჰდბწჯაჰბდჯჰბაწჯდბწაჯბდასმდამლზხნზკნდკწდასნლმხლანდწანკ",updatedStudentsInfo,"updated students")
+      }
+      const studentsIds = studentsInfo.map((userInfo,index)=>userInfo._id)
+      const updatedClassResult = await LearningClass.findByIdAndUpdate(
         { _id: classId },
         {
-          students: [...new Set([...learningClass.students, ...req.body.students])],
+          students: [...new Set([...learningClass.students, ...studentsIds])],
         },
         // {
         //   sentences: [...new Set([...learningClass.sentences, ...req.body.sentences])],
         // },
       );
+      // console.log(updatedClassResult, "updated", names, "names")
+      // console.log(q,"ქიუ", filters, "filters", studentsIds, "ids")
 
-    }else if(req.body.type=="sentences"){
+    } else if (req.body.type == "sentences") {
       console.log("sentences")
       const updatedResult = await LearningClass.findByIdAndUpdate(
         { _id: classId },

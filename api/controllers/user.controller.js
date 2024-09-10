@@ -15,6 +15,9 @@ export const getUser = async (req, res, next) => {
 
   res.status(200).send(user);
 };
+export const getUsers = async (req, res, next) => {
+  console.log("get Users");
+};
 export const updateUser = async (req, res, next) => {
   console.log("update User");
 }

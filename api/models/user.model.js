@@ -17,6 +17,9 @@ const userSchema = new Schema(
       type: String,
       required: true,
     },
+    classes: {
+      type: Array
+    },
     // // img: {
     // //   type: String,
     // //   // required: false,

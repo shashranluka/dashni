@@ -48,7 +48,7 @@ export const getWords = async (req, res, next) => {
     // ...(q._id && { _id: q._id }),
   };
 
-  console.log("filters", filters);
+  console.log("filters", filters,"from words");
   try {
     const videoDatas =
       lang == "ba"
@@ -58,7 +58,7 @@ export const getWords = async (req, res, next) => {
         : none;
 
     res.status(200).send(videoDatas);
-    // console.log("დასაწყისი", req.query, req.params, "videodatas", "word");
+    // console.log("დასაწყისი", req.query, videoDatas, "videodatas", "word");
   } catch (err) {
     next(err);
   }

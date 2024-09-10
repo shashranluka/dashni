@@ -71,7 +71,7 @@ function MyRoom() {
     const classId = chosenClass._id;
     const type = "students"
 
-    newRequest.put(`/classes/single/${classId}`, { type, students, userId }).then((res => console.log(res)))
+    // newRequest.put(`/classes/single/${classId}`, { type, students, userId }).then((res => console.log(res)))
     newRequest.put(`/classes/single/${classId}`, { type, students, userId }).then((res => console.log(res)))
   }
   console.log(students,chosenClass)
