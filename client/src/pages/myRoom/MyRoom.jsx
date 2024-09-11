@@ -74,7 +74,7 @@ function MyRoom() {
     // newRequest.put(`/classes/single/${classId}`, { type, students, userId }).then((res => console.log(res)))
     newRequest.put(`/classes/single/${classId}`, { type, students, userId }).then((res => console.log(res)))
   }
-  console.log(students,chosenClass)
+  console.log(students,chosenClass,currentUser,"current User")
   return (
     <div className="myRoom">
       <div className="classes">

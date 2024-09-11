@@ -18,7 +18,8 @@ const userSchema = new Schema(
       required: true,
     },
     classes: {
-      type: Array
+      type: Array,
+      unique:true,
     },
     // // img: {
     // //   type: String,

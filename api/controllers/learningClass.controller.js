@@ -87,8 +87,8 @@ export const getLearningClasses = async (req, res, next) => {
 };
 
 export const updateLearningClass = async (req, res, next) => {
-  // console.log(req.body, "უპდატე", req.params, "params")
   const classId = req.params.id
+  console.log(req.body, "უპდატე", req.params, "params", classId)
   // const nameOfClass = req.body.share.name
   try {
     // console.log(classId, "უპდატე2")
@@ -96,7 +96,7 @@ export const updateLearningClass = async (req, res, next) => {
     // ბაზიდან კლასის ინფორმაციის ამოღება
     const learningClass = await LearningClass.findById(classId);
 
-    // console.log("უპდატე3", learningClass)
+    console.log("უპდატე3", learningClass._id == learningClass._id)
     if (learningClass.userId !== req.body.userId)
       return next(createError(403, "You can delete only your gig!"));
     // console.log(learningClass, "dwadwa")
@@ -109,22 +109,30 @@ export const updateLearningClass = async (req, res, next) => {
       // console.log("dafa", names, "query", req.query)
 
       const q = { username: names };
-      
+
       const filters = {
         ...(q.username && { username: q.username }),
       };
-      
+
       const studentsInfo = await User.find(filters)
-      for(var i = 0;i<studentsInfo.length;i++){
-        console.log(studentsInfo[i])
-        const updatedStudentsInfo = User.findByIdAndUpdate({ _id: studentsInfo[i]._id },{classes: [...new Set([...studentsInfo[i].classes, classId])]})
-        console.log(studentsInfo[i],"სდწადაწლმ,მაკნკდჯნწაკჯბსკჯბდჯწაბჯჰდბწჯაჰბდჯჰბაწჯდბწაჯბდასმდამლზხნზკნდკწდასნლმხლანდწანკ",updatedStudentsInfo,"updated students")
+      for (var i = 0; i < studentsInfo.length; i++) {
+        // console.log(studentsInfo[i], "ინფო")
+        const student = await User.findById(studentsInfo[i]._id.toHexString() );
+        const studentId = studentsInfo[i]._id.toHexString()
+        console.log(student, "student", [...new Set([...studentsInfo[i].classes, classId])], studentId,classId, "class")
+        const updatedStudentsInfo = User.findByIdAndUpdate(
+          { _id: studentId },
+          { classes: [...new Set([...studentsInfo[i].classes, classId])] }
+        )
+        console.log(studentsInfo[i], "სდწადაწლმ,", updatedStudentsInfo, "updated students")
       }
-      const studentsIds = studentsInfo.map((userInfo,index)=>userInfo._id)
+      const studentsIds = studentsInfo.map((userInfo, index) => userInfo._id.toHexString())
+      // console.log([...new Set([...learningClass.students, ...studentsIds])], "set")
       const updatedClassResult = await LearningClass.findByIdAndUpdate(
         { _id: classId },
         {
-          students: [...new Set([...learningClass.students, ...studentsIds])],
+          students: [...new Set([...learningClass.students,
+          ...studentsIds])],
         },
         // {
         //   sentences: [...new Set([...learningClass.sentences, ...req.body.sentences])],
