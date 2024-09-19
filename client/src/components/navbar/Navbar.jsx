@@ -54,28 +54,19 @@ function Navbar() {
               <span>{currentUser?.username}</span>
               {open && (
                 <div className="options">
-                  {currentUser.isSeller && (
+                  {currentUser.isSeller? (
                     <>
                       <Link className="link" to="/myroom">
                         ჩემი ოთახი
                       </Link>
-                      {/* <Link className="link" to="/mygigs">
-                        Gigs
+                    </>
+                  ):(
+                    <>
+                      <Link className="link" to="/myschool">
+                        ჩემი სკოლა
                       </Link>
-                      <Link className="link" to="/myvideos">
-                        Videos
-                      </Link>
-                      <Link className="link" to="/add">
-                        Add New Gig
-                      </Link> */}
                     </>
                   )}
-                  {/* <Link className="link" to="/orders">
-                    Orders
-                  </Link>
-                  <Link className="link" to="/messages">
-                    Messages
-                  </Link> */}
                   <Link className="link" onClick={handleLogout}>
                     Logout
                   </Link>

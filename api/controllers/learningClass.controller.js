@@ -36,17 +36,13 @@ export const deleteLearningClass = async (req, res, next) => {
   }
 };
 export const getLearningClass = async (req, res, next) => {
-  console.log("getLearningClass");
   try {
     const learningClass = await LearningClass.findById(req.params.id);
     const ids = { _id: learningClass.sentences }
-    // console.log("kog", ids);
     const filters = {
       ...(ids._id && { _id: ids._id }),
     };
-    // const filters = {...(ids._id && { _id: ids._id }),}
     const sentences = await Sentence.find(filters).sort({ [ids.sort]: -1 });
-    // console.log("kog",filters,sentences);
 
     if (!learningClass) next(createError(404, "Gig not found!"));
     res.status(200).send([learningClass, sentences]);
@@ -55,32 +51,14 @@ export const getLearningClass = async (req, res, next) => {
   }
 };
 export const getLearningClasses = async (req, res, next) => {
-  // const p= {shortTitle: 'two'};
-  // const p= {title: 'one'};
   const q = req.query;
-  console.log("dafa", q)
-  // const filters = {
   const filters = {
-    // ...(p.shortTitle && { shortTitle: p.shortTitle }),
-    // ...(p.title && { title: p.title }),
-    ...(q.userId && { userId: q.userId }),
-    ...(q.cat && { cat: q.cat }),
-    ...((q.min || q.max) && {
-      price: {
-        ...(q.min && { $gt: q.min }),
-        ...(q.max && { $lt: q.max }),
-      },
-    }),
-    ...(q.search && { title: { $regex: q.search, $options: "i" } }),
+    ...(q.type=="student" && {students: { $all: [q.userId] }}),
+    ...(q.type!="student" && { userId: q.userId }),
   };
-  console.log(filters)
-
   try {
-    // const gigs = await Gig.find((el)=>{
-    //   el.userId==q.userId}).sort({ [q.sort]: -1 });
     const LearningClasses = await LearningClass.find(filters).sort({ [q.sort]: -1 });
     res.status(200).send(LearningClasses);
-    console.log(LearningClasses)
   } catch (err) {
     next(err);
   }
@@ -88,7 +66,7 @@ export const getLearningClasses = async (req, res, next) => {
 
 export const updateLearningClass = async (req, res, next) => {
   const classId = req.params.id
-  console.log(req.body, "უპდატე", req.params, "params", classId)
+  // console.log(req.body, "უპდატე", req.params, "params", classId)
   // const nameOfClass = req.body.share.name
   try {
     // console.log(classId, "უპდატე2")
@@ -96,13 +74,13 @@ export const updateLearningClass = async (req, res, next) => {
     // ბაზიდან კლასის ინფორმაციის ამოღება
     const learningClass = await LearningClass.findById(classId);
 
-    console.log("უპდატე3", learningClass._id == learningClass._id)
+    // console.log("უპდატე3", learningClass._id == learningClass._id)
     if (learningClass.userId !== req.body.userId)
       return next(createError(403, "You can delete only your gig!"));
     // console.log(learningClass, "dwadwa")
     const names = {}
     if (req.body.type == "students") {
-      console.log("დასაწყისი", req.body, "body", req.params, "params")
+      // console.log("დასაწყისი", req.body, "body", req.params, "params")
       // console.log("dafa", q)
       // const filters = {
       const names = req.body.students;
@@ -117,14 +95,15 @@ export const updateLearningClass = async (req, res, next) => {
       const studentsInfo = await User.find(filters)
       for (var i = 0; i < studentsInfo.length; i++) {
         // console.log(studentsInfo[i], "ინფო")
-        const student = await User.findById(studentsInfo[i]._id.toHexString() );
+        const student = await User.findById(studentsInfo[i]._id.toHexString());
         const studentId = studentsInfo[i]._id.toHexString()
-        console.log(student, "student", [...new Set([...studentsInfo[i].classes, classId])], studentId,classId, "class")
+
+        // console.log(student, "student", [...new Set([...studentsInfo[i].classes, classId])], studentId, classId, "class")
         const updatedStudentsInfo = User.findByIdAndUpdate(
           { _id: studentId },
           { classes: [...new Set([...studentsInfo[i].classes, classId])] }
         )
-        console.log(studentsInfo[i], "სდწადაწლმ,", updatedStudentsInfo, "updated students")
+        // console.log(studentsInfo[i], "სდწადაწლმ,", updatedStudentsInfo, "updated students")
       }
       const studentsIds = studentsInfo.map((userInfo, index) => userInfo._id.toHexString())
       // console.log([...new Set([...learningClass.students, ...studentsIds])], "set")

@@ -128,6 +128,7 @@ export default function Video() {
           params: {
             wordsToTranslate,
             lang,
+            test:"test"
           },
         })
         .then((res) => {

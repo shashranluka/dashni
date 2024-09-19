@@ -25,6 +25,7 @@ import Sentences from "./pages/sentences/Sentences";
 import MySentences from "./pages/mySentences/MySentences";
 import MySentencesTest from "./pages/mySentences/MySentencesTest";
 import MyRoom from "./pages/myRoom/MyRoom";
+import MySchool from "./pages/MySchool/MySchool";
 // =======
 import AddVideoData from "./pages/addVideoData/AddVideoData";
 import MyVideoDatas from "./pages/myVideoDatas.copy/MyVideoDatas";
@@ -99,6 +100,10 @@ function App() {
         {
           path: "/myRoom",
           element: <MyRoom />,
+        },
+        {
+          path: "/myschool",
+          element: <MySchool />,
         },
         {
           path: "/orders",

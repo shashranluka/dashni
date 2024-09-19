@@ -48,7 +48,7 @@ export const getWords = async (req, res, next) => {
     // ...(q._id && { _id: q._id }),
   };
 
-  console.log("filters", filters,"from words");
+  console.log("filters", filters,"from words",req.query,"test");
   try {
     const videoDatas =
       lang == "ba"
