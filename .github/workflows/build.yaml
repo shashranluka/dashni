@@ -17,10 +17,15 @@ jobs:
     - name: Checkout repository
       uses:  actions/checkout@v4
 
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v3
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
     - name: Build api
       run: |
         cd api
-        docker build --no-cache . -t api-${{ env.DOCKER_IMAGE }} --platform linux/arm64
+        docker build . -t api-${{ env.DOCKER_IMAGE }} --platform linux/arm64
 
     - name: Build client
       run: |
