@@ -25,10 +25,10 @@ jobs:
     - name: executing remote
       uses: appleboy/ssh-action@v1.0.3
       with:
-        host: host.dosh.ge
-        username: luka
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USER }}
         key: ${{ secrets.KEY }}
-        port: 4431
+        port: ${{ secrets.PORT }}
         fingerprint: ${{ secrets.FINGERPRINT }}
         script: echo "hello from host"
       
