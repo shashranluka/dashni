@@ -5,22 +5,13 @@ on:
     branches: [ main ]
 
 jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
+  BPD:
+    runs-on: ubuntu-24.04
 
     steps:
     - name: Checkout repository
       uses:  actions/checkout@v4
 
-    - name: print content
-      run: ls
-
-    - name: Build Docker image
-      run: echo "wauuu image has been builded"
-
-
-    - name: Push image to private docker
-      run: echo ${{ secrets.HOST }}
 
     - name: executing remote
       uses: appleboy/ssh-action@v1.0.3
@@ -30,3 +21,4 @@ jobs:
         key: ${{ secrets.KEY }}
         port: ${{ secrets.PORT }}
         fingerprint: ${{ secrets.FINGERPRINT }}
+        script: whoami
