@@ -28,7 +28,7 @@ jobs:
         host: host.dosh.ge
         username: luka
         key: ${{ secrets.KEY }}
-        port: ${{ secrets.PORT }}
+        port: 4431
         fingerprint: ${{ secrets.FINGERPRINT }}
         script: echo "hello from host"
       
