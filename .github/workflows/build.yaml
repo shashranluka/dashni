@@ -20,7 +20,7 @@ jobs:
 
 
     - name: Push image to private docker
-      run: echo "gavpushet"
+      run: echo ${{ secrets.HOST }}
 
     - name: executing remote
       uses: appleboy/ssh-action@v1.0.3
