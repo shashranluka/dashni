@@ -29,6 +29,6 @@ jobs:
       username: luka
       key: ${{ secrets.SSH_PRIVATE_KEY }}
       port: ${{ secrets.PORT }}
-+     fingerprint: ${{ secrets.SSH_PRIVATE_FINGREPRINT }}
+      fingerprint: ${{ secrets.SSH_PRIVATE_FINGREPRINT }}
       script: whoami
       
