@@ -29,5 +29,5 @@ jobs:
         username: ${{ secrets.USER }}
         key: ${{ secrets.KEY }}
         port: ${{ secrets.PORT }}
-        fingerprint: ${{ secrets.FINGERPRINT }}
-      
+        #fingerprint: ${{ secrets.FINGERPRINT }}
+        fingerprint: SHA256:18GjHbw6bCqju2ij9pwrSbkUMdfl1IU6yRIfnofZaHM
