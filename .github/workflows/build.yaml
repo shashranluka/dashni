@@ -19,6 +19,7 @@ jobs:
 
     - name: Build api
       run: |
+        pwd
         cd ./api
         docker build . -t api-${{ env.DOCKER_IMAGE }} --platform linux/arm64
 
