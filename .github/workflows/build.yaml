@@ -25,7 +25,7 @@ jobs:
     - name: executing remote
       uses: appleboy/ssh-action@v1.0.3
       with:
-        host: ${{ secrets.HOST }}
+        host: host.dosh.ge
         username: ${{ secrets.FINGERPRINT }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         port: ${{ secrets.PORT }}
