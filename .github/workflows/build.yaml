@@ -43,7 +43,7 @@ jobs:
         chmod 664 client-${{ env.DOCKER_IMAGE_TAR }}
 
     - name: Copy Docker image(API) to host
-      uses: appleboy/ssh-action@v1.0.3
+      uses: appleboy/scp-action@v0.1.7
       with:
         host: ${{ secrets.HOST }}
         username: ${{ secrets.USER }}
@@ -54,7 +54,7 @@ jobs:
         target: "api-${{ env.DOCKER_IMAGE_TAR }}"
 
     - name: Copy Docker image(Client) to host
-      uses: appleboy/ssh-action@v1.0.3
+      uses: appleboy/scp-action@v0.1.7
       with:
         host: ${{ secrets.HOST }}
         username: ${{ secrets.USER }}
