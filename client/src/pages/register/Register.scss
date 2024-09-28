@@ -5,17 +5,16 @@
 
   form {
     width: 960px;
-    padding: 100px 0px;
     display: flex;
     gap: 120px;
-
+    
     h1 {
       color: gray;
       margin-bottom: 20px;
     }
-
-    .left,
-    .right {
+    
+    .form {
+      padding: 1em;
       flex: 1;
       display: flex;
       flex-direction: column;

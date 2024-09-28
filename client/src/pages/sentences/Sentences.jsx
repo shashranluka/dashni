@@ -21,7 +21,7 @@ function Sentences() {
   const [gameDataCollected, setGameDataCollected] = useState(false);
 
   const amountRef = useRef();
-  const withPicsRef = useRef();
+  const withPicsRef = useRef(0);
   const methodRef = useRef();
   const themesRef = useRef();
   const themes = useMemo(() => {
@@ -52,7 +52,12 @@ function Sentences() {
           return res.data;
         }),
   });
-  // console.log("some render");
+  console.log(data)
+  const GameData_new = useMemo(()=>{
+    // console.log("gamedata_new")
+    return "chosenSentences"
+  },[newGame])
+  // console.log("some render",GameData_new);
   function handleSubmit() {
     // console.log(data, "submit",isStarted,newGame);
     if (!isStarted) {
@@ -65,11 +70,12 @@ function Sentences() {
   }
 
   function pickSentences(data, NoS, NoP, method, themes) {
+    console.log(data)
     const sentencesWithPicture = data.filter((sentence) => sentence.picture);
     const sentencesWithOutPicture = data.filter(
       (sentence) => !sentence.picture
     );
-    // console.log(NoP, sentencesWithPicture, sentencesWithOutPicture);
+    console.log(NoP, sentencesWithPicture, sentencesWithOutPicture);
     // console.log(data, NoS, method);
     const chosenSentences = [];
     // სურათიანი წინადადებების არჩევა
@@ -111,13 +117,14 @@ function Sentences() {
       .flat();
     return words;
   }
+  console.log(withPicsRef.current)
   useEffect(() => {
     if (isStarted) {
       const chosenSentences = pickSentences(
         data,
         amountRef.current.value,
         withPicsRef.current.value,
-        methodRef.current.value
+        // methodRef.current.value
       );
       const wordsToTranslate = splitText(chosenSentences).filter(
         (value, index, self) => self.indexOf(value) === index
@@ -147,7 +154,7 @@ function Sentences() {
   // console.log("gameData", gameData, isStarted);
   return (
     <div className="sentences">
-      <div className="container">
+      <div className="">
         <div className="start-button">
           <div className="choose-sentences flex">
             <div className="">
@@ -168,16 +175,16 @@ function Sentences() {
                 defaultValue="1"
               />
             </div>
-            <div className="">
+            {/* <div className="">
               <input ref={methodRef} type="string" placeholder="method" />
               <label for="cars">Choosing method:</label>
               <select id="cars" name="carlist" form="carform" ref={methodRef}>
-                {/* <option value="volvo">Volvo</option>
+                <option value="volvo">Volvo</option>
                 <option value="saab">Saab</option>
                 <option value="opel">Opel</option>
-                <option value="audi">Audi</option> */}
+                <option value="audi">Audi</option>
               </select>
-            </div>
+            </div> */}
             <div className="">
               <button
                 onClick={() => {
@@ -200,15 +207,17 @@ function Sentences() {
           {/* <GameInput /> */}
         </div>
         {/* <GameInput /> */}
-        {gameDataCollected ? <GameSentences gameData={gameData} /> : null}
+        {gameDataCollected && <GameSentences gameData={gameData} />}
         <div className="cards">
           {isLoading
             ? "loading"
             : error
             ? "Something went wrong!"
-            : data.map((gig) => <SentenceCard key={gig._id} item={gig} />)}
-        </div>
-      </div>
+            : "go on"}
+            {/*}: data.map((gig) => <SentenceCard
+            key={gig._id} item={gig} />) */}
+            </div>
+            </div>
     </div>
   );
 }

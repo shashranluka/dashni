@@ -39,7 +39,8 @@ function Navbar() {
       <div className="container">
         <div className="logo">
           <Link className="link" to="/">
-            <span className="text">დაშნი</span>
+            {/* <span className="website-name">დაშნი</span> */}
+            <img src="/img/logo.png" className="logo" alt="" />
           </Link>
           {/* <span className="dot">.</span> */}
         </div>
@@ -49,37 +50,46 @@ function Navbar() {
           <span>English</span> */}
           {/* {!currentUser?.isSeller && <span>Become a Seller</span>} */}
           {currentUser ? (
-            <div className="user" onClick={() => setOpen(!open)}>
-              <img src={currentUser.img || "/img/noavatar.jpg"} alt="" />
-              <span>{currentUser?.username}</span>
-              {open && (
-                <div className="options">
-                  {currentUser.isSeller? (
-                    <>
-                      <Link className="link" to="/myroom">
-                        ჩემი ოთახი
-                      </Link>
-                    </>
-                  ):(
-                    <>
-                      <Link className="link" to="/myschool">
-                        ჩემი სკოლა
-                      </Link>
-                    </>
-                  )}
-                  <Link className="link" onClick={handleLogout}>
-                    Logout
-                  </Link>
+            <div className="userpanel">
+              <Link className="roomlink" to={currentUser.isSeller?"/myroom":"/myschool"}>
+                <span className="mydoor">
+                  ჩემი 🚪
+                </span>
+              </Link> 
+              <div className="user" onClick={() => setOpen(!open)}>
+                {/* <img src={currentUser.img || "/img/noavatar.jpg"} alt="" /> */}
+                <div className="username">
+                  <span>{currentUser?.username}</span>
                 </div>
-              )}
+                {open && (
+                  <div className="options">
+                    {/* {currentUser.isSeller ? (
+                      <>
+                        <Link className="link" to="/myroom">
+                          ჩემი ოთახი
+                        </Link>
+                      </>
+                    ) : (
+                      <>
+                        <Link className="link" to="/myschool">
+                          ჩემი სკოლა
+                        </Link>
+                      </>
+                    )} */}
+                    <Link className="logoutlink" onClick={handleLogout}>
+                      გამოსვლა
+                    </Link>
+                  </div>
+                )}
+              </div>
             </div>
           ) : (
             <>
-              <Link to="/login" className="link">
-                Sign in
+              <Link className="link sign-in" to="/login">
+                შესვლა
               </Link>
               <Link className="link" to="/register">
-                <button>Join</button>
+                <button>შექმნა</button>
               </Link>
             </>
           )}

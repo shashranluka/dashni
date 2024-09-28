@@ -67,11 +67,11 @@ function MySchool() {
           <div className="">
             {classData.map((gig, index) =>
               <div className="class-box">
+                  <Link style={{textDecoration: 'none'}} to={`/myClass/${gig._id}`}>
                 <div className={chosenClassIndex == index ? "classroom-card chosen-class" : "classroom-card"}
                   onClick={() => classClickHandler(gig, index)}>{gig.name}</div>
-                <Link to={`/myClass/${gig._id}`}>
-                  <div className="class-link">გადასვლა</div>
                 </Link>
+                  {/* <div className="class-link">გადასვლა</div> */}
               </div>)}
           </div>
         )}

@@ -47,20 +47,20 @@ function Register() {
   return (
     <div className="register">
       <form onSubmit={handleSubmit}>
-        <div className="left">
+        <div className="form">
           <h1>ახალი ანგარიშის შექმნა</h1>
           <label htmlFor="">მომხმარებლის სახელი</label>
           <input
             name="username"
             type="text"
-            placeholder="johndoe"
+            placeholder=""
             onChange={handleChange}
           />
           <label htmlFor="">მომხმარებლის ელ. ფოსტა</label>
           <input
             name="email"
             type="email"
-            placeholder="email"
+            placeholder=""
             onChange={handleChange}
           />
           <label htmlFor="">პაროლი</label>
@@ -76,7 +76,7 @@ function Register() {
           <input
             name="phone"
             type="text"
-            placeholder="598 36 36 36"
+            placeholder=""
             onChange={handleChange}
           />
           <label htmlFor="">დამატებითი ინფორმაცია</label>

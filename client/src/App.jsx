@@ -33,6 +33,7 @@ import VideoData from "./pages/videoData/VideoData";
 import MyVideos from "./pages/myVideos/MyVideos";
 import GameTushetians from "./pages/gameTushetians/GameTushetians";
 import MyClass from "./pages/MyClass/MyClass";
+import PrivacyStatement from "./pages/privacyStatement/PrivacyStatement";
 function App() {
   const queryClient = new QueryClient();
   const [keyboardChosenLetter, setKeyboardChosenLetter] = useState(null);
@@ -45,7 +46,7 @@ function App() {
             <Navbar />
             <Outlet />
             {/* <KeyboardRare setLetter={setKeyboardChosenLetter} /> */}
-            {/* <Footer /> */}
+            <Footer />
           </QueryClientProvider>
         </div>
       </div>
@@ -168,6 +169,10 @@ function App() {
         {
           path: "/addvideodata",
           element: <AddVideoData />,
+        },
+        {
+          path: "/privacy-statement",
+          element: <PrivacyStatement />,
         },
       ],
     },

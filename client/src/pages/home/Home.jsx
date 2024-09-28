@@ -1,19 +1,19 @@
 import React from "react";
 import "./Home.scss";
-import Featured from "../../components/featured/Featured";
-import TrustedBy from "../../components/trustedBy/TrustedBy";
-import Slide from "../../components/slide/Slide";
-import CatCard from "../../components/catCard/CatCard";
-import ProjectCard from "../../components/projectCard/ProjectCard";
+// import Featured from "../../components/featured/Featured";
+// import TrustedBy from "../../components/trustedBy/TrustedBy";
+// import Slide from "../../components/slide/Slide";
+// import CatCard from "../../components/catCard/CatCard";
+// import ProjectCard from "../../components/projectCard/ProjectCard";
+// import { cards, projects } from "../../data";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { cards, projects } from "../../data";
 
 function Home() {
   return (
     <div className="home">
       <div className="features flex-column">
         <Link className="link" to="/myvideos">
-          <div className="feature">ჩემი ვიდეოები</div>
+          <div className="feature">ვიდეოს გარჩევა</div>
         </Link>
         <Link className="link" to="/sentences">
           <div className="feature">თუშურის სასწავლი თამაში</div>

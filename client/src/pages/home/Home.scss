@@ -10,8 +10,15 @@
     justify-content: center;
     padding: 100px 0px;
 
-    .feature{
-      margin: 20px;
+    .link{
+      text-decoration: none;
+      
+      .feature{
+        background-color: rgb(93, 235, 215);
+        margin: .3em;
+        padding: 20px;
+        border-radius: .3em;
+      }
     }
 
   //   &.dark {

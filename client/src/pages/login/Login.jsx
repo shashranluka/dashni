@@ -26,16 +26,16 @@ function Login() {
   return (
     <div className="login">
       <form onSubmit={handleSubmit}>
-        <h1>Sign in</h1>
-        <label htmlFor="">Username</label>
+        <h1>შესვლა</h1>
+        <label htmlFor="">მომხმარებლის სახელი</label>
         <input
           name="username"
           type="text"
-          placeholder="johndoe"
+          placeholder=""
           onChange={(e) => setUsername(e.target.value)}
         />
 
-        <label htmlFor="">Password</label>
+        <label htmlFor="">პაროლი</label>
         <input
           name="password"
           type="password"

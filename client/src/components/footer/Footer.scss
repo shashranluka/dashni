@@ -1,70 +1,87 @@
 .footer {
+  background-color: #006042;
   display: flex;
   justify-content: center;
-  color: #666;
-  margin: 50px 0px;
+  color: #5DEBD7;
+  // width: 1400px;
+  // color: white;
+  padding: .5em;
+  
+  // margin: 50px 0px;
 
-  img {
-    width: 24px;
-    height: 24px;
+  // img {
+  //   width: 24px;
+  //   height: 24px;
+  // }
+
+
+  .top {
+    display: flex;
+    justify-content: space-between;
+
+    .social {
+
+      img {
+        width: 1.5em;
+      }
+    }
+
+    .item {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+
+      h2 {
+        font-size: 16px;
+        color: #5DEBD7;
+      }
+
+      span {
+        font-weight: 300;
+      }
+    }
   }
 
-  .container {
-    width: 1400px;
-    .top {
-      display: flex;
-      justify-content: space-between;
-      .item {
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-        h2 {
-          font-size: 16px;
-          color: #555;
-        }
-        span {
-          font-weight: 300;
-        }
-      }
-    }
+  hr {
+    margin: 50px 0px;
+    height: 0;
+    border: 1px solid #ebe9e9;
+  }
 
-    hr {
-      margin: 50px 0px;
-      height: 0;
-      border: 1px solid #ebe9e9;
-    }
-    .bottom {
+  .bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .top {
+      width: max-content;
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      gap: 20px;
 
-      .left {
-        width: max-content;
-        display: flex;
-        align-items: center;
-        gap: 20px;
 
-        span {
-          font-size: 13px;
-          white-space: nowrap;
-        }
+      .intelectual-property {
+        width: 100%;
+        font-size: 13px;
+        white-space: nowrap;
       }
-      .right {
-        width: max-content;
+    }
+
+    .intelectual-property {
+      width: max-content;
+      display: flex;
+      align-items: center;
+      gap: 30px;
+
+      .social {
+        display: flex;
+        gap: 20px;
+      }
+
+      .link {
         display: flex;
         align-items: center;
-        gap: 30px;
-
-        .social {
-          display: flex;
-          gap: 20px;
-        }
-
-        .link {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-        }
+        gap: 10px;
       }
     }
   }

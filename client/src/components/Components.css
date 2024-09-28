@@ -5,7 +5,7 @@ h2 {
 img {
   width: 100%;
   /* min-width: 370px; */
-  border: #000000 solid;
+  /* border: #000000 solid; */
   box-sizing: border-box;
 }
 p {
