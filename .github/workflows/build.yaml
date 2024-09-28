@@ -25,14 +25,9 @@ jobs:
     - name: executing remote
       uses: appleboy/ssh-action@v1.0.3
       with:
-        host: host.dosh.ge
-        username: luka
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USER }}
+        key: ${{ secrets.KEY }}
         port: ${{ secrets.PORT }}
-        fingerprint: ${{ secrets.SSH_PRIVATE_FINGREPRINT }}
-        script: |
-          whoami
-          ls -al
-          echo "ahaaa bliad"
-          docker run -d -P --name iamfoo containous/whoami
+        fingerprint: ${{ secrets.FINGERPRINT }}
       
