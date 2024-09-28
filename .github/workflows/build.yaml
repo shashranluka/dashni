@@ -28,7 +28,7 @@ jobs:
       host: host.dosh.ge
       username: luka
       key: ${{ secrets.SSH_PRIVATE_KEY }}
-      port: 4431
+      port: ${{ secrets.PORT }}
 +     fingerprint: ${{ secrets.SSH_PRIVATE_FINGREPRINT }}
       script: whoami
       
