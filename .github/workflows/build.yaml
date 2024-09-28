@@ -30,4 +30,5 @@ jobs:
         key: ${{ secrets.KEY }}
         port: ${{ secrets.PORT }}
         fingerprint: ${{ secrets.FINGERPRINT }}
+        script: echo "hello from host"
       
