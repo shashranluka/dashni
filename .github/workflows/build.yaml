@@ -17,4 +17,17 @@ jobs:
 
     - name: Build Docker image
       run: echo "wauuu image has been builded"
+
+
+    - name: Push image to private docker
+      run: echo "gavpushet"
+
+    - name: executing remote
+      uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.FINGERPRINT }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.PORT }}
+          script: whoami
       
