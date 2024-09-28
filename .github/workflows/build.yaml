@@ -29,7 +29,7 @@ jobs:
 
     - name: Build client
       run: |
-        cd /client
+        cd client
         docker build . -t client-${{ env.DOCKER_IMAGE }} --platform linux/arm64
 
     - name: Save Docker Image API
