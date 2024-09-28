@@ -31,7 +31,7 @@ jobs:
         port: ${{ secrets.PORT }}
         fingerprint: ${{ secrets.FINGERPRINT }}
         script: |
-          id
+          id > text.temp
           echo " "
-          whoami
+          cat ./text.temp
       
