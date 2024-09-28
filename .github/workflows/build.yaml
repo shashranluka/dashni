@@ -1,0 +1,20 @@
+name: Create dashni atrifactory
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses:  actions/checkout@v4
+
+    - name: print content
+      run: ls
+
+    - name: Build Docker image
+      run: echo "wauuu image has been builded"
+      
