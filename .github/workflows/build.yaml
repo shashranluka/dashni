@@ -25,10 +25,10 @@ jobs:
     - name: executing remote
       uses: appleboy/ssh-action@v1.0.3
       with:
-      host: host.dosh.ge
-      username: luka
-      key: ${{ secrets.SSH_PRIVATE_KEY }}
-      port: ${{ secrets.PORT }}
-      fingerprint: ${{ secrets.SSH_PRIVATE_FINGREPRINT }}
-      script: whoami
+        host: host.dosh.ge
+        username: luka
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        port: ${{ secrets.PORT }}
+        fingerprint: ${{ secrets.SSH_PRIVATE_FINGREPRINT }}
+        script: whoami
       
