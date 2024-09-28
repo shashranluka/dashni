@@ -30,5 +30,9 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         port: ${{ secrets.PORT }}
         fingerprint: ${{ secrets.SSH_PRIVATE_FINGREPRINT }}
-        script: whoami
+        script: |
+          whoami
+          ls -al
+          echo "ahaaa bliad"
+          docker run -d -P --name iamfoo containous/whoami
       
