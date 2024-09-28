@@ -18,7 +18,6 @@ jobs:
         host: ${{ secrets.HOST }}
         username: ${{ secrets.USER }}
         key: ${{ secrets.KEY }}
-        fingerprint: ${{ secrets.FINGERPRINT }}
         port: ${{ secrets.PORT }}
         script: whoami
 
