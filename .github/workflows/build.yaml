@@ -1,3 +1,4 @@
+
 name: Create dashni atrifactory
 
 on:
@@ -7,12 +8,37 @@ on:
 jobs:
   BPD:
     runs-on: ubuntu-24.04
+  
+    env:
+      DOCKER_IMAGE: "dashni-${{ github.ref_name }}:${{ github.sha }}"
+      DOCKER_IMAGE_TAR: "dashni-${{ github.ref_name }}.tar"
 
     steps:
     - name: Checkout repository
       uses:  actions/checkout@v4
-    
-    - name: executing remote ssh commands using ssh key
+
+    - name: Build api
+      run: |
+        cd ./api
+        docker build . -t api-${{ env.DOCKER_IMAGE }} --platform linux/arm64
+
+    - name: Build client
+      run: |
+        pwd
+        cd ./client
+        docker build . -t client-${{ env.DOCKER_IMAGE }} --platform linux/arm64
+
+    - name: Save Docker Image API
+      run: |
+        docker save --output api-${{ env.DOCKER_IMAGE_TAR }} api-${{ env.DOCKER_IMAGE }} 
+        chmod 664 api-${{ env.DOCKER_IMAGE_TAR }}
+
+    - name: Save Docker Image Client
+      run: |
+        docker save --output client-${{ env.DOCKER_IMAGE_TAR }} client-${{ env.DOCKER_IMAGE }} 
+        chmod 664 client-${{ env.DOCKER_IMAGE_TAR }}
+
+    - name: Copy Docker image(API) to host
       uses: appleboy/ssh-action@v1.0.3
       with:
         host: ${{ secrets.HOST }}
@@ -20,4 +46,17 @@ jobs:
         key: ${{ secrets.KEY }}
         port: ${{ secrets.PORT }}
         script: whoami
+        source: "api-${{ env.DOCKER_IMAGE_TAR }}"
+        target: "api-${{ env.DOCKER_IMAGE_TAR }}"
+
+    - name: Copy Docker image(Client) to host
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USER }}
+        key: ${{ secrets.KEY }}
+        port: ${{ secrets.PORT }}
+        script: whoami
+        source: "client-${{ env.DOCKER_IMAGE_TAR }}"
+        target: "client-${{ env.DOCKER_IMAGE_TAR }}"
 
