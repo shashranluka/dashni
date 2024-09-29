@@ -1,5 +1,5 @@
 
-name: Create dashni atrifactory
+name: Deploy dashni to Hetzner
 
 on:
   push:
@@ -22,27 +22,27 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
 
-    - name: Build api
+    - name: Build backend
       run: |
-        cd api
-        docker build . -t api-${{ env.DOCKER_IMAGE }} --platform linux/arm64
+        cd backend
+        docker build . -t backend-${{ env.DOCKER_IMAGE }} --platform linux/amd64
 
-    - name: Build client
+    - name: Build fronted
       run: |
-        cd client
-        docker build . -t client-${{ env.DOCKER_IMAGE }} --platform linux/arm64
+        cd fronted
+        docker build . -t fronted-${{ env.DOCKER_IMAGE }} --platform linux/amd64
 
-    - name: Save Docker Image API
+    - name: Save Docker Image backend
       run: |
-        docker save --output api-${{ env.DOCKER_IMAGE_TAR }} api-${{ env.DOCKER_IMAGE }} 
-        chmod 664 api-${{ env.DOCKER_IMAGE_TAR }}
+        docker save --output backend-${{ env.DOCKER_IMAGE_TAR }} backend-${{ env.DOCKER_IMAGE }} 
+        chmod 664 backend-${{ env.DOCKER_IMAGE_TAR }}
 
-    - name: Save Docker Image Client
+    - name: Save Docker Image fronted
       run: |
-        docker save --output client-${{ env.DOCKER_IMAGE_TAR }} client-${{ env.DOCKER_IMAGE }} 
-        chmod 664 client-${{ env.DOCKER_IMAGE_TAR }}
+        docker save --output fronted-${{ env.DOCKER_IMAGE_TAR }} fronted-${{ env.DOCKER_IMAGE }} 
+        chmod 664 fronted-${{ env.DOCKER_IMAGE_TAR }}
 
-    - name: Copy Docker image(API) to host
+    - name: Copy Docker image(backend) to host
       uses: appleboy/scp-action@v0.1.7
       with:
         host: ${{ secrets.HOST }}
@@ -50,10 +50,10 @@ jobs:
         key: ${{ secrets.KEY }}
         port: ${{ secrets.PORT }}
         script: whoami
-        source: "api-${{ env.DOCKER_IMAGE_TAR }}"
-        target: "api-${{ env.DOCKER_IMAGE_TAR }}"
+        source: "backend-${{ env.DOCKER_IMAGE_TAR }}"
+        target: "backend-${{ env.DOCKER_IMAGE_TAR }}"
 
-    - name: Copy Docker image(Client) to host
+    - name: Copy Docker image(fronted) to host
       uses: appleboy/scp-action@v0.1.7
       with:
         host: ${{ secrets.HOST }}
@@ -61,6 +61,6 @@ jobs:
         key: ${{ secrets.KEY }}
         port: ${{ secrets.PORT }}
         script: whoami
-        source: "client-${{ env.DOCKER_IMAGE_TAR }}"
-        target: "client-${{ env.DOCKER_IMAGE_TAR }}"
+        source: "fronted-${{ env.DOCKER_IMAGE_TAR }}"
+        target: "fronted-${{ env.DOCKER_IMAGE_TAR }}"
 
