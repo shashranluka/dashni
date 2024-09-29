@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-24.04
   
     env:
-      DOCKER_IMAGE: "dashni-${{ github.ref_name }}:${{ github.sha }}"
+      DOCKER_IMAGE: "${{ github.ref_name }}:${{ github.sha }}"
       DOCKER_IMAGE_TAR: "${{ github.ref_name }}.tar"
 
     steps:
