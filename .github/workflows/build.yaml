@@ -39,7 +39,8 @@ jobs:
         key: ${{ secrets.KEY }}
         port: ${{ secrets.PORT }}
         script: | 
-          yq -i '.services.backend.env = {"DOCKER_IMAGE": "dashni-${{ github.ref_name }}:${{ github.sha }}", "DOCKER_IMAGE_TAR": "dashni-${{ github.ref_name }}.tar"}' dashni/docker-compose.yml
+          yq e -i '.services.backend.image = "dashni-${{ github.ref_name }}:${{ github.sha }}"' dashni/docker-compose.yml
+
 
           
 
