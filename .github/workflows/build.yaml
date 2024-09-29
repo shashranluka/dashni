@@ -20,7 +20,7 @@ jobs:
       uses: docker/setup-buildx-action@v3
 
         
-    - name: Load Docker image(frontend)
+    - name: Load Docker Image
       uses: appleboy/ssh-action@v1.0.3
       with:
         host: ${{ secrets.HOST }}
@@ -30,5 +30,16 @@ jobs:
         script: | 
           docker load -i frontend-${{ env.DOCKER_IMAGE_TAR }}/frontend-${{ env.DOCKER_IMAGE_TAR }}
           docker load -i backend-${{ env.DOCKER_IMAGE_TAR }}/backend-${{ env.DOCKER_IMAGE_TAR }}
+    
+    - name: Update Docker Compose 
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USER }}
+        key: ${{ secrets.KEY }}
+        port: ${{ secrets.PORT }}
+        script: | 
+          yq -i ".services.backend-${{ github.ref_name }}.image = \"${{ env.DOCKER_IMAGE }}\"" 'dashni/docker-compose.yml'
+          yq -i ".services.frontend-${{ github.ref_name }}.image = \"${{ env.DOCKER_IMAGE }}\"" 'dashni/docker-compose.yml'
           
 
