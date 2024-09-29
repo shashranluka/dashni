@@ -7,6 +7,7 @@ import WordsAndMarks from "../WordsAndMarks/WordsAndMarks";
 import GuessPicture from "../GuessPicture/GuessPicture";
 // import PartOfSpeech from "../components/PartsOfSpeech";
 
+
 import Settings from "../GameSettings";
 import Results from "../Results/Results";
 import About from "../About";
