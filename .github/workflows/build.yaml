@@ -98,8 +98,7 @@ jobs:
         port: ${{ secrets.PORT }}
         script: | 
           cd dashni
-          docker rollout frontend-${{ github.ref_name }}
-          docker rollout backend-${{ github.ref_name }}
+          docker compose up -d 
         
 
 
