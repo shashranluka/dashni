@@ -98,8 +98,8 @@ jobs:
         port: ${{ secrets.PORT }}
         script: | 
           cd dashni
-          docker rollout frontend-${{ github.ref_name }} --remove-orphans
-          docker rollout backend-${{ github.ref_name }} --remove-orphans
+          docker rollout frontend-${{ github.ref_name }}
+          docker rollout backend-${{ github.ref_name }}
         
 
 
