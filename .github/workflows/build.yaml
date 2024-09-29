@@ -86,8 +86,8 @@ jobs:
         key: ${{ secrets.KEY }}
         port: ${{ secrets.PORT }}
         script: | 
-          yq w -i dashni/docker-compose.yml 'services.frontend.image' 'frontend-${{ github.ref_name }}:${{ github.sha }}'
-          yq w -i dashni/docker-compose.yml 'services.backend.image' 'backend-${{ github.ref_name }}:${{ github.sha }}'
+          yq w -i dashni/docker-compose.yml 'services.frontend-${{ github.ref_name }}.image' 'frontend-${{ github.ref_name }}:${{ github.sha }}'
+          yq w -i dashni/docker-compose.yml 'services.backend-${{ github.ref_name }}.image' 'backend-${{ github.ref_name }}:${{ github.sha }}'
     
     - name: Recreate images
       uses: appleboy/ssh-action@v1.0.3
