@@ -27,20 +27,20 @@ jobs:
         cd backend
         docker build . -t backend-${{ env.DOCKER_IMAGE }} --platform linux/amd64
 
-    - name: Build fronted
+    - name: Build frontend
       run: |
-        cd fronted
-        docker build . -t fronted-${{ env.DOCKER_IMAGE }} --platform linux/amd64
+        cd frontend
+        docker build . -t frontend-${{ env.DOCKER_IMAGE }} --platform linux/amd64
 
     - name: Save Docker Image backend
       run: |
         docker save --output backend-${{ env.DOCKER_IMAGE_TAR }} backend-${{ env.DOCKER_IMAGE }} 
         chmod 664 backend-${{ env.DOCKER_IMAGE_TAR }}
 
-    - name: Save Docker Image fronted
+    - name: Save Docker Image frontend
       run: |
-        docker save --output fronted-${{ env.DOCKER_IMAGE_TAR }} fronted-${{ env.DOCKER_IMAGE }} 
-        chmod 664 fronted-${{ env.DOCKER_IMAGE_TAR }}
+        docker save --output frontend-${{ env.DOCKER_IMAGE_TAR }} frontend-${{ env.DOCKER_IMAGE }} 
+        chmod 664 frontend-${{ env.DOCKER_IMAGE_TAR }}
 
     - name: Copy Docker image(backend) to host
       uses: appleboy/scp-action@v0.1.7
@@ -53,7 +53,7 @@ jobs:
         source: "backend-${{ env.DOCKER_IMAGE_TAR }}"
         target: "backend-${{ env.DOCKER_IMAGE_TAR }}"
 
-    - name: Copy Docker image(fronted) to host
+    - name: Copy Docker image(frontend) to host
       uses: appleboy/scp-action@v0.1.7
       with:
         host: ${{ secrets.HOST }}
@@ -61,6 +61,6 @@ jobs:
         key: ${{ secrets.KEY }}
         port: ${{ secrets.PORT }}
         script: whoami
-        source: "fronted-${{ env.DOCKER_IMAGE_TAR }}"
-        target: "fronted-${{ env.DOCKER_IMAGE_TAR }}"
+        source: "frontend-${{ env.DOCKER_IMAGE_TAR }}"
+        target: "frontend-${{ env.DOCKER_IMAGE_TAR }}"
 
