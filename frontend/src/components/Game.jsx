@@ -1,14 +1,14 @@
 import { useMemo, useRef, useState } from "react";
-import "../components/Components.css";
-import GamePanel from "../components/GamePanel";
+import "./Components.css";
+import GamePanel from "./GamePanel";
 import Dictionary from "./Dictionary/Dictionary";
 // import CreateSentences from "../components/CreateSentences";
 // import WordsAndMarks from "../components/WordsAndMarks";
 // import PartOfSpeech from "../components/PartsOfSpeech";
 
-import Settings from "../components/GameSettings";
+import Settings from "./GameSettings";
 import Results from "./Results/Results";
-import About from "../components/About";
+import About from "./About";
 import about from "../about.json";
 // import GuessPicture from "../components/GuessPicture";
 // import TellPicture from "../components/TellPicture";
