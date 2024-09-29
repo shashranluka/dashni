@@ -14,53 +14,17 @@ jobs:
       DOCKER_IMAGE_TAR: "dashni-${{ github.ref_name }}.tar"
 
     steps:
-    - name: Checkout repository
-      uses:  actions/checkout@v4
 
-    - name: Set up QEMU
-      uses: docker/setup-qemu-action@v3
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
-
-    - name: Build backend
-      run: |
-        cd backend
-        docker build . -t backend-${{ env.DOCKER_IMAGE }} --platform linux/amd64
-
-    - name: Build frontend
-      run: |
-        cd frontend
-        docker build . -t frontend-${{ env.DOCKER_IMAGE }} --platform linux/amd64
-
-    - name: Save Docker Image backend
-      run: |
-        docker save --output backend-${{ env.DOCKER_IMAGE_TAR }} backend-${{ env.DOCKER_IMAGE }} 
-        chmod 664 backend-${{ env.DOCKER_IMAGE_TAR }}
-
-    - name: Save Docker Image frontend
-      run: |
-        docker save --output frontend-${{ env.DOCKER_IMAGE_TAR }} frontend-${{ env.DOCKER_IMAGE }} 
-        chmod 664 frontend-${{ env.DOCKER_IMAGE_TAR }}
-
-    - name: Copy Docker image(backend) to host
+        
+    - name: Load Docker image(frontend)
       uses: appleboy/scp-action@v0.1.7
       with:
         host: ${{ secrets.HOST }}
         username: ${{ secrets.USER }}
         key: ${{ secrets.KEY }}
         port: ${{ secrets.PORT }}
-        script: whoami
-        source: "backend-${{ env.DOCKER_IMAGE_TAR }}"
-        target: "backend-${{ env.DOCKER_IMAGE_TAR }}"
-
-    - name: Copy Docker image(frontend) to host
-      uses: appleboy/scp-action@v0.1.7
-      with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USER }}
-        key: ${{ secrets.KEY }}
-        port: ${{ secrets.PORT }}
-        script: whoami
-        source: "frontend-${{ env.DOCKER_IMAGE_TAR }}"
-        target: "frontend-${{ env.DOCKER_IMAGE_TAR }}"
+        script: | 
+          docker load -i frontend-${{ env.DOCKER_IMAGE_TAR }}/frontend-${{ env.DOCKER_IMAGE_TAR }}
+          docker load -i backend-${{ env.DOCKER_IMAGE_TAR }}/backend-${{ env.DOCKER_IMAGE_TAR }}
+          
 
