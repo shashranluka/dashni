@@ -100,6 +100,18 @@ jobs:
           cd dashni
           docker rollout frontend-${{ github.ref_name }}
           docker rollout backend-${{ github.ref_name }}
+          
+    - name: Clean up old images
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USER }}
+        key: ${{ secrets.KEY }}
+        port: ${{ secrets.PORT }}
+        script: | 
+          docker image prune -a -f
+
+    
         
 
 
