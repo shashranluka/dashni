@@ -57,7 +57,7 @@ jobs:
         source: "backend-${{ env.DOCKER_IMAGE_TAR }}"
         target: "backend-${{ env.DOCKER_IMAGE_TAR }}"
 
-    - name: Copy Docker image(frontend) to host
+    - name: Copy Docker image to host
       uses: appleboy/scp-action@v0.1.7
       with:
         host: ${{ secrets.HOST }}
