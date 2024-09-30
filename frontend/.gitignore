@@ -8,7 +8,6 @@ pnpm-debug.log*
 lerna-debug.log*
 yarn.lock
 .env
-baseUrl.js
 
 node_modules
 dist
