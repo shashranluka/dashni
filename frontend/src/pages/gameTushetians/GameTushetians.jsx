@@ -2,6 +2,7 @@ import GameSentences from "../../components/gameSentences/GameSentences";
 import { useQuery } from "@tanstack/react-query";
 import newRequest from "../../utils/newRequest";
 
+////////////
 export default function GameTushetians() {
   // const { isLoading, error, data } = useQuery({
   //   queryKey: ["gig"],

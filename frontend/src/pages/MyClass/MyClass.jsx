@@ -5,7 +5,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import "./Myclass.scss";
+import "./MyClass.scss";
 import SentenceCard from "../../components/sentenceCard/SentenceCard";
 import GameSentences from "../../components/gameSentences/GameSentences";
 import { useQuery } from "@tanstack/react-query";

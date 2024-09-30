@@ -1,7 +1,9 @@
 import axios from "axios";
-
+import Url from "../../baseUrl";
+// import {Url} from "../../url.json";
+console.log(Url)
 const newRequest = axios.create({
-  baseURL: "http://localhost:8800/api",
+  baseURL: Url,
   withCredentials: true,
 });
 
