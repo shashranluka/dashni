@@ -10,7 +10,8 @@ import SentenceCard from "../../components/sentenceCard/SentenceCard";
 import GameSentences from "../../components/gameSentences/GameSentences";
 import { useQuery } from "@tanstack/react-query";
 import newRequest from "../../utils/newRequest";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import getCurrentUser from "../../utils/getCurrentUser";
 
 function Sentences() {
   // const [sort, setSort] = useState("sales");
@@ -20,7 +21,11 @@ function Sentences() {
   const [isStarted, setIsStarted] = useState(false);
   const [gameDataCollected, setGameDataCollected] = useState(false);
   const { id } = useParams();
-
+  const currentUser = getCurrentUser();
+  if(!currentUser){
+    const navigate = useNavigate();
+    navigate("/login")
+  }
 
   const amountRef = useRef();
   const withPicsRef = useRef(0);
@@ -63,7 +68,11 @@ function Sentences() {
         return res.data;
       }),
   });
-  console.log(classData)
+  if(!isLoadingClass&& (!classData[0].userId==currentUser._id || !classData[0].students.includes(currentUser._id))){
+    navigate("/")
+    // console.log(classData[0].userId==currentUser._id || classData[0].students.includes(currentUser._id))
+  }
+  // if()
   const GameData_new = useMemo(() => {
     // console.log("gamedata_new")
     return "chosenSentences"

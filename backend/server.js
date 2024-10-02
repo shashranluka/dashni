@@ -28,7 +28,9 @@ const connect = async () => {
   }
 };
 
-app.use(cors({ origin: "https://dashni.dosh.ge", credentials: true }));
+
+// console.log(process.env,process.env.ONLINE?"trueeee":"falseeee")
+app.use(cors({ origin: process.env.HOST, credentials: true }));
 app.use(express.json());
 app.use(cookieParser());
 
