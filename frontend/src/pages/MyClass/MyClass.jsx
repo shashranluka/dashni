@@ -13,7 +13,7 @@ import newRequest from "../../utils/newRequest";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import getCurrentUser from "../../utils/getCurrentUser";
 
-function Sentences() {
+function MyClass() {
   // const [sort, setSort] = useState("sales");
   // const [open, setOpen] = useState(false);
   const [gameData, setGameData] = useState({});
@@ -77,7 +77,7 @@ function Sentences() {
     // console.log("gamedata_new")
     return "chosenSentences"
   }, [newGame])
-  // console.log("some render",GameData_new);
+  console.log("some render",withPicsRef);
   function handleSubmit() {
     // console.log(data, "submit",isStarted,newGame);
     if (!isStarted) {
@@ -144,7 +144,8 @@ function Sentences() {
       const chosenSentences = pickSentences(
         classData[1],
         amountRef.current.value,
-        withPicsRef.current.value,
+        withPicsRef.current,
+        // withPicsRef.current.value,
         // methodRef.current.value
       );
       const wordsToTranslate = splitText(chosenSentences).filter(
@@ -187,7 +188,7 @@ function Sentences() {
                 defaultValue="4"
               />
             </div>
-            <div className="">
+            {/* <div className="">
               <label>სურათებიანების რაოდენობა</label>
               <input
                 ref={withPicsRef}
@@ -195,7 +196,7 @@ function Sentences() {
                 placeholder="withPics"
                 defaultValue="1"
               />
-            </div>
+            </div> */}
             {/* <div className="">
               <input ref={methodRef} type="string" placeholder="method" />
               <label for="cars">Choosing method:</label>
@@ -234,9 +235,9 @@ function Sentences() {
             ? "loading"
             : error
               ? "Something went wrong!"
-              // : "go on"
-              : classData[1].map((gig) => <SentenceCard
-                key={gig._id} item={gig} />)
+              : "go on"
+              // : classData[1].map((gig) => <SentenceCard
+              //   key={gig._id} item={gig} />)
           }
         </div>
       </div>
@@ -244,4 +245,4 @@ function Sentences() {
   );
 }
 
-export default Sentences;
+export default MyClass;

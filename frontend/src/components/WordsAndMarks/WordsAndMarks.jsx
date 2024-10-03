@@ -42,7 +42,7 @@ export default function WordsAndMarks(props) {
       markId.current = index;
       setClickedMark(index);
     }
-    console.log("შედარდება",wordsWithMarks,markAfterWord.current,chosenMark.current,markAfterWord.current == chosenMark.current);
+    console.log("შედარდება", wordsWithMarks, markAfterWord.current, chosenMark.current, markAfterWord.current == chosenMark.current);
     if (markAfterWord.current == chosenMark.current) {
       console.log("დაემთხვა", wordsWithMarks[wordId.current]);
       wordsWithMarks.splice(wordId.current + 1, 0, {
@@ -110,7 +110,10 @@ export default function WordsAndMarks(props) {
       </div>
       <div className="next_game">
         {marks.length === 0 ? (
-          <button onClick={() => setPartOfGame(4)}>შემდეგი ეტაპი</button>
+          <div className="">
+            <button onClick={() => setPartOfGame(4)}>შემდეგი ეტაპი</button>
+            <button onClick={() => setPartOfGame(6)}>შედეგები</button>
+          </div>
         ) : null}
       </div>
     </div>

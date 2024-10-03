@@ -133,30 +133,30 @@ function Game(props) {
               setPartOfGame={setPartOfGame}
             />
           </div>
-        ) : partOfGame === 4 ? (
-          <div className="">
-            <GuessPicture
-              sentences={sentencesData}
-              point={point}
-              setPoint={setPoint}
-              tries={tries}
-              setTries={setTries}
-              setPartOfGame={setPartOfGame}
-            />
-          </div>
-        ) : partOfGame === 5 ? (
-          <div className="">
-            <TellPicture
-              point={point}
-              setPoint={setPoint}
-              tries={tries}
-              setTries={setTries}
-              wordsForCards={wordsFromSentences}
-              isBackVisible={isBackVisible}
-              sentences={sentencesData}
-              setPartOfGame={setPartOfGame}
-            />
-          </div>
+        // ) : partOfGame === 4 ? (
+        //   <div className="">
+        //     <GuessPicture
+        //       sentences={sentencesData}
+        //       point={point}
+        //       setPoint={setPoint}
+        //       tries={tries}
+        //       setTries={setTries}
+        //       setPartOfGame={setPartOfGame}
+        //     />
+        //   </div>
+        // ) : partOfGame === 5 ? (
+        //   <div className="">
+        //     <TellPicture
+        //       point={point}
+        //       setPoint={setPoint}
+        //       tries={tries}
+        //       setTries={setTries}
+        //       wordsForCards={wordsFromSentences}
+        //       isBackVisible={isBackVisible}
+        //       sentences={sentencesData}
+        //       setPartOfGame={setPartOfGame}
+        //     />
+        //   </div>
         ) : partOfGame === 6 ? (
           <div className="">
             <Results point={point} tries={tries} sentences={sentencesData} />

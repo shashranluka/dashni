@@ -12,7 +12,7 @@ function Home() {
   return (
     <div className="home">
       <div className="features flex-column">
-        <Link className="link" to="/myvideos">
+        <Link className="link" to="/videos">
           <div className="feature">ვიდეოს გარჩევა</div>
         </Link>
         <Link className="link" to="/sentences">
