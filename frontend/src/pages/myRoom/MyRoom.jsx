@@ -77,6 +77,17 @@ function MyRoom() {
   console.log(students,chosenClass,currentUser,"current User")
   return (
     <div className="myRoom">
+      <Link to="/mysentences">
+        <div className="shelf-button">
+          წინადადებები
+        </div>
+      </Link>
+      <Link to="/myvideos">
+        <div className="shelf-button">
+          ვიდეოები
+        </div>
+      </Link>
+
       <div className="classes">
         {classLoading ? (
           "loading"
@@ -95,16 +106,7 @@ function MyRoom() {
           </div>
         )}
       </div>
-      <Link to="/mysentences">
-        <div className="shelf-button">
-          წინადადებები
-        </div>
-      </Link>
-      <Link to="/myvideos">
-        <div className="shelf-button">
-          ვიდეოები
-        </div>
-      </Link>
+
       <div className="">
         <div className="">
           <button className="show-space-button" onClick={() => setAddSpaceState(!addSpaceState)}>{addSpaceState ? ("-") : ("+")}</button>

@@ -78,8 +78,13 @@ function Footer() {
                 </Link>
               </div> */}
               <div className="">
-                <Link to="https://www.facebook.com/dosh/">
+                <Link to="https://www.facebook.com/">
                   <img src="/img/facebook.png" alt="" />
+                </Link>
+              </div>
+              <div className="">
+                <Link to="https://github.com/shashranluka/dashni">
+                  <img src="/img/Black-Github-Logo-PNG-Photo.png" alt="" />
                 </Link>
               </div>
               {/* <img src="/img/twitter.png" alt="" />
@@ -99,7 +104,10 @@ function Footer() {
           </div>
         </div>
         <div className="intelectual-property">
-          <div className="">ინტელექტუალური საკუთრების უფლებაზე</div>
+          {/* <div className="">ინტელექტუალური საკუთრების უფლებაზე</div> */}
+          <Link to="/intelectual-property">
+          ინტელექტუალური საკუთრების უფლებაზე
+          </Link>
           {/* <span></span> */}
           {/* <span>ინტელექტუალური საკუთრება საკუთრების უფლების შეზღუდვაა</span>
           <br></br>

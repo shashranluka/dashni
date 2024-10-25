@@ -1,6 +1,6 @@
 import "./app.scss";
 import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
-import React, {useState} from "react";
+import React, { useState } from "react";
 import Navbar from "./components/navbar/Navbar";
 import KeyboardRare from "./components/keyboard/KeyboardRare";
 import Footer from "./components/footer/Footer";
@@ -34,17 +34,20 @@ import MyVideos from "./pages/myVideos/MyVideos";
 import GameTushetians from "./pages/gameTushetians/GameTushetians";
 import MyClass from "./pages/MyClass/MyClass";
 import PrivacyStatement from "./pages/privacyStatement/PrivacyStatement";
+import IntelectualProperty from "./pages/intelectualProperty/intelectualProperty";
 function App() {
   const queryClient = new QueryClient();
   const [keyboardChosenLetter, setKeyboardChosenLetter] = useState(null);
 
   const Layout = () => {
     return (
-      <div className="app">
-        <div className="cntn">
+      <div className="cntn">
+        <div className="app">
           <QueryClientProvider client={queryClient}>
             <Navbar />
-            <Outlet />
+            <div className="outlet">
+              <Outlet />
+            </div>
             {/* <KeyboardRare setLetter={setKeyboardChosenLetter} /> */}
             <Footer />
           </QueryClientProvider>
@@ -65,6 +68,10 @@ function App() {
         {
           path: "/myVideoDatas",
           element: <MyVideoDatas />,
+        },
+        {
+          path: "/videoData",
+          element: <VideoData />,
         },
         {
           path: "/myVideos",
@@ -173,6 +180,10 @@ function App() {
         {
           path: "/privacy-statement",
           element: <PrivacyStatement />,
+        },
+        {
+          path: "/intelectual-property",
+          element: <IntelectualProperty />,
         },
       ],
     },

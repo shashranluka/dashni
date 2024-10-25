@@ -1,5 +1,6 @@
 import Word from "../models/word.model.js";
 import BaWord from "../models/baWord.model.js";
+import User from "../models/user.model.js"
 import Dictionary from "../models/dictionary.model.js";
 
 export const createWord = async (req, res, next) => {
@@ -40,25 +41,44 @@ export const createWord = async (req, res, next) => {
 // };
 
 export const getWords = async (req, res, next) => {
-  // console.log(req.query.chosenWords, "getWords req");
+  console.log(Object.keys(req.query), req.query, "getWords req");
   const q = { theWord: req.query.wordsToTranslate };
   const lang = req.query.lang;
   const filters = {
     ...(q.theWord && { theWord: q.theWord }),
     // ...(q._id && { _id: q._id }),
   };
+  if (Object.keys(req.query) == "userId") {
+    console.log("mopovebuli sityvebis wamoRebaa sawiro")
+    const user = await User.findById(req.query.userId);
+    console.log("mopovebuli sityvebis patroni", user)
+    const ids = user.collectedWords;
+    const p = { _id: ids };
 
-  console.log("filters", filters,"from words",req.query,"test");
+    const filter = {
+      ...(p._id && { _id: p._id })
+    }
+    // console.log(user.collectedWords.length, "user")
+    try {
+      console.log(p, "მონაცემები", filter, "ტესტი", user, "user")
+      const collectedWordsData = await BaWord.find(filter)
+      // console.log("მონაცემები",collectedWordsData,"data")
+      res.status(200).send(collectedWordsData);
+    } catch (err) {
+      console.log(err)
+    }
+  }
+  // console.log("filters", filters, "from words", req.query, "test");
   try {
     const videoDatas =
       lang == "ba"
         ? await BaWord.find(filters).sort({ [q.sort]: -1 })
         : lang == "en"
-        ? await Word.find(filters).sort({ [q.sort]: -1 })
-        : none;
+          ? await Word.find(filters).sort({ [q.sort]: -1 })
+          : none;
 
     res.status(200).send(videoDatas);
-    // console.log("დასაწყისი", req.query, videoDatas, "videodatas", "word");
+    console.log("დასაწყისი", req.query, videoDatas, "videodatas", "word");
   } catch (err) {
     next(err);
   }

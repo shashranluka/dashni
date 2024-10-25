@@ -19,5 +19,21 @@ export const getUsers = async (req, res, next) => {
   console.log("get Users");
 };
 export const updateUser = async (req, res, next) => {
-  console.log("update User");
+  console.log("update User",req.params,req.body);
+  const userId = req.params.id;
+  const student = await User.findById(userId);
+  
+  try {
+    console.log("update User2",student._id==userId);
+
+    const updated = await User.findByIdAndUpdate(
+      { _id: userId },
+      {collectedWords: req.body},
+    );
+  console.log("update User3",updated);
+
+  } catch (error) {
+    next(error)
+  }
+
 }

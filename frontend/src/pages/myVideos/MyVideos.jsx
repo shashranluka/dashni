@@ -26,7 +26,7 @@ import getCurrentUser from "../../utils/getCurrentUser";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import newRequest from "../../utils/newRequest";
 
-function MyVideoDatas() {
+function MyVideos() {
   const currentUser = getCurrentUser();
   console.log(currentUser);
   const queryClient = useQueryClient();
@@ -108,4 +108,4 @@ function MyVideoDatas() {
   );
 }
 
-export default MyVideoDatas;
+export default MyVideos;

@@ -88,7 +88,7 @@ function Register() {
             rows="10"
             onChange={handleChange}
           ></textarea>
-          <button type="submit">Register</button>
+          <button type="submit">რეგისტრაცია</button>
         </div>
         {/* <div className="right">
           <h1>I want to become a seller</h1>

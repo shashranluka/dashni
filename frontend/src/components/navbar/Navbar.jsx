@@ -24,6 +24,10 @@ function Navbar() {
 
   const navigate = useNavigate();
 
+  function goToAddSentences () {
+    navigate("/add-data");
+    console.log("dwafass")
+  }
   const handleLogout = async () => {
     try {
       await newRequest.post("/auth/logout");
@@ -35,8 +39,8 @@ function Navbar() {
   };
 
   return (
-    <div className={active || pathname !== "/" ? "navbar " : "navbar"}>
-      <div className="container">
+    <div className="header">
+      <div className={active || pathname !== "/" ? "navbar " : "navbar"}>
         <div className="logo">
           <Link className="link" to="/">
             {/* <span className="website-name">დაშნი</span> */}
@@ -51,11 +55,11 @@ function Navbar() {
           {/* {!currentUser?.isSeller && <span>Become a Seller</span>} */}
           {currentUser ? (
             <div className="userpanel">
-              <Link className="roomlink" to={currentUser.isSeller?"/myroom":"/myschool"}>
+              <Link className="roomlink" to={currentUser.isSeller ? "/myroom" : "/myschool"}>
                 <span className="mydoor">
-                  ჩემი 🚪
+                  {currentUser.isSeller ? "ჩემი ოთახი" : "ჩემი სკოლა"}
                 </span>
-              </Link> 
+              </Link>
               <div className="user" onClick={() => setOpen(!open)}>
                 {/* <img src={currentUser.img || "/img/noavatar.jpg"} alt="" /> */}
                 <div className="username">
@@ -76,6 +80,12 @@ function Navbar() {
                         </Link>
                       </>
                     )} */}
+                    <Link className="addTextLink" to={"/add-data"}>
+                      ტექსტის დამატება
+                    </Link>
+                    <Link className="addVideoLink" to={"/addvideodata"}>
+                      ვიდეოს დამატება
+                    </Link>
                     <Link className="logoutlink" onClick={handleLogout}>
                       გამოსვლა
                     </Link>
@@ -85,11 +95,11 @@ function Navbar() {
             </div>
           ) : (
             <>
-              <Link className="link sign-in" to="/login">
-                შესვლა
-              </Link>
               <Link className="link" to="/register">
                 <button>შექმნა</button>
+              </Link>
+              <Link className="link sign-in" to="/login">
+                შესვლა
               </Link>
             </>
           )}

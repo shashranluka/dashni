@@ -20,9 +20,10 @@
     justify-content: space-between;
 
     .social {
-
+      display: flex;
       img {
         width: 1.5em;
+        margin: .3em;
       }
     }
 

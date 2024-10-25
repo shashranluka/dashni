@@ -1,17 +1,17 @@
-.navbar {
+*{
+  margin: 0;
+  padding: 0;
+.header {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  background-color: rgb(7, 65, 115);
-  color: white;
-  // position: sticky;
-  top: 0;
-  z-index: 999;
-  transition: 0.5s all ease;
-  width: 100%;
+  justify-content: center;
+  // gap: 0px;
+  // display: flex;
+  // flex-direction: column;
+  // align-items: center;
+  // align-items: center;
 
   // &.active {
-  //   background-color: #1dbf73;
+    // background-color: #1dbf73;
   //   color: rgb(81, 152, 89);
 
   //   // button {
@@ -21,76 +21,93 @@
   //   // }
   // }
 
-  .container {
+  .navbar {
+    background-color: rgb(7, 65, 115);
+    // color: white;
+    // color: rgb(93, 235, 215);
+    // padding: 20px 10px 20px 10px;
+    // position: sticky;
+    padding: .5em;
+    top: 0;
+    z-index: 999;
+    transition: 0.5s all ease;
     width: 100%;
-    max-width: 1000px;
+    // max-width: 1000px;
     display: flex;
     align-items: center;
-    color: rgb(93, 235, 215);
     justify-content: space-between;
-    padding: 20px 10px 20px 10px;
     box-sizing: border-box;
     height: 10vh;
 
-    
-    .username{
+    .roomlink {
+      text-decoration: none;
+      margin: .3em;
+      padding: .3em;
+      background-color: rgb(148, 147, 147);
+      border-radius: .3em;
+    }
+
+    .username {
       background-color: rgb(91, 93, 93);
       padding: .3em;
       border-radius: .3em;
+      margin: .3em;
     }
-    
-    
+
+
     .link {
-      text-decoration: none;
-      
+
       .logo {
-        width: 50px;
+        width: 36px;
         // border: none;
         // font-size: 34px;
         // font-weight: bold;
         // color: white;
       }
-      
+
       .website-name {
         color: rgb(22, 121, 171);
       }
     }
+
     .sign-in {
       color: wheat;
     }
-    
-    
+
+
     .dot {
       font-weight: bold;
       color: #1dbf73;
     }
   }
-  
+
   .links {
     display: flex;
     align-items: center;
-    gap: 24px;
+    // gap: 24px;
     font-family: "Montserrat", sans-serif;
     font-weight: 500;
-    
+
     span {
       white-space: nowrap;
     }
-    .userpanel{
+
+    .userpanel {
       display: flex;
-      
-      .mydoor{
+
+      .mydoor {
         background-color: gray;
         border-radius: .3em;
         color: #ebe9e9;
         width: 100px;
-        
+
       }
     }
+
     .user {
       display: flex;
       align-items: center;
-      gap: 10px;
+      // gap: 10px;
       cursor: pointer;
       position: relative;
 
@@ -112,14 +129,25 @@
         border: 1px solid lightgrey;
         display: flex;
         flex-direction: column;
-        gap: 10px;
+        // gap: 10px;
         width: 200px;
         font-weight: 300;
         color: gray;
+        
+        .addTextLink,.addVideoLink,.logoutlink {
+          background-color: green;
+          padding: .3em;
+          margin: .3em;
+          color: antiquewhite;
+          text-decoration: none;
+          border-radius: .3em;
+        }
+        .logoutlink{
+          color: rgb(210, 1, 1)
+          
+        }
       }
-      .logoutlink{
-        color: red;
-      }
+
     }
 
     button {
@@ -155,4 +183,5 @@ hr {
   font-family: "Montserrat", sans-serif;
   padding: 20px 10px 20px 10px;
   box-sizing: border-box;
+}
 }

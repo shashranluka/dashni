@@ -1,0 +1,12 @@
+.wordstosave {
+    display: flex;
+    flex-wrap: wrap;
+    
+    .wordcard {
+        background-color: green;
+        margin: .5em;
+        padding: .3em;
+        border-radius: .3em;
+    }
+    
+}

@@ -41,6 +41,9 @@ const userSchema = new Schema(
       type: Boolean,
       // default: false,
     },
+    collectedWords: {
+      type: Array
+    },
   },
   {
     timestamps: true,

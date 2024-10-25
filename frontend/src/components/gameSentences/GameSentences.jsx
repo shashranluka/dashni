@@ -30,12 +30,15 @@ function Game(props) {
   const [gameType, setGameType] = useState("TRANSLATION");
 
   // შემთხვევითად ამოირჩევა წინადადებები ყოველი თავიდან და დაიშლება ობიექტებად, რომლებიც wordsForCards მასივში მიმდევრობით ჩალაგდება
-  console.log(props);
+  // console.log(props);
   const iSentence = useRef();
   const marksAmount = useRef(0);
   const wordsFromLexicon = props.gameData.wordsFromLexicon;
+  const storeCollectedWords = props.gameData.storeCollectedWords;
   const chosenSentences = props.gameData.chosenSentences;
   const wordsFromSentences = props.gameData.wordsFromSentences;
+  const setReturnedData = props.setReturnedData;
+  console.log(wordsFromSentences,typeof(storeCollectedWords))
   const sentencesData = useMemo(() => {
     const sentencesData = chosenSentences.map((el) => {
       const marks = [",", ".", ":", ";", "!", "?"];
@@ -133,33 +136,33 @@ function Game(props) {
               setPartOfGame={setPartOfGame}
             />
           </div>
-        // ) : partOfGame === 4 ? (
-        //   <div className="">
-        //     <GuessPicture
-        //       sentences={sentencesData}
-        //       point={point}
-        //       setPoint={setPoint}
-        //       tries={tries}
-        //       setTries={setTries}
-        //       setPartOfGame={setPartOfGame}
-        //     />
-        //   </div>
-        // ) : partOfGame === 5 ? (
-        //   <div className="">
-        //     <TellPicture
-        //       point={point}
-        //       setPoint={setPoint}
-        //       tries={tries}
-        //       setTries={setTries}
-        //       wordsForCards={wordsFromSentences}
-        //       isBackVisible={isBackVisible}
-        //       sentences={sentencesData}
-        //       setPartOfGame={setPartOfGame}
-        //     />
-        //   </div>
+          // ) : partOfGame === 4 ? (
+          //   <div className="">
+          //     <GuessPicture
+          //       sentences={sentencesData}
+          //       point={point}
+          //       setPoint={setPoint}
+          //       tries={tries}
+          //       setTries={setTries}
+          //       setPartOfGame={setPartOfGame}
+          //     />
+          //   </div>
+          // ) : partOfGame === 5 ? (
+          //   <div className="">
+          //     <TellPicture
+          //       point={point}
+          //       setPoint={setPoint}
+          //       tries={tries}
+          //       setTries={setTries}
+          //       wordsForCards={wordsFromSentences}
+          //       isBackVisible={isBackVisible}
+          //       sentences={sentencesData}
+          //       setPartOfGame={setPartOfGame}
+          //     />
+          //   </div>
         ) : partOfGame === 6 ? (
           <div className="">
-            <Results point={point} tries={tries} sentences={sentencesData} />
+            <Results point={point} tries={tries} sentences={sentencesData} wordsFromLexicon={wordsFromLexicon} setReturnedData={setReturnedData} storeCollectedWords={storeCollectedWords} />
           </div>
         ) : null}
       </div>
