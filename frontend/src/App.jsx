@@ -34,7 +34,7 @@ import MyVideos from "./pages/myVideos/MyVideos";
 import GameTushetians from "./pages/gameTushetians/GameTushetians";
 import MyClass from "./pages/MyClass/MyClass";
 import PrivacyStatement from "./pages/privacyStatement/PrivacyStatement";
-import IntelectualProperty from "./pages/intelectualProperty/intelectualProperty";
+import IntelectualProperty from "./pages/intelectualProperty/IntelectualProperty";
 function App() {
   const queryClient = new QueryClient();
   const [keyboardChosenLetter, setKeyboardChosenLetter] = useState(null);
