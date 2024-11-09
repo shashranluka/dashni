@@ -5,7 +5,7 @@ import {
   getLearningClass,
   getLearningClasses,
   updateLearningClass
-} from "../controllers/learningClasses.controller.js";
+} from "../controllers/learningClass.controller.js";
 import { verifyToken } from "../middleware/jwt.js";
 
 const router = express.Router();
