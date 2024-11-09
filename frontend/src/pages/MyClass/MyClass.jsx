@@ -9,25 +9,28 @@ import "./MyClass.scss";
 import SentenceCard from "../../components/sentenceCard/SentenceCard";
 import GameSentences from "../../components/gameSentences/GameSentences";
 import { useQuery } from "@tanstack/react-query";
+import {handleCheckboxesChange} from "../../utils/handleEvents"
 import newRequest from "../../utils/newRequest";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import getCurrentUser from "../../utils/getCurrentUser";
 
 function MyClass() {
+  const currentUser = getCurrentUser();
+  const navigate = useNavigate();
+  if (!currentUser) {
+    navigate("/login")
+  }
   // const [sort, setSort] = useState("sales");
   // const [open, setOpen] = useState(false);
   const [gameData, setGameData] = useState({});
   const [returnedData, setReturnedData] = useState({});
   const [newGame, setNewGame] = useState(0);
   const [isStarted, setIsStarted] = useState(false);
+  const [isRequestsOpen, setIsRequestOpen] = useState(false);
   const [gameDataCollected, setGameDataCollected] = useState(false);
+  const [checkedRequests, setCheckedRequests] = useState([]);
   const { id } = useParams();
-  const currentUser = getCurrentUser();
-  const navigate = useNavigate();
-  if (!currentUser) {
-    navigate("/login")
-  }
-
+  const marks = useMemo(() => [".", ",", ":", ";", "!", "?"]);
   const amountRef = useRef();
   const withPicsRef = useRef(0);
   const methodRef = useRef();
@@ -77,9 +80,47 @@ function MyClass() {
         return res.data;
       }),
   });
-  if (!isLoadingClass && (!classData[0].userId == currentUser._id || !classData[0].students.includes(currentUser._id))) {
-    navigate("/")
+
+  const loadingRef = useRef(true);
+  if (!isLoadingClass && loadingRef.current) {
+    loadingRef.current = false;
+    setCheckedRequests(new Array(classData.requests.length).fill(false))
   }
+
+  const [requests,textsToBoard] = useMemo(()=>{
+    const requests = [];
+    const textsToBoard = [];
+    if(!isLoadingClass){
+
+      classData.requests.map((text)=>{
+        if(text.access) textsToBoard.push(text)
+          else requests.push(text)
+      })
+    }
+    return [requests,textsToBoard]
+  },[classData])
+
+  console.log(requests,textsToBoard)
+  // const { isLoading: isLoadingRequests, requestsError, data: requestsData } = useQuery({
+  //   queryKey: ["gig"],
+  //   refetchOnWindowFocus: false,
+  //   queryFn: () =>
+  //     newRequest.get(`/classes/single/${id}`).then((res) => {
+  //       return res.data;
+  //     }),
+  // });
+
+  console.log(classData, collectionData, currentUser)
+  //    ამის გამოა 
+  if (!isLoadingClass && (classData.learningClass.userId != currentUser._id && !classData.learningClass.students.includes(currentUser._id))) {
+    // console.log("ამის გამოa", isLoadingClass,"tolia?",classData[0].userId,currentUser._id)
+    // console.log("esec?","dwddddddsssaaაააააააააააააა",classData[0].userId != currentUser._id)
+    // console.log("ეს?",classData[0].userId != currentUser._id || !classData[0].students.includes(currentUser._id))
+    // console.log("aba es?",!classData[0].students.includes(currentUser._id))
+    navigate("/")
+    console.log("ამის გამო")
+  }
+  ////////////////////////////////
   const GameData_new = useMemo(() => {
     return "chosenSentences"
   }, [newGame])
@@ -137,19 +178,26 @@ function MyClass() {
       .flat();
     return words;
   }
-  const [numberOfWordsOnBoard, setNumberOfWordsOnBoard] = useState(0)
-  const wordsOnBoard = useMemo(() => ([]), [])
+  // const [numberOfWordsOnBoard, setNumberOfWordsOnBoard] = useState(0)
+  const [writingRequest, setWritingRequest] = useState("");
+  // const wordsOnBoard = useMemo(() => (""), [])
   function clickCollectionCard(wordData, index) {
-    wordsOnBoard.push(wordData)
-    setNumberOfWordsOnBoard(numberOfWordsOnBoard + 1)
+    setWritingRequest(writingRequest + " " + wordData.theWord)
+    collectionData.splice(index, 1)
   }
 
-  console.log(numberOfWordsOnBoard, typeof (wordsOnBoard))
+  const storeCollectedWords = (returnedData) => {
+    newRequest.put(`/users/single/${currentUser._id}`, returnedData).then((res => console.log(res)))
+  }
+
+  function markClickHandler(mark) {
+    setWritingRequest(writingRequest + mark)
+  }
 
   useEffect(() => {
     if (isStarted) {
       const chosenSentences = pickSentences(
-        classData[1],
+        classData.sentences,
         amountRef.current.value,
         withPicsRef.current,
       );
@@ -175,30 +223,78 @@ function MyClass() {
         });
     }
   }, [newGame]);
-  useEffect(() => {
-  })
-  const returnedDatatest = ["65e1e49fe98143caf1ef9d0b", "65e1e49fe98143caf1ef9d0c", "65e1e49fe98143caf1ef9d0d", "65e1e49fe98143caf1ef9d0e"]
-  function storeCollectedWords(returnedData) {
-    newRequest.put(`/users/single/${currentUser._id}`, returnedData).then((res => console.log(res)))
-  }
-  useEffect(() => {
-    if (typeof (returnedData) != "undefined") {
-      newRequest.put(`/users/single/${currentUser._id}`, returnedData).then((res => console.log(res)))
-    } else {
-    }
-  }, [returnedData])
-  return (
-    <div className="classroom">
-      <div className="">
-        <div className="board">
-          <button onClick={() => setReturnedData(!returnedData)}>ტესტი</button>
-          <button onClick={() => {
-            storeCollectedWords()
-          }}>ტესტი2</button>
 
+  function requestHandler() {
+    const classId = classData.learningClass._id;
+    const userId = currentUser._id
+    const userName = currentUser.username
+
+    newRequest.put(`/classes/single/${classId}`, { type: "requestOnBoard", writingRequest, userId, userName });
+  }
+  function openRequests() {
+    setIsRequestOpen(!isRequestsOpen)
+  }
+  
+  function handleAccept() {
+    const classId = classData.learningClass._id;
+    const userId = currentUser._id
+    const acceptedTexts = checkedRequests.reduce((a, c, i) => {
+      if (c) {
+        a.push(classData.requests[i]._id);
+      }
+      return a;
+    }, []);
+    console.log(acceptedTexts)
+    newRequest.put(`/classes/single/${classId}`, { type: "acceptOnBoardRequest", acceptedTexts, userId });
+  }
+
+  console.log(checkedRequests)
+  return (
+    <div className="">
+      <div className="classroom">
+        {currentUser.isSeller &&
+          // <div className=""></div>
+          <div className="requests">
+            <div className="requests-button" onClick={openRequests}>{isRequestsOpen?"მოთხოვნების დამალვა":"მოთხოვნების გამოჩენა"}</div>
+            {isRequestsOpen &&
+              <div className="">
+                {requests.map((request, index) =>
+                // console.log(request.writingRequest))}
+                (
+                  <div className="request-card">
+                    <div className="writing-card">{request.writingRequest}</div>
+                    <div className="panel">
+                      <input type="checkbox" onChange={()=>handleCheckboxesChange(index,checkedRequests,setCheckedRequests)} />
+                    <div className="user-info-card">{request.userName}</div>
+                    </div>
+                  </div>
+                ))}
+                <div className="accept-button" onClick={handleAccept}>მონიშნულების დაფაზე გადატანა</div>
+              </div>
+            }
+          </div>
+        }
+        <div className="board">
+          <div className="writings">
+            {textsToBoard.map((text,index)=>(
+              <div className="writing">{text.writingRequest}</div>
+
+            ))}
+            <div className="writing">{writingRequest}</div>
+          </div>
+          {/* <button onClick={() => setReturnedData(!returnedData)}>ტესტი</button>
+          <button onClick={() => {
+            storeCollectedWords(returnedDatatest)
+          }}>ტესტი2</button> */}
+        </div>
+        <div className="panel">
+          <div className="marks-classroom">
+            {marks.map((mark, index) => <div className="mark-card" onClick={() => markClickHandler(mark)}>{mark}</div>)}
+          </div>
+          <button className="request-button" onClick={requestHandler}>გაგზავნა</button>
         </div>
         <div className="">
-          მოპოვებული სიტყვები
+          {/* მოპოვებული სიტყვები */}
           {isLoadingCollection ? "იტვირთება" : collectionError ? "რაღაც შეცდომაა" :
             <div className="collection">
               {collectionData.map((wordData, index) => (

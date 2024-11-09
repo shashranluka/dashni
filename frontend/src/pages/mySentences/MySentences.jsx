@@ -54,6 +54,7 @@ function MySentences() {
   if (!sentenceLoading && loadingRef.current) {
     loadingRef.current = false;
     setCheckedState(new Array(sentenceData.length).fill(false))
+    console.log(checkedState)
   }
 
   const mutation = useMutation({

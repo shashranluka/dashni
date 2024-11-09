@@ -2,9 +2,9 @@ import "./Results.scss"
 export default function Results(props) {
   const { sentences, point, tries, wordsFromLexicon, setReturnedData, storeCollectedWords } = props;
   console.log(props);
-  const wordsIdsFromLexicon = wordsFromLexicon.map((wordData)=>wordData._id)
+  const wordsIdsFromLexicon = wordsFromLexicon.map((wordData) => wordData._id)
   console.log(wordsIdsFromLexicon);
-  
+
   return (
     <div className="">
       <h1>
@@ -21,13 +21,16 @@ export default function Results(props) {
       </div>
       <div className="">
 
-      <div className="wordstosave">
-        {wordsFromLexicon.map((wordData, index)=>(
-          <div className="wordcard">{wordData.theWord}</div>
-        ))}
-      </div>
-      <button onClick={()=>setReturnedData(wordsIdsFromLexicon)}>მოპოვებულის შენახვა</button>
+        <div className="wordstosave">
+          {wordsFromLexicon.map((wordData, index) => (
+            <div className="wordcard">{wordData.theWord}</div>
+          ))}
         </div>
+        <button onClick={() => {
+          console.log("შედეგებიდან პასუხი")
+          storeCollectedWords(wordsIdsFromLexicon)
+        }}>მოპოვებულის შენახვა</button>
+      </div>
 
     </div>
   );

@@ -67,7 +67,7 @@ function MyRoom() {
   }
   function handleStudentsSubmit() {
     const userId = currentUser._id;
-    console.log(chosenClass)
+    // console.log(chosenClass,"currentUser",currentUser)
     const classId = chosenClass._id;
     const type = "students"
 
@@ -87,25 +87,6 @@ function MyRoom() {
           ვიდეოები
         </div>
       </Link>
-
-      <div className="classes">
-        {classLoading ? (
-          "loading"
-        ) : classError ? (
-          "error"
-        ) : (
-          <div className="">
-            {classData.map((gig, index) =>
-              <div className="class-box">
-                <div className={chosenClassIndex == index ? "classroom-card chosen-class" : "classroom-card"}
-                  onClick={() => classClickHandler(gig, index)}>{gig.name}</div>
-                <Link to={`/myClass/${gig._id}`}>
-                  <div className="class-link">გადასვლა</div>
-                </Link>
-              </div>)}
-          </div>
-        )}
-      </div>
 
       <div className="">
         <div className="">
@@ -128,6 +109,25 @@ function MyRoom() {
             <div className=""></div>
           )
         }
+      </div>
+
+      <div className="classes">
+        {classLoading ? (
+          "loading"
+        ) : classError ? (
+          "error"
+        ) : (
+          <div className="">
+            {classData.map((gig, index) =>
+              <div className="class-box">
+                <div className={chosenClassIndex == index ? "classroom-card chosen-class" : "classroom-card"}
+                  onClick={() => classClickHandler(gig, index)}>{gig.name}</div>
+                <Link to={`/myClass/${gig._id}`}>
+                  <div className="class-link">გადასვლა</div>
+                </Link>
+              </div>)}
+          </div>
+        )}
       </div>
 
       <div className="">

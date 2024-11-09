@@ -28,7 +28,7 @@ export const updateUser = async (req, res, next) => {
 
     const updated = await User.findByIdAndUpdate(
       { _id: userId },
-      {collectedWords: req.body},
+      {collectedWords: [...student.collectedWords, ...req.body]},
     );
   console.log("update User3",updated);
 

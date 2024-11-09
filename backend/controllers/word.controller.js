@@ -1,10 +1,9 @@
 import Word from "../models/word.model.js";
 import BaWord from "../models/baWord.model.js";
 import User from "../models/user.model.js"
-import Dictionary from "../models/dictionary.model.js";
 
 export const createWord = async (req, res, next) => {
-  // console.log("wordsState", req.body, "newWord");
+  console.log("wordsState", req.body, "newWord");
   // const newWord = new Word({
   //   userId: req.userId,
   //   ...req.body,
@@ -62,8 +61,8 @@ export const getWords = async (req, res, next) => {
     try {
       console.log(p, "მონაცემები", filter, "ტესტი", user, "user")
       const collectedWordsData = await BaWord.find(filter)
-      // console.log("მონაცემები",collectedWordsData,"data")
       res.status(200).send(collectedWordsData);
+      // console.log("მონაცემები",collectedWordsData,"data")
     } catch (err) {
       console.log(err)
     }
@@ -73,9 +72,7 @@ export const getWords = async (req, res, next) => {
     const videoDatas =
       lang == "ba"
         ? await BaWord.find(filters).sort({ [q.sort]: -1 })
-        : lang == "en"
-          ? await Word.find(filters).sort({ [q.sort]: -1 })
-          : none;
+        : await Word.find(filters).sort({ [q.sort]: -1 })
 
     res.status(200).send(videoDatas);
     console.log("დასაწყისი", req.query, videoDatas, "videodatas", "word");

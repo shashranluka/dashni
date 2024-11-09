@@ -34,14 +34,15 @@ function Game(props) {
   const iSentence = useRef();
   const marksAmount = useRef(0);
   const wordsFromLexicon = props.gameData.wordsFromLexicon;
-  const storeCollectedWords = props.gameData.storeCollectedWords;
+  const storeCollectedWords = props.storeCollectedWords;
   const chosenSentences = props.gameData.chosenSentences;
   const wordsFromSentences = props.gameData.wordsFromSentences;
   const setReturnedData = props.setReturnedData;
-  console.log(wordsFromSentences,typeof(storeCollectedWords))
+  // console.log(props,typeof(storeCollectedWords),storeCollectedWords)
   const sentencesData = useMemo(() => {
     const sentencesData = chosenSentences.map((el) => {
       const marks = [",", ".", ":", ";", "!", "?"];
+      // const usedMarks = [];
       const words = el.sentence
         .replace('"', "")
         .replace('"', "")
@@ -55,17 +56,19 @@ function Game(props) {
           if (marks.includes(word[word.length - 1])) {
             wordObj.word = word.substr(0, word.length - 1);
             wordObj.mark = word[word.length - 1];
+            // usedMarks.push(word[word.length - 1]);
           } else {
             wordObj.word = word;
           }
           wordObj.isDone = false;
+          
           return wordObj;
         });
       return { ...el, words: words, isDone: false };
     });
     return sentencesData;
   }, []);
-
+  console.log(sentencesData)
   // const wordsFromSentences = useMemo(()=>);
 
   return (

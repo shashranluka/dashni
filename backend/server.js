@@ -49,7 +49,7 @@ app.use("/api/reviews", reviewRoute);
 app.use((err, req, res, next) => {
   const errorStatus = err.status || 500;
   const errorMessage = err.message || "Something went wrong!";
-  // console.log("err from sentences", errorMessage, "err from sentences");
+  // console.log(err,"err from sentences", errorMessage, "err from sentences");
   return res.status(errorStatus).send(errorMessage);
 });
 
