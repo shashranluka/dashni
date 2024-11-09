@@ -3,7 +3,7 @@ import LearningClass from "../models/learningClass.model.js";
 import OnBoardRequest from "../models/onBoardRequest.model.js"
 import createError from "../utils/createError.js";
 import User from "../models/user.model.js";
-import { createOnBoardRequest,updateClassText } from "./onBoardRequest.controller.js";
+import { createOnBoardRequest, updateClassText } from "./onBoardRequest.controller.js";
 // import { getUsers, updateUser } from "./user.controller.js";
 
 export const createLearningClass = async (req, res, next) => {
@@ -77,12 +77,12 @@ export const updateLearningClass = async (req, res, next) => {
   const { writingRequest, userId, userName, acceptedTexts} = req.body;
   // console.log(classId, req.body, writingRequest);
   try {
-    // console.log("try")
+    console.log("try",classId)
     const learningClass = await LearningClass.findById(classId);
-    if (learningClass.userId != req.body.userId) {
-      return next(createError(403, "You can't update this class!"));
-    }
-    // console.log("try",learningClass)
+    console.log("try",learningClass.userId,userId)
+    // if (learningClass.userId != req.body.userId) {
+    //   return next(createError(403, "You can't update this class!"));
+    // }
     if (req.body.type == "requestOnBoard") {
       // const writingRequest = req.body.writingRequest;
       console.log("type:request")
