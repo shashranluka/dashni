@@ -3,7 +3,7 @@ import BaWord from "../models/baWord.model.js";
 import User from "../models/user.model.js"
 
 export const createWord = async (req, res, next) => {
-  console.log("wordsState", req.body, "newWord");
+  // console.log("wordsState", req.body, "newWord");
   // const newWord = new Word({
   //   userId: req.userId,
   //   ...req.body,
@@ -40,7 +40,7 @@ export const createWord = async (req, res, next) => {
 // };
 
 export const getWords = async (req, res, next) => {
-  console.log(Object.keys(req.query), req.query, "getWords req");
+  // console.log(Object.keys(req.query), req.query, "getWords req");
   const q = { theWord: req.query.wordsToTranslate };
   const lang = req.query.lang;
   const filters = {
@@ -48,18 +48,18 @@ export const getWords = async (req, res, next) => {
     // ...(q._id && { _id: q._id }),
   };
   if (Object.keys(req.query) == "userId") {
-    console.log("mopovebuli sityvebis wamoRebaa sawiro")
+    // console.log("mopovebuli sityvebis wamoRebaa sawiro")
     const user = await User.findById(req.query.userId);
-    console.log("mopovebuli sityvebis patroni", user)
+    // console.log("mopovebuli sityvebis patroni", user)
     const ids = user.collectedWords;
     const p = { _id: ids };
 
     const filter = {
       ...(p._id && { _id: p._id })
     }
-    // console.log(user.collectedWords.length, "user")
+    console.log(user.collectedWords.length, "user",filter)
     try {
-      console.log(p, "მონაცემები", filter, "ტესტი", user, "user")
+      // console.log(p, "მონაცემები", filter, "ტესტი", user, "user")
       const collectedWordsData = await BaWord.find(filter)
       res.status(200).send(collectedWordsData);
       // console.log("მონაცემები",collectedWordsData,"data")
@@ -75,7 +75,7 @@ export const getWords = async (req, res, next) => {
         : await Word.find(filters).sort({ [q.sort]: -1 })
 
     res.status(200).send(videoDatas);
-    console.log("დასაწყისი", req.query, videoDatas, "videodatas", "word");
+    // console.log("დასაწყისი", req.query, videoDatas, "videodatas", "word");
   } catch (err) {
     next(err);
   }

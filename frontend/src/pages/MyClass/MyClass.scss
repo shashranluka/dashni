@@ -45,6 +45,13 @@
         flex-wrap: wrap;
       }
     }
+    .writing-request {
+      background-color: #016106;
+      padding: 2em;
+      min-height: 1.5em;
+      border: solid #1e1e1e;
+      border-radius: .3em;
+    }
     .panel{
       display: flex;
       justify-content: space-between;
@@ -67,10 +74,11 @@
     }
     .collection{
       display: flex;
-      flex-wrap: wrap;
+      flex-wrap:wrap;
       flex-direction: column;
       background-color:#9c9c9c;
       height: 20vh;
+      // box-sizing: border-box;
     }
 
     .sentence-div{

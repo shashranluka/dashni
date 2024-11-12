@@ -9,7 +9,7 @@ import "./MyClass.scss";
 import SentenceCard from "../../components/sentenceCard/SentenceCard";
 import GameSentences from "../../components/gameSentences/GameSentences";
 import { useQuery } from "@tanstack/react-query";
-import {handleCheckboxesChange} from "../../utils/handleEvents"
+import { handleCheckboxesChange } from "../../utils/handleEvents"
 import newRequest from "../../utils/newRequest";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import getCurrentUser from "../../utils/getCurrentUser";
@@ -87,20 +87,21 @@ function MyClass() {
     setCheckedRequests(new Array(classData.requests.length).fill(false))
   }
 
-  const [requests,textsToBoard] = useMemo(()=>{
+  const [requests, textsToBoard] = useMemo(() => {
     const requests = [];
     const textsToBoard = [];
-    if(!isLoadingClass){
+    if (!isLoadingClass) {
 
-      classData.requests.map((text)=>{
-        if(text.access) textsToBoard.push(text)
-          else requests.push(text)
+      classData.requests.map((text) => {
+        console.log(text)
+        if (text.access == "true") { textsToBoard.push(text) }
+        else { requests.push(text) }
       })
     }
-    return [requests,textsToBoard]
-  },[classData])
+    return [requests, textsToBoard]
+  }, [classData])
 
-  console.log(requests,textsToBoard)
+  console.log(requests, textsToBoard)
   // const { isLoading: isLoadingRequests, requestsError, data: requestsData } = useQuery({
   //   queryKey: ["gig"],
   //   refetchOnWindowFocus: false,
@@ -170,7 +171,7 @@ function MyClass() {
           .replace('"', "")
           .replace('"', "")
           .replace("(", "")
-          .replace(")", "")
+          .replace(")", "")                         
           .replace(":", "")
           .replace("?", "")
           .split(" ")
@@ -178,16 +179,21 @@ function MyClass() {
       .flat();
     return words;
   }
+
   // const [numberOfWordsOnBoard, setNumberOfWordsOnBoard] = useState(0)
   const [writingRequest, setWritingRequest] = useState("");
-  // const wordsOnBoard = useMemo(() => (""), [])
+  const wordsOffCollection = useMemo(() => [], [])
+
   function clickCollectionCard(wordData, index) {
     setWritingRequest(writingRequest + " " + wordData.theWord)
-    collectionData.splice(index, 1)
+    wordsOffCollection.push(collectionData.splice(index, 1)[0]._id)
+    console.log(wordsOffCollection)
   }
 
   const storeCollectedWords = (returnedData) => {
     newRequest.put(`/users/single/${currentUser._id}`, returnedData).then((res => console.log(res)))
+    setInterval(()=>window.parent.location = window.parent.location.href,5000)
+    // window.parent.location = window.parent.location.href;
   }
 
   function markClickHandler(mark) {
@@ -229,12 +235,17 @@ function MyClass() {
     const userId = currentUser._id
     const userName = currentUser.username
 
-    newRequest.put(`/classes/single/${classId}`, { type: "requestOnBoard", writingRequest, userId, userName });
+    newRequest.put(`/classes/single/${classId}`, { type: "requestOnBoard", writingRequest, userId, userName, wordsOffCollection });
+    // navigate(`/myClass/${classId}`)
+    console.log("navigate")
+    // window.location.reload
+    setInterval(()=>window.parent.location = window.parent.location.href,5000)
+    // window.parent.location = window.parent.location.href;
   }
   function openRequests() {
     setIsRequestOpen(!isRequestsOpen)
   }
-  
+
   function handleAccept() {
     const classId = classData.learningClass._id;
     const userId = currentUser._id
@@ -255,7 +266,7 @@ function MyClass() {
         {currentUser.isSeller &&
           // <div className=""></div>
           <div className="requests">
-            <div className="requests-button" onClick={openRequests}>{isRequestsOpen?"მოთხოვნების დამალვა":"მოთხოვნების გამოჩენა"}</div>
+            <div className="requests-button" onClick={openRequests}>{isRequestsOpen ? "მოთხოვნების დამალვა" : "მოთხოვნების გამოჩენა"}</div>
             {isRequestsOpen &&
               <div className="">
                 {requests.map((request, index) =>
@@ -264,8 +275,8 @@ function MyClass() {
                   <div className="request-card">
                     <div className="writing-card">{request.writingRequest}</div>
                     <div className="panel">
-                      <input type="checkbox" onChange={()=>handleCheckboxesChange(index,checkedRequests,setCheckedRequests)} />
-                    <div className="user-info-card">{request.userName}</div>
+                      <input type="checkbox" onChange={() => handleCheckboxesChange(index, checkedRequests, setCheckedRequests)} />
+                      <div className="user-info-card">{request.userName}</div>
                     </div>
                   </div>
                 ))}
@@ -276,22 +287,22 @@ function MyClass() {
         }
         <div className="board">
           <div className="writings">
-            {textsToBoard.map((text,index)=>(
+            {textsToBoard.map((text, index) => (
               <div className="writing">{text.writingRequest}</div>
 
             ))}
-            <div className="writing">{writingRequest}</div>
           </div>
           {/* <button onClick={() => setReturnedData(!returnedData)}>ტესტი</button>
           <button onClick={() => {
             storeCollectedWords(returnedDatatest)
-          }}>ტესტი2</button> */}
+            }}>ტესტი2</button> */}
         </div>
+            <div className="writing-request">{writingRequest}</div>
         <div className="panel">
           <div className="marks-classroom">
             {marks.map((mark, index) => <div className="mark-card" onClick={() => markClickHandler(mark)}>{mark}</div>)}
           </div>
-          <button className="request-button" onClick={requestHandler}>გაგზავნა</button>
+          <button className="request-button" refresh="true" onClick={requestHandler}>გაგზავნა</button>
         </div>
         <div className="">
           {/* მოპოვებული სიტყვები */}
@@ -300,6 +311,7 @@ function MyClass() {
               {collectionData.map((wordData, index) => (
                 <div className="card" onClick={() => clickCollectionCard(wordData, index)}>{wordData.theWord}</div>
               ))}
+          {collectionData.length}
             </div>
           }
         </div>

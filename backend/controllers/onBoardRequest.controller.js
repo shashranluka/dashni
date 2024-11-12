@@ -3,11 +3,11 @@ import OnBoardRequest from "../models/onBoardRequest.model.js"
 import createError from "../utils/createError.js";
 
 export const createOnBoardRequest = async (classId, writingRequest, userId, userName, res, next) => {
-  console.log("createGigdwada", classId, writingRequest, userId);
+  // console.log("createGigdwada", classId, writingRequest, userId);
   const newOnBoardRequest = new OnBoardRequest({
     classId, writingRequest, userId, userName, access: "false"
   });
-  console.log(newOnBoardRequest);
+  // console.log(newOnBoardRequest);
   try {
     const savedOnBoardRequest = await newOnBoardRequest.save();
     res.status(201).json(savedOnBoardRequest);
@@ -44,7 +44,7 @@ export const updateClassText = async (classId, userId, acceptedTexts, res, next)
   }
 }
 export const createGig = async (req, res, next) => {
-  console.log("createGigdwada", req.body);
+  // console.log("createGigdwada", req.body);
   if (!req.isSeller)
     return next(createError(403, "Only sellers can create a gig!"));
 
@@ -52,7 +52,7 @@ export const createGig = async (req, res, next) => {
     userId: req.userId,
     ...req.body,
   });
-  console.log(newGig, "ahali");
+  // console.log(newGig, "ahali");
   try {
     const savedGig = await newGig.save();
     res.status(201).json(savedGig);
