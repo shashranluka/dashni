@@ -29,6 +29,7 @@ function MyClass() {
   const [isRequestsOpen, setIsRequestOpen] = useState(false);
   const [gameDataCollected, setGameDataCollected] = useState(false);
   const [checkedRequests, setCheckedRequests] = useState([]);
+  const [checkedToBoard, setCheckedToBoard] = useState([]);
   const { id } = useParams();
   const marks = useMemo(() => [".", ",", ":", ";", "!", "?"]);
   const amountRef = useRef();
@@ -80,27 +81,30 @@ function MyClass() {
         return res.data;
       }),
   });
+  console.log(classData,"classdata")
 
-  const loadingRef = useRef(true);
-  if (!isLoadingClass && loadingRef.current) {
-    loadingRef.current = false;
-    setCheckedRequests(new Array(classData.requests.length).fill(false))
-  }
-
+  
   const [requests, textsToBoard] = useMemo(() => {
     const requests = [];
     const textsToBoard = [];
     if (!isLoadingClass) {
-
+      
       classData.requests.map((text) => {
-        console.log(text)
+        // console.log(text)
         if (text.access == "true") { textsToBoard.push(text) }
         else { requests.push(text) }
       })
     }
     return [requests, textsToBoard]
   }, [classData])
-
+  
+  const loadingRef = useRef(true);
+  if (!isLoadingClass && loadingRef.current) {
+    loadingRef.current = false;
+    setCheckedRequests(new Array(requests.length).fill(false))
+    setCheckedToBoard(new Array(textsToBoard.length).fill(false))
+  }
+  
   console.log(requests, textsToBoard)
   // const { isLoading: isLoadingRequests, requestsError, data: requestsData } = useQuery({
   //   queryKey: ["gig"],
@@ -112,12 +116,9 @@ function MyClass() {
   // });
 
   console.log(classData, collectionData, currentUser)
+  
   //    ამის გამოა 
   if (!isLoadingClass && (classData.learningClass.userId != currentUser._id && !classData.learningClass.students.includes(currentUser._id))) {
-    // console.log("ამის გამოa", isLoadingClass,"tolia?",classData[0].userId,currentUser._id)
-    // console.log("esec?","dwddddddsssaaაააააააააააააა",classData[0].userId != currentUser._id)
-    // console.log("ეს?",classData[0].userId != currentUser._id || !classData[0].students.includes(currentUser._id))
-    // console.log("aba es?",!classData[0].students.includes(currentUser._id))
     navigate("/")
     console.log("ამის გამო")
   }
@@ -171,7 +172,7 @@ function MyClass() {
           .replace('"', "")
           .replace('"', "")
           .replace("(", "")
-          .replace(")", "")                         
+          .replace(")", "")
           .replace(":", "")
           .replace("?", "")
           .split(" ")
@@ -192,7 +193,7 @@ function MyClass() {
 
   const storeCollectedWords = (returnedData) => {
     newRequest.put(`/users/single/${currentUser._id}`, returnedData).then((res => console.log(res)))
-    setInterval(()=>window.parent.location = window.parent.location.href,5000)
+    setInterval(() => window.parent.location = window.parent.location.href, 5000)
     // window.parent.location = window.parent.location.href;
   }
 
@@ -239,7 +240,7 @@ function MyClass() {
     // navigate(`/myClass/${classId}`)
     console.log("navigate")
     // window.location.reload
-    setInterval(()=>window.parent.location = window.parent.location.href,5000)
+    setInterval(() => window.parent.location = window.parent.location.href, 5000)
     // window.parent.location = window.parent.location.href;
   }
   function openRequests() {
@@ -255,128 +256,140 @@ function MyClass() {
       }
       return a;
     }, []);
-    console.log(acceptedTexts)
+    console.log(acceptedTexts);
     newRequest.put(`/classes/single/${classId}`, { type: "acceptOnBoardRequest", acceptedTexts, userId });
+    setInterval(() => window.parent.location = window.parent.location.href, 5000)
   }
 
-  console.log(checkedRequests)
+  console.log(checkedRequests,checkedToBoard);
   return (
     <div className="">
       <div className="classroom">
-        {currentUser.isSeller &&
-          // <div className=""></div>
-          <div className="requests">
-            <div className="requests-button" onClick={openRequests}>{isRequestsOpen ? "მოთხოვნების დამალვა" : "მოთხოვნების გამოჩენა"}</div>
-            {isRequestsOpen &&
-              <div className="">
-                {requests.map((request, index) =>
-                // console.log(request.writingRequest))}
-                (
-                  <div className="request-card">
-                    <div className="writing-card">{request.writingRequest}</div>
-                    <div className="panel">
-                      <input type="checkbox" onChange={() => handleCheckboxesChange(index, checkedRequests, setCheckedRequests)} />
-                      <div className="user-info-card">{request.userName}</div>
-                    </div>
-                  </div>
-                ))}
-                <div className="accept-button" onClick={handleAccept}>მონიშნულების დაფაზე გადატანა</div>
-              </div>
-            }
-          </div>
-        }
-        <div className="board">
-          <div className="writings">
-            {textsToBoard.map((text, index) => (
-              <div className="writing">{text.writingRequest}</div>
+        <div className="high-div">
 
-            ))}
-          </div>
-          {/* <button onClick={() => setReturnedData(!returnedData)}>ტესტი</button>
+          {currentUser.isSeller &&
+            // <div className=""></div>
+            <div className="requests">
+              <div className="requests-button" onClick={openRequests}>{isRequestsOpen ? "მოთხოვნების დამალვა" : "მოთხოვნების გამოჩენა"}</div>
+              {isRequestsOpen &&
+                <div className="">
+                  {requests.map((request, index) =>
+                  // console.log(request.writingRequest))}
+                  (
+                    <div className="request-card">
+                      <div className="writing-card">{request.writingRequest}</div>
+                      <div className="panel">
+                        <input type="checkbox" onChange={() => handleCheckboxesChange(index, checkedRequests, setCheckedRequests)} />
+                        <div className="user-info-card">{request.userName}</div>
+                      </div>
+                    </div>
+                  ))}
+                  <div className="accept-button" onClick={handleAccept}>მონიშნულების დაფაზე გადატანა</div>
+                </div>
+              }
+            </div>
+          }
+          <div className="board">
+            <div className="writings">
+              {textsToBoard.map((text, index) => (
+                <div className="">
+                  <div className="writing">{text.writingRequest}</div>
+                  <div className="panel">
+                    <input type="checkbox" onChange={() => handleCheckboxesChange(index, checkedToBoard, setCheckedToBoard)} />
+                    <div className="user-info-card">{text.userName}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            {/* <button onClick={() => setReturnedData(!returnedData)}>ტესტი</button>
           <button onClick={() => {
             storeCollectedWords(returnedDatatest)
             }}>ტესტი2</button> */}
-        </div>
-            <div className="writing-request">{writingRequest}</div>
-        <div className="panel">
-          <div className="marks-classroom">
-            {marks.map((mark, index) => <div className="mark-card" onClick={() => markClickHandler(mark)}>{mark}</div>)}
           </div>
-          <button className="request-button" refresh="true" onClick={requestHandler}>გაგზავნა</button>
-        </div>
-        <div className="">
-          {/* მოპოვებული სიტყვები */}
-          {isLoadingCollection ? "იტვირთება" : collectionError ? "რაღაც შეცდომაა" :
-            <div className="collection">
-              {collectionData.map((wordData, index) => (
-                <div className="card" onClick={() => clickCollectionCard(wordData, index)}>{wordData.theWord}</div>
-              ))}
-          {collectionData.length}
+          <div className="writing-request">{writingRequest}</div>
+          <div className="panel">
+            <div className="marks-classroom">
+              {marks.map((mark, index) => <div className="mark-card" onClick={() => markClickHandler(mark)}>{mark}</div>)}
             </div>
-          }
+            <button className="request-button" refresh="true" onClick={requestHandler}>გაგზავნა</button>
+          </div>
+          <div className="">
+            {/* მოპოვებული სიტყვები */}
+            {isLoadingCollection ? "იტვირთება" : collectionError ? "რაღაც შეცდომაა" :
+              <div className="collection">
+                {collectionData.map((wordData, index) => (
+                  <div className="card" onClick={() => clickCollectionCard(wordData, index)}>{wordData.theWord}</div>
+                ))}
+                {collectionData.length}
+              </div>
+            }
+          </div>
         </div>
-        <div className="start-button">
-          <div className="choose-sentences flex">
-            <div className="">
-              <label>წინადადებების რაოდენობა</label>
-              <input
-                ref={amountRef}
-                type="number"
-                placeholder="amount"
-                defaultValue="4"
-              />
-            </div>
-            {/* <div className="">
+        <div className="game-div">
+
+          <div className="start-button">
+            <div className="choose-sentences flex">
+              <div className="">
+                <label>წინადადებების რაოდენობა</label>
+                <input
+                  ref={amountRef}
+                  type="number"
+                  placeholder="amount"
+                  defaultValue="4"
+                />
+              </div>
+              {/* <div className="">
               <label>სურათებიანების რაოდენობა</label>
               <input
-                ref={withPicsRef}
-                type="number"
-                placeholder="withPics"
-                defaultValue="1"
+              ref={withPicsRef}
+              type="number"
+              placeholder="withPics"
+              defaultValue="1"
               />
-            </div> */}
-            {/* <div className="">
+              </div> */}
+              {/* <div className="">
               <input ref={methodRef} type="string" placeholder="method" />
               <label for="cars">Choosing method:</label>
               <select id="cars" name="carlist" form="carform" ref={methodRef}>
-                <option value="volvo">Volvo</option>
-                <option value="saab">Saab</option>
-                <option value="opel">Opel</option>
-                <option value="audi">Audi</option>
+              <option value="volvo">Volvo</option>
+              <option value="saab">Saab</option>
+              <option value="opel">Opel</option>
+              <option value="audi">Audi</option>
               </select>
-            </div> */}
-            <div className="">
-              <button
-                onClick={() => {
-                  handleSubmit();
-                  // if (!isStarted) setNewGame(newGame + 1);
-                  // setIsStarted(!isStarted);
-                }}
-              >
-                {isStarted ? "თამაშის გატანა" : "თამაშის გამოტანა"}
-              </button>
-            </div>
-            {/* <input
+              </div> */}
+              <div className="">
+                <button
+                  onClick={() => {
+                    handleSubmit();
+                    // if (!isStarted) setNewGame(newGame + 1);
+                    // setIsStarted(!isStarted);
+                  }}
+                >
+                  {isStarted ? "თამაშის გატანა" : "თამაშის გამოტანა"}
+                </button>
+              </div>
+              {/* <input
           type="submit"
           className="input-interval"
           onClick={() => {
             handleSubmit();
-          }}
-        /> */}
+            }}
+            /> */}
+            </div>
+            {/* <GameInput /> */}
           </div>
           {/* <GameInput /> */}
-        </div>
-        {/* <GameInput /> */}
-        {gameDataCollected && <GameSentences gameData={gameData} setReturnedData={setReturnedData} storeCollectedWords={storeCollectedWords} />}
-        <div className="cards">
-          {isLoadingClass
-            ? "loading"
-            : error
-              ? "Something went wrong!"
-              : "go on"
-            // : classData[1].map((gig) => <SentenceCard
-            //   key={gig._id} item={gig} />)
-          }
+          {gameDataCollected && <GameSentences gameData={gameData} setReturnedData={setReturnedData} storeCollectedWords={storeCollectedWords} />}
+          <div className="cards">
+            {isLoadingClass
+              ? "loading"
+              : error
+                ? "Something went wrong!"
+                : "go on"
+              // : classData[1].map((gig) => <SentenceCard
+              //   key={gig._id} item={gig} />)
+            }
+          </div>
         </div>
       </div>
     </div>
