@@ -1,91 +1,112 @@
   .classroom {
+
     // width: 1400px;
     // padding: 30px 0px;
     // display: flex;
     // gap: 50px;
-    .requests{
-      .requests-button{
-        background-color: #999999;
-        padding: .5em;
-        width: fit-content;
-        border-radius: .3em;
-        cursor: pointer;
+    .high-div {
+      background-color: #b4b4b4;
+      border: solid black;
 
-      }
-      .request-card {
-        margin: .5em;
-        .writing-card{
-          background-color: #ffc108;
+      .requests {
+        .requests-button {
+          background-color: #999999;
+          padding: .5em;
+          width: fit-content;
+          border-radius: .3em;
+          cursor: pointer;
+
         }
-        .user-info-card{
-          background-color: #1dbf73;
-          display: flex;
-          justify-content: end;
-          // align-items: center;
+
+        .request-card {
+          margin: .5em;
+
+          .writing-card {
+            background-color: #ffc108;
+          }
+
+          .user-info-card {
+            background-color: #1dbf73;
+            display: flex;
+            justify-content: end;
+            // align-items: center;
+          }
+        }
+
+        .accept-button {
+          background-color: #865353;
+          padding: .5em;
+          width: fit-content;
+          border: solid black;
+          border-radius: .3em;
+          cursor: pointer;
         }
       }
-      .accept-button{
-        background-color: #865353;
+
+      .board {
+        background-color: #929191;
+        min-height: 100px;
+        margin: 1em;
+        border-radius: .5em;
+        border: solid .3em;
         padding: .5em;
-        width: fit-content;
-        border: solid black;
-        border-radius: .3em;
-        cursor: pointer;
+
+        .writing {
+          display: flex;
+          flex-wrap: wrap;
+        }
       }
-    }
-    .board{
-      background-color: #555;
-      min-height: 100px;
-      margin: 1em;
-      border-radius: .5em;
-      border: solid .3em;
-      padding: .5em;
-      .writing{
+
+      .writing-request {
+        background-color: #016106;
+        padding: 2em;
+        min-height: 1.5em;
+        border: solid #1e1e1e;
+        border-radius: .3em;
+      }
+
+      .panel {
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .marks-classroom {
         display: flex;
         flex-wrap: wrap;
+        justify-content: space-around;
+        width: 100%;
+        background-color: #434543;
+
+
+        .mark-card {
+          background-color: rgb(138, 126, 105);
+          padding: .3em;
+          margin: .5em;
+          border-radius: .3em;
+          cursor: pointer;
+        }
+      }
+
+      .collection {
+        display: flex;
+        flex-wrap: wrap;
+        flex-direction: column;
+        background-color: #9c9c9c;
+        height: 20vh;
+        // box-sizing: border-box;
       }
     }
-    .writing-request {
+
+    .game-div{
       background-color: #016106;
-      padding: 2em;
-      min-height: 1.5em;
-      border: solid #1e1e1e;
-      border-radius: .3em;
-    }
-    .panel{
-      display: flex;
-      justify-content: space-between;
-    }
-    .marks-classroom{
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-around;
-      width: 100%;
-      background-color: #434543;
-
-
-      .mark-card{
-        background-color: rgb(138, 126, 105);
-        padding: .3em;
-        margin: .5em;
-        border-radius: .3em;
-        cursor: pointer;
-      }
-    }
-    .collection{
-      display: flex;
-      flex-wrap:wrap;
-      flex-direction: column;
-      background-color:#9c9c9c;
-      height: 20vh;
-      // box-sizing: border-box;
     }
 
-    .sentence-div{
+    .sentence-div {
       background-color: #1dbf73;
       margin: .3em;
       padding: .3em;
     }
+
     .left {
       flex: 2;
       display: flex;

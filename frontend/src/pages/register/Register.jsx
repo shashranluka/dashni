@@ -49,24 +49,26 @@ function Register() {
       <form onSubmit={handleSubmit}>
         <div className="form">
           <h1>ახალი ანგარიშის შექმნა</h1>
-          <label htmlFor="">მომხმარებლის სახელი</label>
+          <label htmlFor="">ელ. ფოსტა</label>
+          <input
+            name="email"
+            type="email"
+            required="true"
+            placeholder=""
+            onChange={handleChange}
+          />
+          <label htmlFor="">მეტსახელი</label>
           <input
             name="username"
+            required="true"
             type="text"
             placeholder=""
             onChange={handleChange}
           />
-          <label htmlFor="">მომხმარებლის ელ. ფოსტა</label>
-          <input
-            name="email"
-            type="email"
-            placeholder=""
-            onChange={handleChange}
-          />
           <label htmlFor="">პაროლი</label>
-          <input name="password" type="password" onChange={handleChange} />
+          <input name="password" required="true" type="password" onChange={handleChange} />
           <div className="toggle">
-            <label htmlFor="">მენტორი</label>
+            <label htmlFor="">კაპიტანი</label>
             <label className="switch">
               <input type="checkbox" onChange={handleSeller} />
               <span className="slider round"></span>

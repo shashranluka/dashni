@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [loginTryCounter, setLoginTryCounter] = useState("");
   const [error, setError] = useState(null);
 
   const navigate = useNavigate();
@@ -20,6 +21,7 @@ function Login() {
       navigate("/");
     } catch (err) {
       setError(err.response.data);
+      setLoginTryCounter(loginTryCounter+" ისევ")
     }
   };
 
@@ -31,6 +33,7 @@ function Login() {
         <input
           name="username"
           type="text"
+          required="true"
           placeholder=""
           onChange={(e) => setUsername(e.target.value)}
         />
@@ -39,10 +42,11 @@ function Login() {
         <input
           name="password"
           type="password"
+          required="true"
           onChange={(e) => setPassword(e.target.value)}
         />
         <button type="submit">Login</button>
-        {error && error}
+        {error && error}{loginTryCounter}
       </form>
     </div>
   );

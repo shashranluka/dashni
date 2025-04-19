@@ -16,7 +16,7 @@ const AddVideoData = () => {
   const [selectedLanguage, setSelectedLanguage] = useState('orange');
 
   const [state, dispatch] = useReducer(videoDataReducer, INITIAL_STATE);
-
+  console.log(state)
   const handleChange = (e) => {
     console.log(e.target.value);
     dispatch({
@@ -71,7 +71,7 @@ const AddVideoData = () => {
   // };
 
   return (
-    <div className="add">
+    <div className="add-video">
       <div className="container">
         <h1>ახალი ვიდეოს მონაცემების დამატება</h1>
         <div className="sections">
@@ -80,14 +80,14 @@ const AddVideoData = () => {
             <input
               type="text"
               name="title"
-              placeholder="e.g. I will do something I'm really good at"
+              placeholder="ვიდეოს სათაური"
               onChange={handleChange}
             />
             <label htmlFor="">ვიდეოს Url</label>
             <input
               type="text"
               name="shortTitle"
-              placeholder="e.g. One-page web design"
+              placeholder="ვიდეოს Url"
               onChange={handleChange}
             />
             <label htmlFor="">ენა</label>
@@ -97,15 +97,16 @@ const AddVideoData = () => {
               onChange={handleChange}
               // onChange={(e) => setSelectedFruit(e.target.value)}
             >
-              <option value="english">English</option>
-              <option value="español">Español</option>
-              <option value="თუშური">თუშური</option>
+              <option value="en">ინგლისური</option>
+              <option value="de">ესპანური</option>
+              <option value="es">გერმანული</option>
+              <option value="tu">თუშური</option>
             </select>
             <label htmlFor="">სუბტიტრები</label>
             <textarea
               name="desc"
               id=""
-              placeholder="Brief descriptions to introduce your service to customers"
+              placeholder="სუბტიტრები"
               cols="0"
               rows="16"
               onChange={handleChange}
@@ -115,15 +116,15 @@ const AddVideoData = () => {
               name="shortDesc"
               onChange={handleChange}
               id=""
-              placeholder="Short description of your service"
+              placeholder="აღწერა"
               cols="30"
               rows="10"
             ></textarea>
             <div className="tags">
               <label htmlFor="">თეგები</label>
               <form action="" className="add" onSubmit={handleFeature}>
-                <input type="text" placeholder="e.g. page design" />
-                <button type="submit">add</button>
+                <input type="text" placeholder="თეგები" />
+                <button type="submit">თეგის დამატება</button>
               </form>
               <div className="addedFeatures">
                 {state?.features?.map((f) => (
@@ -142,7 +143,7 @@ const AddVideoData = () => {
                 ))}
               </div>
             </div>
-            <button onClick={handleSubmit}>Create</button>
+            <button onClick={handleSubmit}>შენახვა</button>
           </div>
           {/* <label htmlFor="">Category</label>
             <select name="cat" id="cat" onChange={handleChange}>

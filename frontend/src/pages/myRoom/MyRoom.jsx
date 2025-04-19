@@ -13,6 +13,7 @@ function MyRoom() {
   const [nameOfStudent, setNameOfStudent] = useState();
   const [chosenClassIndex, setChosenClassIndex] = useState();
   const [chosenClass, setChosenClass] = useState();
+  const [showClasses, setShowClasses] = useState(false);
   const currentUser = getCurrentUser();
   console.log(currentUser);
   const queryClient = useQueryClient();
@@ -61,6 +62,7 @@ function MyRoom() {
     }
     // console.log("add");
     newRequest.post(`/classes`, test).then((res => console.log(res)))
+    setInterval(() => window.parent.location = window.parent.location.href, 5000)
   }
   function handleAddStudent() {
     setStudents([...students, nameOfStudent])
@@ -74,7 +76,7 @@ function MyRoom() {
     // newRequest.put(`/classes/single/${classId}`, { type, students, userId }).then((res => console.log(res)))
     newRequest.put(`/classes/single/${classId}`, { type, students, userId }).then((res => console.log(res)))
   }
-  console.log(students,chosenClass,currentUser,"current User")
+  console.log(students, chosenClass, currentUser, "current User")
   return (
     <div className="myRoom">
       <Link to="/mysentences">
@@ -90,10 +92,9 @@ function MyRoom() {
 
       <div className="">
         <div className="">
-          <button className="show-space-button" onClick={() => setAddSpaceState(!addSpaceState)}>{addSpaceState ? ("-") : ("+")}</button>
-          <label>
-            საკლასო ოთახის შექმნა
-          </label>
+          <button className="shelf-button" onClick={() => setAddSpaceState(!addSpaceState)}>
+            საკლასო ოთახის შექმნა {addSpaceState ? " ▼" : " ▶"}
+          </button>
         </div>
         {addSpaceState ?
           (<div className="">
@@ -111,31 +112,39 @@ function MyRoom() {
         }
       </div>
 
-      <div className="classes">
-        {classLoading ? (
-          "loading"
-        ) : classError ? (
-          "error"
-        ) : (
-          <div className="">
-            {classData.map((gig, index) =>
-              <div className="class-box">
-                <div className={chosenClassIndex == index ? "classroom-card chosen-class" : "classroom-card"}
-                  onClick={() => classClickHandler(gig, index)}>{gig.name}</div>
-                <Link to={`/myClass/${gig._id}`}>
-                  <div className="class-link">გადასვლა</div>
-                </Link>
-              </div>)}
+      <div className="">
+        <div className="">
+          <button className="shelf-button" onClick={() => setShowClasses(!showClasses)}>
+            კლასები {showClasses ? " ▼" : " ▶"}
+          </button>
+        </div>
+        {showClasses && (
+          <div className="classes">
+            {classLoading ? (
+              "loading"
+            ) : classError ? (
+              "error"
+            ) : (
+              <div className="">
+                {classData.map((gig, index) =>
+                  <div className="class-box">
+                    <div className={chosenClassIndex == index ? "classroom-card chosen-class" : "classroom-card"}
+                      onClick={() => classClickHandler(gig, index)}>{gig.name}</div>
+                    <Link to={`/myClass/${gig._id}`}>
+                      <div className="class-link">გადასვლა</div>
+                    </Link>
+                  </div>)}
+              </div>
+            )}
           </div>
         )}
       </div>
 
       <div className="">
         <div className="">
-          <button className="show-space-button" onClick={() => setAddStudentSpaceState(!addStudentSpaceState)}>{addStudentSpaceState ? ("-") : ("+")}</button>
-          <label>
-            კლასში მოსწავლეების დამატება
-          </label>
+          <button className="shelf-button" onClick={() => setAddStudentSpaceState(!addStudentSpaceState)}>
+            კლასში მოსწავლეების დამატება {addStudentSpaceState ? " ▼" : " ▶"}
+          </button>
         </div>
         {addStudentSpaceState ?
           (<div className="">
@@ -145,8 +154,17 @@ function MyRoom() {
             </div>
             <div className="add-button">
               <button onClick={() => handleAddStudent()}>
-                დამატება
+                +
               </button>
+            </div>
+            <div className="">
+              <h3>დასამატებელი მოსწავლეები</h3>
+              {students.map((studentName) => (
+                <div className="">{studentName}</div>
+              ))}
+              <div className="">
+                <button onClick={handleStudentsSubmit}>დაამატე მოსწავლეები</button>
+              </div>
             </div>
           </div>) : (
             <div className=""></div>
@@ -154,13 +172,6 @@ function MyRoom() {
         }
       </div>
 
-      <div className="">
-        <h3>დასამატებელი მოსწავლეები</h3>
-        {students.map((studentName) => (
-          <div className="">{studentName}</div>
-        ))}
-      </div>
-      <button onClick={handleStudentsSubmit}>დაამატე მოსწავლეები</button>
       {/* {isLoading ? (
         "loading"
       ) : error ? (
