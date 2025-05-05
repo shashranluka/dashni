@@ -23,7 +23,7 @@ export default function Dictionary(props) {
   const [clickedRightCardId, setClickedRightCardId] = useState();
   const [clickedLeftCardId, setClickedLeftCardId] = useState();
   const [isFixedVisible, setIsFixedVisible] = useState(false);
-  const [wonWord, setWonWord] = useState([{ theWord: "", TRANSLATION: "" }]);
+  const [wonWord, setWonWord] = useState([{ word: "", translation: "" }]);
   // const [visibleBackIndex, setVisibleBackIndex] = useState();
   // const [clickedSentence, setClickedSentence] = useState(false);
   const [isSecond, setIsSecond] = useState(false);
@@ -35,13 +35,13 @@ export default function Dictionary(props) {
   function clickHandler(cardData, index, side) {
     // console.log(cardData, index, side, "dwadefserfes");
     if (side == "left") {
-      leftBack.current = cardData.theWord;
+      leftBack.current = cardData.word;
       // frontTextId.current = index;
       setClickedLeftCardId(index);
       leftId.current = index;
     }
     if (side == "right") {
-      rightBack.current = cardData.theWord;
+      rightBack.current = cardData.word;
       // theWordId.current = index;
       setClickedRightCardId(index);
       rightId.current = index;
@@ -87,12 +87,12 @@ export default function Dictionary(props) {
                 clickHandler(cardData, index, "left");
               }}
             >
-              <div className={firstPartState}>{cardData.TRANSLATION}</div>
-              <div className={secondPartState}>{cardData.theWord}</div>
+              <div className={firstPartState}>{cardData.translation}</div>
+              <div className={secondPartState}>{cardData.word}</div>
             </div>
           ))}
           <div className={isFixedVisible ? "fixed-won-word" : "hidden"}>
-            {wonWord[0].TRANSLATION} - {wonWord[0].theWord}
+            {wonWord[0].translation} - {wonWord[0].word}
           </div>
         </div>
         <div className="b_words flex_wrap">
@@ -108,7 +108,7 @@ export default function Dictionary(props) {
               onClick={() => clickHandler(cardData, index, "right")}
             >
               <div>
-                <div className={thirdPartState}>{cardData.theWord}</div>
+                <div className={thirdPartState}>{cardData.word}</div>
               </div>
             </div>
           ))}
@@ -118,7 +118,7 @@ export default function Dictionary(props) {
         <div className="won_words">
           {wonWords.map((wonWord, index) => (
             <div className="won_word">
-              <div>{wonWord.TRANSLATION}</div> - <div>{wonWord.theWord}</div>
+              <div>{wonWord.translation}</div> - <div>{wonWord.word}</div>
             </div>
           ))}
         </div>

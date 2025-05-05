@@ -227,7 +227,7 @@ function MySentences() {
                   {/* <img className="image" src={gig.cover} alt="" /> */}
                 </td>
                 {/* <td>
-                  <Link to={`/gig/${gig._id}`}>{gig.originalSentence}</Link>
+                  <Link to={`/gig/${gig._id}`}>{gig.sentence}</Link>
                 </td> */}
                 <td>{gig.translation}</td>
                 {/* <td>{gig.name}</td>

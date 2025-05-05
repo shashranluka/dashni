@@ -80,6 +80,7 @@ function Game(props) {
         setTries={setTries}
         partOfGame={partOfGame}
         setPartOfGame={setPartOfGame}
+        numberOfParts={4}
       />
       <About partOfGame={partOfGame} desc={about.partsOfGame[partOfGame]} />
       <div>

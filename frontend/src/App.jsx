@@ -22,11 +22,13 @@ import Success from "./pages/success/Success";
 import Game from "./pages/Game";
 // <<<<<<< HEAD
 import Sentences from "./pages/sentences/Sentences";
+import Words from "./pages/words/Words";
 import MySentences from "./pages/mySentences/MySentences";
 import MySentencesTest from "./pages/mySentences/MySentencesTest";
 import MyRoom from "./pages/myRoom/MyRoom";
 import MySchool from "./pages/MySchool/MySchool";
 // =======
+import AddWordsData from "./pages/addWordsData/AddWordsData";
 import AddVideoData from "./pages/addVideoData/AddVideoData";
 import MyVideoDatas from "./pages/myVideoDatas.copy/MyVideoDatas";
 import VideoData from "./pages/videoData/VideoData";
@@ -37,7 +39,7 @@ import PrivacyStatement from "./pages/privacyStatement/PrivacyStatement";
 import IntelectualProperty from "./pages/intelectualProperty/IntelectualProperty";
 function App() {
   const queryClient = new QueryClient();
-  const [keyboardChosenLetter, setKeyboardChosenLetter] = useState(null);
+  // const [keyboardChosenLetter, setKeyboardChosenLetter] = useState(null);
 
   const Layout = () => {
     return (
@@ -74,6 +76,10 @@ function App() {
           element: <VideoData />,
         },
         {
+          path: "/words",
+          element: <Words />,
+        },
+        {
           path: "/myVideos",
           element: <MyVideos />,
         },
@@ -88,10 +94,6 @@ function App() {
         {
           path: "/myGigs",
           element: <MyGigs />,
-        },
-        {
-          path: "/myVideoDatas",
-          element: <MyVideoDatas />,
         },
         {
           path: "/myVideos",
@@ -176,6 +178,10 @@ function App() {
         {
           path: "/addvideodata",
           element: <AddVideoData />,
+        },
+        {
+          path: "/addwordsdata",
+          element: <AddWordsData />,
         },
         {
           path: "/privacy-statement",

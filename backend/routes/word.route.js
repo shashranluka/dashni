@@ -7,9 +7,11 @@ const router = express.Router();
 
 // router.post("/", verifyToken, createWord);
 
-// console.log("test");
+console.log("test");
+
 router.get("/", getWords);
-router.post("/", verifyToken, createWord);
+// router.post("/", verifyToken, createWord);
+router.post("/",verifyToken, createWord);
 
 // router.delete("/:id", verifyToken, deleteSentence);
 // router.get("/single/:id", getSentence);

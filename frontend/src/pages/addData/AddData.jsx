@@ -115,8 +115,8 @@ export default function AddData() {
     mutationSentence.mutate(sentenceState);
     mutationWords.mutate(wordsState);
     // navigate("/mygigs");
-    console.log(sentenceState.originalSentence.split(" "));
-    // const wordsFromSentence = state.originalSentence.split(" ");
+    console.log(sentenceState.sentence.split(" "));
+    // const wordsFromSentence = state.sentence.split(" ");
   };
 
   useEffect(() => {
@@ -133,9 +133,9 @@ export default function AddData() {
               <label htmlFor="">წინადადება</label>
               <input
                 // ref={ref}
-                value={sentenceState.originalSentence}
+                value={sentenceState.sentence}
                 type="text"
-                name="originalSentence"
+                name="sentence"
                 placeholder=""
                 onChange={handleSentencePartChange}
                 onClick={handleInputClick}
@@ -190,7 +190,7 @@ export default function AddData() {
             </div>
             <button
               onClick={() => {
-                setWordsFromSentence(sentenceState.originalSentence.split(" "));
+                setWordsFromSentence(sentenceState.sentence.split(" "));
               }}
             >
               სიტყვების გენერირება

@@ -1,5 +1,52 @@
 export default function GamePanel(props) {
-  const { point, setPoint, tries, setTries, partOfGame, setPartOfGame } = props;
+  const { point, setPoint, tries, setTries, partOfGame, setPartOfGame, numberOfParts } = props;  
+  // დინამიურად გავაკეთოთ თამაშის ღილაკების რენდერი numberOfParts-ის მიხედვით
+  const renderGameButtons = () => {
+    const buttons = [];
+    
+    // პირველი ღილაკი - Settings
+    buttons.push(
+      <button
+        key="settings"
+        className={partOfGame === 0 ? "opened_game" : ""}
+        onClick={() => {
+          setPartOfGame(0);
+        }}
+      >
+        S
+      </button>
+    );
+    // თამაშის ეტაპების ღილაკები nuberOfParts-ის მიხედვით
+    for (let i = 1; i < numberOfParts; i++) {
+      let label;
+      // რომაული რიცხვები ეტაპებისთვის
+      switch (i) {
+        case 1: label = "I"; break;
+        case 2: label = "II"; break;
+        case 3: label = "III"; break;
+        case 4: label = "IV"; break;
+        case 5: label = "V"; break;
+        default: label = i.toString();
+      }
+      
+      buttons.push(
+        <button
+          key={i}
+          className={partOfGame === i ? "opened_game" : "closed_game"}
+          onClick={() => {
+            setPartOfGame(i);
+            setPoint(0);
+            setTries(0);
+          }}
+        >
+          {label}
+        </button>
+      );
+    };
+
+    return buttons;
+  };
+
   return (
     <div className="topic-div">
       <div className="result">
@@ -14,74 +61,7 @@ export default function GamePanel(props) {
         </div>
       </div>
       <div className="game_part_buttons">
-        <button
-          className={partOfGame === 0 ? "opened_game" : ""}
-          onClick={() => {
-            setPartOfGame(0);
-          }}
-        >
-          S
-        </button>
-        <button
-          className={partOfGame === 1 ? "opened_game" : ""}
-          onClick={() => {
-            setPartOfGame(1);
-            setPoint(0);
-            setTries(0);
-          }}
-        >
-          I
-        </button>
-        <button
-          className={partOfGame === 2 ? "opened_game" : "closed_game"}
-          onClick={() => {
-            setPartOfGame(2);
-            setPoint(0);
-            setTries(0);
-          }}
-        >
-          II
-        </button>
-        <button
-          className={partOfGame === 3 ? "opened_game" : "closed_game"}
-          onClick={() => {
-            setPartOfGame(3);
-            setPoint(0);
-            setTries(0);
-          }}
-        >
-          III
-        </button>
-        <button
-          className={partOfGame === 4 ? "opened_game" : "closed_game"}
-          onClick={() => {
-            setPartOfGame(4);
-            setPoint(0);
-            setTries(0);
-          }}
-        >
-          IV
-        </button>
-        <button
-          className={partOfGame === 5 ? "opened_game" : "closed_game"}
-          onClick={() => {
-            setPartOfGame(5);
-            setPoint(0);
-            setTries(0);
-          }}
-        >
-          V
-        </button>
-        <button
-          className={partOfGame === 6 ? "opened_game" : "closed_game"}
-          onClick={() => {
-            setPartOfGame(0);
-            setPoint(0);
-            setTries(0);
-          }}
-        >
-          R
-        </button>
+        {renderGameButtons()}
       </div>
     </div>
   );

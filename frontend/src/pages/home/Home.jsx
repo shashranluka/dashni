@@ -12,12 +12,15 @@ function Home() {
   return (
     <div className="home">
       <div className="features flex-column">
-        <Link className="link" to="/videos">
+        <Link className="link" to="/words">
+          <div className="feature">სიტყვები</div>
+        </Link>
+        {/* <Link className="link" to="/videos">
           <div className="feature">ვიდეოს გარჩევა</div>
         </Link>
         <Link className="link" to="/sentences">
           <div className="feature">თუშურის სასწავლი თამაში</div>
-        </Link>
+        </Link> */}
       </div>
     </div>
     // <div className="home">

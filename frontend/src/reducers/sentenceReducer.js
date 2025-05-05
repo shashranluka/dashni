@@ -1,6 +1,6 @@
 export const SENTENCE_INITIAL_STATE = {
   userId: JSON.parse(localStorage.getItem("currentUser"))?._id,
-  originalSentence: "",
+  sentence: "",
   translation: "",
   images: [],
   uri: "",

@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 const { Schema } = mongoose;
 
-const baWordSchema = new Schema(
+const frWordSchema = new Schema(
   {
     userId: {
       type: String,
@@ -47,14 +47,10 @@ const baWordSchema = new Schema(
       type: Boolean,
       default: false,
     },
-    // ძველი ველი TRANSLATION, შევინარჩუნოთ თავსებადობისთვის
-    TRANSLATION: {
-      type: String,
-    },
   },
   {
     timestamps: true,
   }
 );
 
-export default mongoose.model("BaWord", baWordSchema);
+export default mongoose.model("FrWord", frWordSchema);

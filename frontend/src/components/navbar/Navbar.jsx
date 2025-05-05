@@ -24,7 +24,7 @@ function Navbar() {
 
   const navigate = useNavigate();
 
-  function goToAddSentences () {
+  function goToAddSentences() {
     navigate("/add-data");
     console.log("dwafass")
   }
@@ -80,6 +80,9 @@ function Navbar() {
                         </Link>
                       </>
                     )} */}
+                    <Link className="addWordsLink" to={"/addwordsdata"}>
+                      სიტყვების დამატება
+                    </Link>
                     <Link className="addTextLink" to={"/add-data"}>
                       ტექსტის დამატება
                     </Link>
