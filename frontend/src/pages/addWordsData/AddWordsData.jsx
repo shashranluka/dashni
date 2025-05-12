@@ -10,6 +10,19 @@ const AddWordsData = () => {
   const [wordsData, setWordsData] = useState([]);
   const [showAdditionalFields, setShowAdditionalFields] = useState(false); // ნარინჯისფერი ყუთის მართვა
   const [expandedWordIndex, setExpandedWordIndex] = useState(null); // აქტიური სიტყვა
+  
+  // ახლად დამატებული state ცვლადები ენების მართვისთვის
+  const [languages, setLanguages] = useState([
+    { code: "ba", name: "თუშური" },
+    { code: "en", name: "ინგლისური" },
+    { code: "de", name: "გერმანული" },
+    { code: "es", name: "ესპანური" },
+    { code: "fr", name: "ფრანგული" },
+    { code: "sx", name: "სხვა" },
+    { code: "custom", name: "საკუთარი ენის დამატება..." } // ახალი ენის დამატების ოფცია
+  ]);
+  const [isAddingLanguage, setIsAddingLanguage] = useState(false); // გვიჩვენებს ენის დამატების ფორმას
+  const [newLanguage, setNewLanguage] = useState({ code: "", name: "" }); // ახალი ენის მონაცემები
 
   const queryClient = useQueryClient();
   // useMutation ჰუკის განახლება axios-ით
@@ -40,7 +53,67 @@ const AddWordsData = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    dispatch({ type: 'UPDATE_FIELD', field: name, value });
+    
+    // თუ ენის არჩევანი შეიცვალა და აირჩია "საკუთარი ენის დამატება" ოფცია
+    if (name === 'language' && value === 'custom') {
+      // გამოვაჩინოთ ენის დამატების ფორმა
+      setIsAddingLanguage(true);
+    } else {
+      // სხვა შემთხვევაში ჩვეულებრივად განაახლე ფორმის მონაცემები
+      dispatch({ type: 'UPDATE_FIELD', field: name, value });
+    }
+  };
+
+  // ახალი ფუნქცია ენის დამატების ფორმის ველების მართვისთვის
+  const handleNewLanguageChange = (e) => {
+    const { name, value } = e.target;
+    setNewLanguage({
+      ...newLanguage,
+      [name]: value // განაახლე შესაბამისი ველი (code ან name)
+    });
+  };
+
+  // ახალი ფუნქცია ენის დამატებისთვის
+  const handleAddLanguage = () => {
+    // შემოწმება - არცერთი ველი არ უნდა იყოს ცარიელი
+    if (!newLanguage.code.trim() || !newLanguage.name.trim()) {
+      alert("გთხოვთ შეავსოთ ენის კოდი და სახელი");
+      return;
+    }
+
+    // შემოწმება - ენის კოდი უნიკალური უნდა იყოს
+    if (languages.some(lang => lang.code === newLanguage.code && lang.code !== 'custom')) {
+      alert("ასეთი ენის კოდი უკვე არსებობს");
+      return;
+    }
+
+    // დავამატოთ ახალი ენა ჩამონათვალში (custom ოფციის წინ)
+    const updatedLanguages = [
+      ...languages.filter(lang => lang.code !== 'custom'), // მოვაშოროთ custom ოფცია დროებით
+      { code: newLanguage.code, name: newLanguage.name }, // დავამატოთ ახალი ენა
+      { code: "custom", name: "საკუთარი ენის დამატება..." } // დავაბრუნოთ custom ოფცია ბოლოში
+    ];
+    
+    // განვაახლოთ ენების სია
+    setLanguages(updatedLanguages);
+    
+    // მივუთითოთ ახლად დამატებული ენა ფორმაში
+    dispatch({ type: 'UPDATE_FIELD', field: 'language', value: newLanguage.code });
+    
+    // დავხუროთ ენის დამატების ფორმა
+    setIsAddingLanguage(false);
+    
+    // გავასუფთავოთ ახალი ენის ფორმა
+    setNewLanguage({ code: "", name: "" });
+    
+    console.log(`ახალი ენა დაემატა: ${newLanguage.name} (${newLanguage.code})`);
+  };
+
+  // ფუნქცია ენის დამატების გაუქმებისთვის
+  const handleCancelAddLanguage = () => {
+    setIsAddingLanguage(false);
+    setNewLanguage({ code: "", name: "" });
+    dispatch({ type: 'UPDATE_FIELD', field: 'language', value: '' });
   };
 
   const handleAddWord = (e) => {
@@ -74,6 +147,12 @@ const AddWordsData = () => {
     saveWordsMutation.mutate(wordsData);
   };
 
+  // ფუნქცია მითითებული ენის კოდის მიხედვით სახელის მოსაძებნად
+  const getLanguageName = (code) => {
+    const language = languages.find(lang => lang.code === code);
+    return language ? language.name : code; // თუ ვერ ვიპოვეთ, ვაბრუნებთ კოდს
+  };
+
   return (
     <div className="add-words-container">
       {/* ლურჯი ყუთი */}
@@ -83,24 +162,58 @@ const AddWordsData = () => {
           {/* <h4>სავალდებულო ველები</h4> */}
           <div className="form-group">
             <label htmlFor="language">ენა:</label>
-            <select
-              id="language"
-              name="language"
-              value={formData.language}
-              onChange={handleChange}
-              required
-            >
-              <option value="" disabled>
-                აირჩიე ენა
-              </option>
-              {/* <option value="ka">ქართული</option> */}
-              <option value="ba">თუშური</option>
-              <option value="en">ინგლისური</option>
-              <option value="de">გერმანული</option>
-              <option value="es">ესპანური</option>
-              <option value="fr">ფრანგული</option>
-              <option value="sx">სხვა</option>
-            </select>
+            
+            {/* ენის არჩევის ველი */}
+            {!isAddingLanguage ? (
+              <select
+                id="language"
+                name="language"
+                value={formData.language}
+                onChange={handleChange}
+                required
+              >
+                <option value="" disabled>
+                  აირჩიე ენა
+                </option>
+                {/* დინამიურად ვაგენერირებთ ენების ჩამონათვალს */}
+                {languages.map((lang) => (
+                  <option key={lang.code} value={lang.code}>
+                    {lang.name}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              /* ენის დამატების ფორმა */
+              <div className="add-language-form">
+                <div className="language-inputs">
+                  <input
+                    type="text"
+                    name="code"
+                    value={newLanguage.code}
+                    onChange={handleNewLanguageChange}
+                    placeholder="ენის კოდი (მაგ: jp)"
+                    maxLength={5}
+                    required
+                  />
+                  <input
+                    type="text"
+                    name="name"
+                    value={newLanguage.name}
+                    onChange={handleNewLanguageChange}
+                    placeholder="ენის სახელი (მაგ: იაპონური)"
+                    required
+                  />
+                </div>
+                <div className="language-buttons">
+                  <button type="button" onClick={handleAddLanguage}>
+                    დამატება
+                  </button>
+                  <button type="button" onClick={handleCancelAddLanguage}>
+                    გაუქმება
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
           <div className="form-group">
             <label htmlFor="word">სიტყვა:</label>
@@ -200,7 +313,8 @@ const AddWordsData = () => {
             </div>
             {expandedWordIndex === index && (
               <div className="word-details">
-                <p><strong>ენა:</strong> {word.language}</p>
+                {/* ვაჩვენოთ ენის სახელი და არა კოდი */}
+                <p><strong>ენა:</strong> {getLanguageName(word.language)}</p>
                 <p><strong>თარგმანი:</strong> {word.translation}</p>
                 <p><strong>განმარტება:</strong> {word.definition}</p>
                 {word.partOfSpeech && <p><strong>მეტყველების ნაწილი:</strong> {word.partOfSpeech}</p>}
@@ -215,7 +329,8 @@ const AddWordsData = () => {
       <button 
         type="button" 
         onClick={saveWordsToDatabase} 
-        disabled={saveWordsMutation.isLoading}
+        disabled={saveWordsMutation.isLoading || wordsData.length === 0}
+        className={wordsData.length === 0 ? "disabled-button" : ""}
       >
         {saveWordsMutation.isLoading ? "მიმდინარეობს შენახვა..." : "მონაცემების შენახვა"}
       </button>

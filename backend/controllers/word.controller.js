@@ -5,6 +5,7 @@ import KaWord from "../models/kaWord.model.js";
 import DeWord from "../models/deWord.model.js";
 import EsWord from "../models/esWord.model.js";
 import FrWord from "../models/frWord.model.js";
+import SxWord from "../models/sxWord.model.js";
 import User from "../models/user.model.js";
 
 export const createWord = async (req, res, next) => {
@@ -35,8 +36,11 @@ export const createWord = async (req, res, next) => {
         case "fr":
           Model = FrWord;
           break;
+        case "sx":
+          Model = SxWord;
+          break;
         default:
-          Model = Word;
+          Model = SxWord;
       }
 
       const newWord = new Model({
@@ -87,6 +91,9 @@ export const getWords = async (req, res, next) => {  // ასინქრონ
       case "fr":
         Model = FrWord;
         break;
+      case "sx":
+        Model = SxWord;
+        break;
       default:
         Model = Word;
     }
@@ -115,18 +122,19 @@ export const getWords = async (req, res, next) => {  // ასინქრონ
         matchFilter.isPrivate = true;
         matchFilter.userId = req.userId;
       }
-
+      console.log("matchFilter", matchFilter);
       const randomWords = await Model.aggregate([
         { $match: matchFilter },
         { $sample: { size: limit } }
       ]);
 
+      console.log("randomWords", randomWords);
       return res.status(200).send(randomWords);
     }
 
     // თუ მოთხოვნილია სიტყვების თარგმნა
     // const { wordsToTranslate, language, sort } = req.query;  // იღებს მოთხოვნის პარამეტრებს
-    const filters = wordsToTranslate ? { theWord: wordsToTranslate } : {};  // ქმნის ფილტრს, თუ wordsToTranslate არსებობს
+    const filters = wordsToTranslate ? { word: wordsToTranslate } : {};  // ქმნის ფილტრს, თუ wordsToTranslate არსებობს
 
     // const Model = language === "ba" ? BaWord : Word;  // ირჩევს მოდელს ენის პარამეტრის მიხედვით (ba=ბაშკირული, სხვა=ქართული)
     const words = await Model.find(filters).sort({ [sort]: -1 });  // ეძებს სიტყვებს შესაბამისი მოდელიდან ფილტრით და ახარისხებს

@@ -140,7 +140,7 @@ function Words() {
             <option value="ka"> ქართული</option>
             <option value="en"> ინგლისური</option>
             <option value="de"> გერმანული</option>
-            <option value="fr"> ფრანგული</option>
+            <option value="sx"> სხვა</option>
           </select>
         </div>
 

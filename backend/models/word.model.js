@@ -7,22 +7,50 @@ const wordSchema = new Schema(
       type: String,
       // required: true,
     },
-    theWord: {
+    word: {
       type: String,
       required: true,
     },
-    TRANSLATION: {
+    translation: {
       type: String,
       required: true,
     },
-    // desc: {
-    //   type: String,
-    //   // required: true,
-    // },
+    definition: {
+      type: String,
+      default: '',
+    },
+    language: {
+      type: String,
+      required: true,
+    },
+    additionalInfo: {
+      type: String,
+      default: '',
+    },
+    partOfSpeech: {
+      type: String,
+      default: '',
+    },
+    baseForm: {
+      type: String,
+      default: '',
+    },
+    baseFormTranslation: {
+      type: String,
+      default: '',
+    },
+    usageExamples: {
+      type: String,
+      default: '',
+    },
+    isPrivate: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,
   }
 );
 
-export default mongoose.model("Word", wordSchema);
+export default mongoose.model("word", wordSchema);
