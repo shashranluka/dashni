@@ -4,13 +4,17 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios'; // დავამატოთ axios-ის იმპორტი
 import newRequest from '../../utils/newRequest';
 import { initialState, formReducer } from '../../reducers/wordReducer';
+import KeyboardRare from "../../components/keyboard/KeyboardRare";
 
 const AddWordsData = () => {
   const [formData, dispatch] = useReducer(formReducer, initialState);
   const [wordsData, setWordsData] = useState([]);
   const [showAdditionalFields, setShowAdditionalFields] = useState(false); // ნარინჯისფერი ყუთის მართვა
   const [expandedWordIndex, setExpandedWordIndex] = useState(null); // აქტიური სიტყვა
-  
+
+
+  const [inputName, setInputName] = useState("");
+  const [inputValue, setInputValue] = useState("");
   // ახლად დამატებული state ცვლადები ენების მართვისთვის
   const [languages, setLanguages] = useState([
     { code: "ba", name: "თუშური" },
@@ -25,6 +29,10 @@ const AddWordsData = () => {
   const [newLanguage, setNewLanguage] = useState({ code: "", name: "" }); // ახალი ენის მონაცემები
 
   const queryClient = useQueryClient();
+  const handleInputClick = (e) => {
+    setInputName(e.target.name);
+    setInputValue(e.target.value);
+  };
   // useMutation ჰუკის განახლება axios-ით
   const saveWordsMutation = useMutation({
     mutationFn: async (data) => {
@@ -33,13 +41,13 @@ const AddWordsData = () => {
         ...word,
         isPrivate: true, // ან false, თუ გსურთ
       }));
-      
+
       console.log('მონაცემები გასაგზავნად', wordsWithPrivacy);
       const response = await newRequest.post('/words', wordsWithPrivacy);
       return response.data;
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries(["myWords"]); 
+      queryClient.invalidateQueries(["myWords"]);
       console.log('მონაცემები წარმატებით გაიგზავნა:', data);
       alert('მონაცემები წარმატებით შეინახა!');
       // წარმატების შემდეგ გავასუფთავოთ wordsData მასივი
@@ -53,7 +61,7 @@ const AddWordsData = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    
+
     // თუ ენის არჩევანი შეიცვალა და აირჩია "საკუთარი ენის დამატება" ოფცია
     if (name === 'language' && value === 'custom') {
       // გამოვაჩინოთ ენის დამატების ფორმა
@@ -93,19 +101,19 @@ const AddWordsData = () => {
       { code: newLanguage.code, name: newLanguage.name }, // დავამატოთ ახალი ენა
       { code: "custom", name: "საკუთარი ენის დამატება..." } // დავაბრუნოთ custom ოფცია ბოლოში
     ];
-    
+
     // განვაახლოთ ენების სია
     setLanguages(updatedLanguages);
-    
+
     // მივუთითოთ ახლად დამატებული ენა ფორმაში
     dispatch({ type: 'UPDATE_FIELD', field: 'language', value: newLanguage.code });
-    
+
     // დავხუროთ ენის დამატების ფორმა
     setIsAddingLanguage(false);
-    
+
     // გავასუფთავოთ ახალი ენის ფორმა
     setNewLanguage({ code: "", name: "" });
-    
+
     console.log(`ახალი ენა დაემატა: ${newLanguage.name} (${newLanguage.code})`);
   };
 
@@ -162,7 +170,7 @@ const AddWordsData = () => {
           {/* <h4>სავალდებულო ველები</h4> */}
           <div className="form-group">
             <label htmlFor="language">ენა:</label>
-            
+
             {/* ენის არჩევის ველი */}
             {!isAddingLanguage ? (
               <select
@@ -193,6 +201,7 @@ const AddWordsData = () => {
                     onChange={handleNewLanguageChange}
                     placeholder="ენის კოდი (მაგ: jp)"
                     maxLength={5}
+                    onClick={handleInputClick}
                     required
                   />
                   <input
@@ -201,6 +210,7 @@ const AddWordsData = () => {
                     value={newLanguage.name}
                     onChange={handleNewLanguageChange}
                     placeholder="ენის სახელი (მაგ: იაპონური)"
+                    onClick={handleInputClick}
                     required
                   />
                 </div>
@@ -224,6 +234,7 @@ const AddWordsData = () => {
               value={formData.word}
               onChange={handleChange}
               placeholder="შეიყვანეთ სიტყვა"
+              onClick={handleInputClick}
               required
             />
           </div>
@@ -236,6 +247,7 @@ const AddWordsData = () => {
               value={formData.translation}
               onChange={handleChange}
               placeholder="შეიყვანეთ თარგმანი"
+              onClick={handleInputClick}
               required
             />
           </div>
@@ -262,6 +274,7 @@ const AddWordsData = () => {
                   value={formData.definition}
                   onChange={handleChange}
                   placeholder="შეიყვანეთ განმარტება"
+                  onClick={handleInputClick}
                 />
               </div>
               <div className="form-group">
@@ -273,6 +286,7 @@ const AddWordsData = () => {
                   value={formData.baseForm}
                   onChange={handleChange}
                   placeholder="შეიყვანეთ საწყისი ფორმა"
+                  onClick={handleInputClick}
                 />
               </div>
               <div className="form-group">
@@ -283,6 +297,7 @@ const AddWordsData = () => {
                   value={formData.usageExamples}
                   onChange={handleChange}
                   placeholder="შეიყვანეთ მაგალითები"
+                  onClick={handleInputClick}
                 />
               </div>
             </div>
@@ -326,9 +341,9 @@ const AddWordsData = () => {
         ))}
       </div>
       {/* მონაცემების შენახვის ღილაკი */}
-      <button 
-        type="button" 
-        onClick={saveWordsToDatabase} 
+      <button
+        type="button"
+        onClick={saveWordsToDatabase}
         disabled={saveWordsMutation.isLoading || wordsData.length === 0}
         className={wordsData.length === 0 ? "disabled-button" : ""}
       >
@@ -339,6 +354,13 @@ const AddWordsData = () => {
           შეცდომა: მონაცემების შენახვა ვერ მოხერხდა
         </div>
       )}
+      <KeyboardRare
+        inputName={inputName}
+        inputValue={inputValue}
+        // setLetter={setKeyboardChosenLetter}
+        textState={formData}
+        dispatchText={dispatch}
+      />
     </div>
   );
 };

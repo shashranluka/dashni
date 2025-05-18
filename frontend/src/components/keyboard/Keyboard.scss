@@ -1,55 +1,72 @@
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 .keyboard {
-  //   position: -webkit-sticky;
   position: sticky;
   bottom: 0;
   // top: 10px;
   left: 100%;
-  padding: 5px;
+  // padding: 5px;
   width: fit-content;
   max-width: 100%;
+  border-radius: .3em;
   background-color: #cae8ca;
   border: 2px solid #4caf50;
 
-  .keyboard-key {
-    background-color: blue;
-    color: white;
-    position: sticky;
-    width: fit-content;
-    padding: .5em;
-    // bottom: 100px;
-    top: 10px;
-    left: 100%;
-    cursor: pointer;
-  }
-  .keyboard-card {
-    background-color: rgb(190, 190, 247);
-    margin: .3em;
-    padding: .3em;
-    border-radius: .3em;
-    font-size: 1.5em;
-    cursor: pointer;
-
-    h3{
-      background-color: red;
-      // padding-left: 10%;
-      width: 2em;
-
-    }
-  }
   .letters {
     display: flex;
     flex-wrap: wrap;
+    justify-content: space-around;
 
-    .letter {
-      font-family: "Times New Roman", Times, serif;
-      background-color: rgb(216, 33, 33);
-      font-size: 2em;
-      padding: 0.3em;
-      margin: 0.5em;
+    .keyboard-button {
+      background-color: rgb(190, 190, 247);
+      margin: .3em;
+      // padding: 0.5em;
+      padding: .1em .7em .3em .7em;
+      border-radius: .3em;
+      font-size: 1.2em;
+      // width: 1.5em;
+      cursor: pointer;
+      box-sizing: border-box;
+
+      // .letter {
+      //   font-family: "Times New Roman", Times, serif;
+      //   background-color: rgb(216, 33, 33);
+      //   font-size: 2em;
+      //   padding: 0.3em;
+      //   margin: 0.5em;
+
       .modifier {
         font-feature-settings: "liga" off;
         color: #4caf50;
       }
     }
   }
+
+  .keyboard-key {
+    background-color: #4caf50;
+    color: black;
+    position: sticky;
+    width: fit-content;
+    padding: .5em;
+    border-radius: .3em;
+    // bottom: 100px;
+    top: 10px;
+    left: 100%;
+    cursor: pointer;
+  }
+
+
+
+  h3 {
+    // background-color: red;
+    // padding-left: 10%;
+    // width: 2em;
+
+  }
+
+  // 
+
 }

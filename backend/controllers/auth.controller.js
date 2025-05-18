@@ -5,21 +5,60 @@ import jwt from "jsonwebtoken";
 
 export const register = async (req, res, next) => {
   try {
+    // პირველ ეტაპზე ვამოწმებთ, ხომ არ არსებობს უკვე ამ იმეილით მომხმარებელი
+    const existingUserByEmail = await User.findOne({ email: req.body.email });
+    
+    // თუ მომხმარებელი უკვე არსებობს, ვაბრუნებთ შეცდომას
+    if (existingUserByEmail) {
+      return res.status(409).json({
+        success: false,
+        message: "ამ ელ-ფოსტით მომხმარებელი უკვე არსებობს"
+      });
+    }
+    
+    // ასევე შევამოწმოთ მომხმარებლის სახელიც
+    const existingUserByUsername = await User.findOne({ username: req.body.username });
+    
+    // თუ მომხმარებლის სახელი უკვე არსებობს, ვაბრუნებთ შეცდომას
+    if (existingUserByUsername) {
+      return res.status(409).json({
+        success: false,
+        message: "ეს მომხმარებლის სახელი უკვე დაკავებულია"
+      });
+    }
+    
+    // თუ ყველაფერი წესრიგშია, გავაგრძელოთ რეგისტრაციის პროცესი
     const hash = bcrypt.hashSync(req.body.password, 5);
     const newUser = new User({
       ...req.body,
       password: hash,
     });
-    console.log(newUser,"ახალი მომხმარებელი");
 
     await newUser.save();
-    res.status(201).send("User has been created.");
-    console.log(newUser,"ახალი მომხმარებელი2");
+    
+    // წარმატებული რეგისტრაციის შეტყობინების გაგზავნა
+    res.status(201).json({
+      success: true,
+      message: "მომხმარებელი წარმატებით შეიქმნა"
+    });
+    
   } catch (err) {
+    // შეცდომის დამუშავება
+    console.error("რეგისტრაციის შეცდომა:", err);
+    
+    // თუ შეცდომა მონგოს დუბლიკატის გამო მოხდა (იშვიათია, მაგრამ თუ პირველი შემოწმებები გვერდი აუარა)
+    if (err.code === 11000) {
+      return res.status(409).json({
+        success: false,
+        message: "ეს მომხმარებლის მონაცემები უკვე გამოყენებულია"
+      });
+    }
+    
+    // სხვა შემთხვევაში გადავცეთ შეცდომა next მიდლვეარს
     next(err);
-    console.log("ერორი", err);
   }
 };
+
 export const login = async (req, res, next) => {
   console.log("ngvhvgf", req.body.username, req.body.password);
   try {

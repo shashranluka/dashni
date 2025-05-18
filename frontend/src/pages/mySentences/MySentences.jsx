@@ -185,10 +185,10 @@ function MySentences() {
             </button>
           </div>
           <div className="title">
-            <h1>Gigs</h1>
+            <h1>ტექსტები</h1>
             {currentUser.isSeller && (
-              <Link to="/add">
-                <button>Add New Gig</button>
+              <Link to="/add-data">
+                <button>ახალი ტექსტის დამატება</button>
               </Link>
             )}
           </div>

@@ -1,104 +1,125 @@
 .register {
   display: flex;
-  align-items: center;
   justify-content: center;
+  padding: 20px;
 
   form {
-    width: 960px;
-    display: flex;
-    gap: 120px;
-    
-    h1 {
-      color: gray;
-      margin-bottom: 20px;
-    }
-    
+    width: 100%;
+    max-width: 600px;
+
     .form {
-      padding: 1em;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      justify-content: space-between;
-
-      label {
-        color: gray;
-        font-size: 18px;
+      padding: 30px;
+      border-radius: 10px;
+      background-color: white;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      
+      h1 {
+        font-size: 24px;
+        margin-bottom: 25px;
+        text-align: center;
+        color: #333;
       }
-
-      input,
-      textarea {
-        padding: 20px;
-        border: 1px solid rgb(216, 214, 214);
+      
+      .input-group {
+        margin-bottom: 20px;
+        
+        label {
+          display: block;
+          margin-bottom: 8px;
+          font-weight: 500;
+        }
+        
+        input, textarea {
+          width: 100%;
+          padding: 10px;
+          border: 1px solid #ddd;
+          border-radius: 5px;
+          
+          &.input-error {
+            border-color: #ff4d4f;
+            background-color: #fff2f0;
+          }
+          
+          &:focus {
+            outline: none;
+            border-color: #006042;
+          }
+        }
+        
+        .error-message {
+          color: #ff4d4f;
+          font-size: 14px;
+          margin-top: 5px;
+          display: block;
+        }
+        
+        .email-exists-error {
+          display: flex;
+          align-items: center;
+          margin-top: 5px;
+          
+          .error-message {
+            margin-right: 10px;
+            margin-top: 0;
+          }
+          
+          .login-link {
+            color: #006042;
+            text-decoration: underline;
+            font-weight: 500;
+            white-space: nowrap;
+          }
+        }
       }
-
-      button {
-        border: none;
-        padding: 20px;
-        color: white;
-        font-weight: 500;
-        font-size: 18px;
-        background-color: #1dbf73;
-        cursor: pointer;
-      }
-
+      
       .toggle {
         display: flex;
         align-items: center;
-        gap: 10px;
-
-        .switch {
-          position: relative;
-          display: inline-block;
-          width: 50px;
-          height: 24px;
+        justify-content: space-between;
+        margin-bottom: 20px;
+        
+        // თქვენი არსებული სვიჩის სტილები
+      }
+      
+      .submit-error {
+        margin-bottom: 20px;
+        padding: 10px;
+        background-color: #fff2f0;
+        border: 1px solid #ffccc7;
+        border-radius: 5px;
+        color: #ff4d4f;
+        text-align: center;
+      }
+      
+      button[type="submit"] {
+        width: 100%;
+        padding: 12px;
+        background-color: #006042;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        font-weight: 500;
+        cursor: pointer;
+        margin-top: 10px;
+        
+        &:hover {
+          background-color: darken(#006042, 10%);
         }
-
-        /* Hide default HTML checkbox */
-        .switch input {
-          opacity: 0;
-          width: 0;
-          height: 0;
-        }
-
-        .slider {
-          position: absolute;
-          cursor: pointer;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background-color: #ccc;
-          -webkit-transition: 0.4s;
-          transition: 0.4s;
-          border-radius: 24px;
-        }
-
-        .slider:before {
-          position: absolute;
-          content: "";
-          height: 16px;
-          width: 16px;
-          left: 4px;
-          bottom: 4px;
-          background-color: white;
-          -webkit-transition: 0.4s;
-          transition: 0.4s;
-          border-radius: 50%;
-        }
-
-        input:checked + .slider {
-          background-color: #2196f3;
-        }
-
-        input:focus + .slider {
-          box-shadow: 0 0 1px #2196f3;
-        }
-
-        input:checked + .slider:before {
-          -webkit-transform: translateX(26px);
-          -ms-transform: translateX(26px);
-          transform: translateX(26px);
+      }
+      
+      .login-prompt {
+        margin-top: 20px;
+        text-align: center;
+        
+        a {
+          color: #006042;
+          text-decoration: none;
+          font-weight: 500;
+          
+          &:hover {
+            text-decoration: underline;
+          }
         }
       }
     }
