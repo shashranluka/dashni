@@ -181,7 +181,7 @@ const AddWordsData = () => {
                 required
               >
                 <option value="" disabled>
-                  აირჩიე ენა
+                  აირჩიეთ ენა
                 </option>
                 {/* დინამიურად ვაგენერირებთ ენების ჩამონათვალს */}
                 {languages.map((lang) => (

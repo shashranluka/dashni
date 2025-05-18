@@ -11,7 +11,7 @@
   // padding: 5px;
   width: fit-content;
   max-width: 100%;
-  border-radius: .3em;
+  border-radius: .5em;
   background-color: #cae8ca;
   border: 2px solid #4caf50;
 
@@ -46,13 +46,14 @@
   }
 
   .keyboard-key {
-    background-color: #4caf50;
-    color: black;
+    background-color: #4c56af;
+    color: white;
     position: sticky;
     width: fit-content;
-    padding: .5em;
+    padding: .1em;
     border-radius: .3em;
     // bottom: 100px;
+    font-size: 1.2em;
     top: 10px;
     left: 100%;
     cursor: pointer;
