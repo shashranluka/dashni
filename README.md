@@ -1,1 +1,1 @@
-test
+frontend/baseUrl.js აღარ იტვირთება github-ზე. ლოკალურად frontend/baseUrl.js-ში წერია localhost მისამართი. github-ზე კი დევს ფაილი, სადაც url-ად dashni.dosh.ge არის მითითებული
