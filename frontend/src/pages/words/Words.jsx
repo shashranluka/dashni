@@ -135,7 +135,7 @@ function Words() {
             disabled={isStarted}
           >
             <option value="" disabled>აირჩიეთ ენა</option>
-            <option value="ka"> თუშური</option>
+            <option value="ba"> თუშური</option>
             {/* <option value="ka"> ქართული</option> */}
             <option value="ka"> ქართული</option>
             <option value="en"> ინგლისური</option>

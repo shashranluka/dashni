@@ -1,4 +1,4 @@
-import React, { useReducer, useState } from 'react';
+import React, { useReducer, useState, useRef } from 'react';
 import './AddWordsData.scss'; // სტილის ფაილი
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios'; // დავამატოთ axios-ის იმპორტი
@@ -124,6 +124,9 @@ const AddWordsData = () => {
     dispatch({ type: 'UPDATE_FIELD', field: 'language', value: '' });
   };
 
+  // დავამატოთ რეფერენსი word input-ისთვის
+  const wordInputRef = useRef(null);
+
   const handleAddWord = (e) => {
     if (
       formData.word.trim() &&
@@ -131,7 +134,15 @@ const AddWordsData = () => {
       formData.language.trim()
     ) {
       setWordsData([...wordsData, formData]); // ახალი სიტყვების დამატება
-      dispatch({ type: 'RESET_FORM' }); // ფორმის გასუფთავება (ენის ველის გამოკლებით)
+      dispatch({ type: 'RESET_FORM' }); // ფორმის გასუფთავება
+
+      // ფოკუსი გადავიტანოთ სიტყვის ველში
+      setTimeout(() => {
+        if (wordInputRef.current) {
+          wordInputRef.current.focus();
+          setInputName("word"); // ვაცნობოთ keyboard-ს რომელი ველია ფოკუსში
+        }
+      }, 10);
     } else {
       alert('გთხოვთ, შეავსოთ ყველა სავალდებულო ველი!');
     }
@@ -231,6 +242,7 @@ const AddWordsData = () => {
               type="text"
               id="word"
               name="word"
+              ref={wordInputRef} // დავამატოთ რეფერენსი
               value={formData.word}
               onChange={handleChange}
               placeholder="შეიყვანეთ სიტყვა"
