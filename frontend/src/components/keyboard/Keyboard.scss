@@ -20,6 +20,13 @@
     flex-wrap: wrap;
     justify-content: space-around;
 
+    .diacretials{
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      width: 100%;
+      background-color: #4caf50;
+    }
     .keyboard-button {
       background-color: rgb(190, 190, 247);
       margin: .3em;

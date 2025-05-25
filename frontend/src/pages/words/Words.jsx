@@ -9,9 +9,13 @@ import { useQuery } from "@tanstack/react-query";
 // API მოთხოვნების გასაგზავნი ფუნქციის იმპორტი
 import newRequest from "../../utils/newRequest";
 import GameWords from "../../components/gameWords/GameWords";
+import getCurrentUser from "../../utils/getCurrentUser"; // დაამატეთ ეს იმპორტი
 
 // Words კომპონენტის განსაზღვრა - სიტყვების თამაშისთვის
 function Words() {
+  // მიმდინარე მომხმარებლის მიღება localStorage-დან
+  const currentUser = getCurrentUser();
+  
   // თამაშის მდგომარეობის ცვლადები:
   // გამოხმობილი სიტყვების და მეტადატა შენახვა
   const [gameData, setGameData] = useState({});
@@ -23,6 +27,11 @@ function Words() {
   const [isLoading, setIsLoading] = useState(false);
   // სიტყვების რაოდენობის ცვლადი
   const [amount, setAmount] = useState(10);
+  // სიტყვების ტიპის არჩევისთვის ცვლადები
+  const [selectedTypes, setSelectedTypes] = useState({
+    mine: currentUser ? false : false, // თავდაპირველად არჩეული არ არის
+    public: true // საჯარო ყოველთვის არჩეულია
+  });
 
   // DOM ელემენტებზე წვდომისთვის რეფერენსები:
   // სიტყვების რაოდენობის ველზე წვდომისთვის რეფერენსი
@@ -32,16 +41,21 @@ function Words() {
 
   // ასინქრონული ფუნქცია სიტყვების API-დან გამოსახმობად
   const fetchWords = async () => {
-    // ვამოწმებთ, არსებობს თუ არა რეფერენსები
-    if (!amountRef.current || !languageRef.current) return;
+    // ვამოწმებთ, არსებობს თუ არა ენის რეფერენსი
+    if (!languageRef.current) return;
 
     // ველებიდან მნიშვნელობების ამოღება
-    const amount = amountRef.current.value;
     const language = languageRef.current.value;
 
     // ვალიდაცია - ამოწმებს, რომ შეყვანილია აუცილებელი მონაცემები
-    if (!amount || !language) {
-      alert("გთხოვთ, მიუთითოთ სიტყვების რაოდენობა და ენა");
+    if (!language) {
+      alert("გთხოვთ, მიუთითოთ ენა");
+      return;
+    }
+
+    // ვალიდაცია - ერთი ტიპი მაინც უნდა იყოს არჩეული
+    if (!selectedTypes.mine && !selectedTypes.public) {
+      alert("გთხოვთ, აირჩიოთ სიტყვების ტიპი (ჩემი ან საჯარო)");
       return;
     }
 
@@ -49,13 +63,24 @@ function Words() {
     setIsLoading(true);
 
     try {
+      // განვსაზღვროთ privacy პარამეტრი
+      let privacy;
+      if (selectedTypes.mine && selectedTypes.public) {
+        privacy = "all";
+      } else if (selectedTypes.mine) {
+        privacy = "mine";
+      } else {
+        privacy = "public";
+      }
+      console.log("აირჩიეთ სიტყვების ტიპი:", privacy);
       // API მოთხოვნის გაგზავნა შემთხვევითი სიტყვების მისაღებად
       const response = await newRequest.get(`/words`, {
         params: {
-          amount,  // რამდენი სიტყვა გვინდა
-          language, // რა ენაზე გვინდა სიტყვები
-          type: "random", // შემთხვევითი სიტყვები
-          privacy: "public", // საჯარო სიტყვები
+          userId: currentUser ? currentUser._id : null, // მომხმარებლის ID
+          amount,
+          language,
+          type: "random",
+          privacy,
         },
       });
       console.log("API პასუხი:", response.data);
@@ -144,33 +169,103 @@ function Words() {
           </select>
         </div>
 
-        {/* სიტყვების რაოდენობის არჩევის ინფუთი სლაიდერით */}
+        {/* სიტყვების რაოდენობის არჩევის ინფუთი სლაიდერით და ხელით შესაყვანი ველით */}
         <div className="control-group">
           <label htmlFor="amount">
-            <i className="fas fa-sort-numeric-up"></i> რაოდენობა: <span className="amount-display">{amountRef.current?.value || 10}</span>
-          </label>
-          <div className="slider-container">
+            <i className="fas fa-sort-numeric-up">რაოდენობა: </i>
             <input
-              ref={amountRef}
-              type="range"
-              id="amount"
+              type="number"
+              className="amount-number-input"
+              value={amount}
               min="5"
               max="50"
-              step="5"
-              defaultValue="10"
-              className="range-slider"
               disabled={isStarted}
-              onChange={(e) => setAmount(e.target.value)}
+              onChange={(e) => {
+                // ვალიდაცია: მინიმუმ 5, მაქსიმუმ 50
+                let newValue = parseInt(e.target.value);
+                if (isNaN(newValue)) newValue = 10;
+                if (newValue < 5) newValue = 5;
+                if (newValue > 50) newValue = 50;
+                setAmount(newValue);
+              }}
             />
-            <div className="slider-markers">
-              <span>5</span>
-              <span>15</span>
-              <span>25</span>
-              <span>35</span>
-              <span>50</span>
+          </label>
+          <div className="amount-input-container">
+            <div className="slider-container">
+              <input
+                ref={amountRef}
+                type="range"
+                id="amount"
+                min="5"
+                max="50"
+                step="1"
+                value={amount}
+                className="range-slider"
+                disabled={isStarted}
+                onChange={(e) => setAmount(parseInt(e.target.value))}
+              />
+              <div className="slider-markers">
+                <span>5</span>
+                <span>15</span>
+                <span>25</span>
+                <span>35</span>
+                <span>50</span>
+              </div>
             </div>
           </div>
         </div>
+
+        {/* სიტყვების ტიპის არჩევა (მხოლოდ ავტორიზებული მომხმარებლისთვის) */}
+        {currentUser && (
+          <div className="control-group">
+            <label>
+              <i className="fas fa-filter"></i> სიტყვების ტიპი:
+            </label>
+            <div className="type-selection-cards">
+              <div 
+                className={`type-card ${selectedTypes.mine ? 'selected' : ''}`}
+                onClick={() => setSelectedTypes(prev => ({
+                  ...prev,
+                  mine: !prev.mine
+                }))}
+              >
+                <div className="type-checkbox">
+                  <input 
+                    type="checkbox" 
+                    checked={selectedTypes.mine} 
+                    onChange={() => {}} 
+                    disabled={isStarted}
+                  />
+                </div>
+                <div className="type-content">
+                  <i className="fas fa-user"></i>
+                  <span>ჩემი</span>
+                </div>
+              </div>
+              
+              <div 
+                className={`type-card ${selectedTypes.public ? 'selected' : ''}`}
+                onClick={() => setSelectedTypes(prev => ({
+                  ...prev,
+                  public: !prev.public
+                }))}
+              >
+                <div className="type-checkbox">
+                  <input 
+                    type="checkbox" 
+                    checked={selectedTypes.public} 
+                    onChange={() => {}} 
+                    disabled={isStarted}
+                  />
+                </div>
+                <div className="type-content">
+                  <i className="fas fa-globe"></i>
+                  <span>საჯარო</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* თამაშის დაწყების/დასრულების ღილაკი ანიმაციით */}
         <button
@@ -195,8 +290,8 @@ function Words() {
             <div className="loading-spinner"></div>
             <div className="loading-words">
               {['წ', 'ი', 'გ', 'ნ', 'ე', 'ბ', 'ი'].map((letter, index) => (
-                <span 
-                  key={index} 
+                <span
+                  key={index}
                   className="bouncing-letter"
                   style={{ animationDelay: `${index * 0.1}s` }}
                 >
@@ -215,10 +310,10 @@ function Words() {
           <div className="game-header">
             <div className="selected-language">
               <span className="label">არჩეული ენა:</span>
-              <span className="value">{gameData.language === "ka" ? "🇬🇪 ქართული" : 
-                                       gameData.language === "en" ? "🇬🇧 ინგლისური" :
-                                       gameData.language === "de" ? "🇩🇪 გერმანული" :
-                                       gameData.language === "fr" ? "🇫🇷 ფრანგული" : ""}</span>
+              <span className="value">{gameData.language === "ka" ? "🇬🇪 ქართული" :
+                gameData.language === "en" ? "🇬🇧 ინგლისური" :
+                  gameData.language === "de" ? "🇩🇪 გერმანული" :
+                    gameData.language === "fr" ? "🇫🇷 ფრანგული" : ""}</span>
             </div>
             <div className="word-counter">
               <span className="label">სიტყვები:</span>

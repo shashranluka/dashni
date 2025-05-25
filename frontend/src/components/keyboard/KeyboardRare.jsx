@@ -186,12 +186,58 @@ export default function KeyboardWrapper(props) {
     // { theLetter: "ჷ", modify: [1, 2, 3, 4, 5, 6] },
     // { theLetter: "¸", modify: [1, 2, 3, 4, 5, 6] },
   ];
+  const diacretials = ["\u10FC", "\u0302", "\u0306", "\u0304", "\u2322", "\u0327", "\u02D6"];
+  const trueLetters = ["ჲ", "ჺ", "ჴ", "ჸ", "ჵ", "ჳ", "ჶ", "ჹ", "ჷ", "ჱ", "®", "°"];
+  // ჱ ჶ ჹ ჷ ჳ ® °
+  // ]
+  function handleKeyboardButtonClick(letter) {
+    // შევამოწმოთ რომ ველი არჩეულია და არსებობს
+    if (!inputName || !textState || typeof textState[inputName] === 'undefined') {
+      console.warn("არ არის არჩეული ველი ან მისი სახელი არასწორია:", inputName);
+      return;
+    }
+    console.log("handleKeyboardButtonClick", letter);
+
+    const currentText = textState[inputName];
+    const { start, end } = cursorPositionRef.current;
+
+    // სიმბოლოს ჩასმა კურსორის პოზიციაში
+    const newText = currentText.substring(0, start) +
+      letter +
+      currentText.substring(end);
+
+    // სტეიტის განახლება
+    dispatchText({
+      type: "CHANGE_INPUT",
+      payload: { name: inputName, value: newText },
+    });
+
+    // ახალი კურსორის პოზიცია სიმბოლოს შემდეგ
+    const newPosition = start + letter.length;
+
+    // დავაბრუნოთ ფოკუსი და დავაყენოთ კურსორი სწორ პოზიციაში
+    setTimeout(() => {
+      if (focusedElementRef.current) {
+        focusedElementRef.current.focus();
+
+        if (focusedElementRef.current.setSelectionRange) {
+          focusedElementRef.current.setSelectionRange(newPosition, newPosition);
+
+          // ასევე განვაახლოთ ჩვენი დამახსოვრებული პოზიცია
+          cursorPositionRef.current = {
+            start: newPosition,
+            end: newPosition
+          };
+        }
+      }
+    }, 10);
+  }
 
   return (
     <div className="keyboard">
       {keyboardKey ? (
         <div className="letters">
-          {letters.map((letter, index) => (
+          {/* {letters.map((letter, index) => (
             <div className="" key={index}>
               {letter.modify.map((diacretial, dIndex) => (
                 <div
@@ -205,6 +251,32 @@ export default function KeyboardWrapper(props) {
                   </button>
                 </div>
               ))}
+            </div>
+          ))} */}
+          <div className="diacretials">
+            {diacretials.map((diacretial, index) => (
+              <div
+              // className="keyboard-button"
+              // onClick={() => handleClick(diacretial)}
+              >
+                <button className="keyboard-button"
+                  key={index}
+                  onClick={() => handleKeyboardButtonClick(diacretial)}>
+                  {diacretial}
+                </button>
+              </div>
+            ))}
+          </div>
+          {trueLetters.map((letter, index) => (
+            <div
+            // className="keyboard-button"
+            // onClick={() => handleClick(letter)}
+            >
+              <button className="keyboard-button"
+                key={index}
+                onClick={() => handleKeyboardButtonClick(letter)}>
+                {letter}
+              </button>
             </div>
           ))}
         </div>

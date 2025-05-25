@@ -20,6 +20,7 @@
 
 // თამაშის მთავარი კონტეინერი - მობილურისთვის ოპტიმიზებული
 .words-game-container {
+  flex: 1;
   width: 100%;
   max-width: 100%;
   margin: 0 auto;
@@ -336,22 +337,67 @@
   }
 }
 
-// ანიმაციები
-@keyframes spin {
-  to { transform: rotate(360deg); }
+// არჩევანის ბარათები - მობილურისთვის ოპტიმიზებული
+.type-selection-cards {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  margin-top: 10px;
+  
+  .type-card {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border: 2px solid var(--border-light);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    
+    &:hover {
+      border-color: var(--primary-color);
+      background-color: #f0f7fc;
+    }
+    
+    &.selected {
+      background-color: #edf7ff;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+    }
+    
+    .type-checkbox {
+      margin-right: 10px;
+      
+      input[type="checkbox"] {
+        width: 16px;
+        height: 16px;
+        accent-color: var(--primary-color);
+        cursor: pointer;
+      }
+    }
+    
+    .type-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      
+      i {
+        font-size: 1rem;
+        color: var(--primary-color);
+        margin-bottom: 5px;
+      }
+      
+      span {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--text-color);
+      }
+    }
+  }
 }
 
-@keyframes bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(15px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-// ტაბლეტებისთვის მედია მოთხოვნა
+// რესფონსიული ცვლილებები ტაბლეტებისთვის
 @media (min-width: 576px) {
   .words-game-container {
     padding: 1.2rem;
@@ -400,6 +446,27 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
+  }
+  
+  .type-selection-cards {
+    .type-card {
+      padding: 12px;
+      
+      .type-content {
+        flex-direction: row;
+        justify-content: center;
+        
+        i {
+          margin-bottom: 0;
+          margin-right: 8px;
+          font-size: 1.1rem;
+        }
+        
+        span {
+          font-size: 0.9rem;
+        }
+      }
+    }
   }
 }
 
@@ -550,6 +617,31 @@
         }
         
         .value {
+          font-size: 1rem;
+        }
+      }
+    }
+  }
+  
+  .type-selection-cards {
+    gap: 15px;
+    
+    .type-card {
+      padding: 15px;
+      
+      .type-checkbox {
+        input[type="checkbox"] {
+          width: 18px;
+          height: 18px;
+        }
+      }
+      
+      .type-content {
+        i {
+          font-size: 1.2rem;
+        }
+        
+        span {
           font-size: 1rem;
         }
       }
