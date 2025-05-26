@@ -6,38 +6,11 @@ export default function KeyboardWrapper(props) {
   const { setLetter, inputName, inputValue, textState, dispatchText } = props;
   const [keyboardKey, setKeyboardKey] = useState(false);
   const [chosenCardIndex, setChosenCardIndex] = useState(null);
-  // დავამატოთ iOS კლავიატურის მდგომარეობის თრეკინგი
-  const [iosKeyboardVisible, setIosKeyboardVisible] = useState(false);
 
   // რეფერენსი ფოკუსში მყოფი ელემენტისთვის
   const focusedElementRef = useRef(null);
   // დავამატოთ კურსორის პოზიციის დასამახსოვრებლად
   const cursorPositionRef = useRef({ start: 0, end: 0 });
-
-  // iOS კლავიატურის დეტექციისთვის
-  useEffect(() => {
-    if (!window.visualViewport) return;
-    
-    const detectKeyboard = () => {
-      const windowHeight = window.innerHeight;
-      const viewportHeight = window.visualViewport.height;
-      
-      // iOS-ზე კლავიატურა ამცირებს viewport-ის სიმაღლეს
-      if (windowHeight - viewportHeight > 150) {
-        setIosKeyboardVisible(true);
-      } else {
-        setIosKeyboardVisible(false);
-      }
-    };
-    
-    window.visualViewport.addEventListener('resize', detectKeyboard);
-    window.visualViewport.addEventListener('scroll', detectKeyboard);
-    
-    return () => {
-      window.visualViewport.removeEventListener('resize', detectKeyboard);
-      window.visualViewport.removeEventListener('scroll', detectKeyboard);
-    };
-  }, []);
 
   // დავიჭიროთ დოკუმენტის ფოკუსირებული ელემენტი
   useEffect(() => {
@@ -105,13 +78,14 @@ export default function KeyboardWrapper(props) {
     const newPosition = start + diacretial.hex.length;
 
     // დავაბრუნოთ ფოკუსი და დავაყენოთ კურსორი სწორ პოზიციაში
-    // შენიშვნა: ეს ნაწილი მნიშვნელოვანია ფოკუსის შესანარჩუნებლად, 
-    // მაგრამ iOS-ზე შეიძლება კლავიატურა დამალოს
     setTimeout(() => {
       if (focusedElementRef.current) {
-        // არ ვცვლით ფოკუსს iOS-ზე კლავიატურის დასატოვებლად
+        focusedElementRef.current.focus();
+
         if (focusedElementRef.current.setSelectionRange) {
           focusedElementRef.current.setSelectionRange(newPosition, newPosition);
+
+          // ასევე განვაახლოთ ჩვენი დამახსოვრებული პოზიცია
           cursorPositionRef.current = {
             start: newPosition,
             end: newPosition
@@ -242,12 +216,14 @@ export default function KeyboardWrapper(props) {
     const newPosition = start + letter.length;
 
     // დავაბრუნოთ ფოკუსი და დავაყენოთ კურსორი სწორ პოზიციაში
-    // iOS-ზე ფოკუსის შეცვლა დამალავს კლავიატურას, ამიტომ ფრთხილად
     setTimeout(() => {
       if (focusedElementRef.current) {
-        // არ გადავიყვანოთ ფოკუსი, მხოლოდ კურსორის პოზიცია განვაახლოთ
+        focusedElementRef.current.focus();
+
         if (focusedElementRef.current.setSelectionRange) {
           focusedElementRef.current.setSelectionRange(newPosition, newPosition);
+
+          // ასევე განვაახლოთ ჩვენი დამახსოვრებული პოზიცია
           cursorPositionRef.current = {
             start: newPosition,
             end: newPosition
@@ -257,17 +233,34 @@ export default function KeyboardWrapper(props) {
     }, 10);
   }
 
-  // კლავიატურის კლასი iOS კლავიატურის მდგომარეობის მიხედვით
-  const keyboardClasses = `keyboard ${iosKeyboardVisible ? 'ios-keyboard-visible' : ''}`;
-
   return (
-    <div className={keyboardClasses}>
+    <div className="keyboard">
       {keyboardKey ? (
         <div className="letters">
+          {/* {letters.map((letter, index) => (
+            <div className="" key={index}>
+              {letter.modify.map((diacretial, dIndex) => (
+                <div
+                // className="keyboard-button"
+                // onClick={() => handleClick(diacretial)}
+                >
+                  <button className="keyboard-button"
+                    key={`${index}-${dIndex}`}
+                    onClick={() => handleClick(diacretial)}>
+                    {diacretial.hex}
+                  </button>
+                </div>
+              ))}
+            </div>
+          ))} */}
           <div className="diacretials">
             {diacretials.map((diacretial, index) => (
-              <div key={index}>
+              <div
+              // className="keyboard-button"
+              // onClick={() => handleClick(diacretial)}
+              >
                 <button className="keyboard-button"
+                  key={index}
                   onClick={() => handleKeyboardButtonClick(diacretial)}>
                   {diacretial}
                 </button>
@@ -275,8 +268,12 @@ export default function KeyboardWrapper(props) {
             ))}
           </div>
           {trueLetters.map((letter, index) => (
-            <div key={index}>
+            <div
+            // className="keyboard-button"
+            // onClick={() => handleClick(letter)}
+            >
               <button className="keyboard-button"
+                key={index}
                 onClick={() => handleKeyboardButtonClick(letter)}>
                 {letter}
               </button>
