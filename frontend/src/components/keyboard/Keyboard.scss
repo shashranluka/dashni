@@ -78,3 +78,32 @@
   // 
 
 }
+
+// CSS ცვლადი კლავიატურის სიმაღლისთვის
+:root {
+  --keyboard-height: 0px;
+}
+
+// მხოლოდ მობილური კლავიატურის ზემოთ განთავსებისთვის
+.keyboard.mobile-keyboard-visible {
+  position: sticky;
+  bottom: var(--keyboard-height);
+  z-index: 1000;
+  background-color: white;
+  transform: translateZ(0); // მთლიანი ელემენტის GPU აქსელერაცია
+  transition: bottom 0.1s; // გლუვი გადასვლა
+}
+
+// iOS-თვის დამატებითი მხარდაჭერა
+@supports (bottom: env(keyboard-inset-height)) {
+  .keyboard.mobile-keyboard-visible {
+    bottom: env(keyboard-inset-height, var(--keyboard-height));
+  }
+}
+
+// უსაფრთხო არეალის მხარდაჭერა
+@supports (padding: env(safe-area-inset-bottom)) {
+  .keyboard {
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+}

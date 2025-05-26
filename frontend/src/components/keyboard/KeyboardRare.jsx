@@ -1,16 +1,50 @@
 import { useState, useEffect, useRef } from "react";
 import "./Keyboard.scss";
 import Keyboard from "react-simple-keyboard";
-// ამ კომპონენტისთვის გადმოცემულ reduceer ფუნქციას საჭიროა ჰქონდეს შესაბამირი action "CHANGE_INPUT"
+// ამ კომპონენტისთვის გადმოცემულ reduceერ ფუნქციას საჭიროა ჰქონდეს შესაბამირი action "CHANGE_INPUT"
 export default function KeyboardWrapper(props) {
   const { setLetter, inputName, inputValue, textState, dispatchText } = props;
   const [keyboardKey, setKeyboardKey] = useState(false);
   const [chosenCardIndex, setChosenCardIndex] = useState(null);
+  
+  // iOS კლავიატურის მდგომარეობის თრეკინგისთვის
+  const [mobileKeyboardVisible, setMobileKeyboardVisible] = useState(false);
 
   // რეფერენსი ფოკუსში მყოფი ელემენტისთვის
   const focusedElementRef = useRef(null);
   // დავამატოთ კურსორის პოზიციის დასამახსოვრებლად
   const cursorPositionRef = useRef({ start: 0, end: 0 });
+
+  // მობილური კლავიატურის დეტექციისთვის
+  useEffect(() => {
+    if (!window.visualViewport) return;
+    
+    const detectKeyboard = () => {
+      const windowHeight = window.innerHeight;
+      const viewportHeight = window.visualViewport.height;
+      
+      // კლავიატურა გახსნილია თუ ვიუპორტის სიმაღლე მნიშვნელოვნად შემცირდა
+      if (windowHeight - viewportHeight > 150) {
+        setMobileKeyboardVisible(true);
+        // CSS ცვლადის დაყენება
+        document.documentElement.style.setProperty('--keyboard-height', `${windowHeight - viewportHeight}px`);
+      } else {
+        setMobileKeyboardVisible(false);
+        document.documentElement.style.setProperty('--keyboard-height', '0px');
+      }
+    };
+    
+    window.visualViewport.addEventListener('resize', detectKeyboard);
+    window.visualViewport.addEventListener('scroll', detectKeyboard);
+    
+    // საწყისი შემოწმება
+    detectKeyboard();
+    
+    return () => {
+      window.visualViewport.removeEventListener('resize', detectKeyboard);
+      window.visualViewport.removeEventListener('scroll', detectKeyboard);
+    };
+  }, []);
 
   // დავიჭიროთ დოკუმენტის ფოკუსირებული ელემენტი
   useEffect(() => {
@@ -80,116 +114,34 @@ export default function KeyboardWrapper(props) {
     // დავაბრუნოთ ფოკუსი და დავაყენოთ კურსორი სწორ პოზიციაში
     setTimeout(() => {
       if (focusedElementRef.current) {
-        focusedElementRef.current.focus();
-
-        if (focusedElementRef.current.setSelectionRange) {
-          focusedElementRef.current.setSelectionRange(newPosition, newPosition);
-
-          // ასევე განვაახლოთ ჩვენი დამახსოვრებული პოზიცია
-          cursorPositionRef.current = {
-            start: newPosition,
-            end: newPosition
-          };
+        // ამ ხაზის შეცვლა iOS-ზე კლავიატურის დასატოვებლად
+        if (navigator.userAgent.match(/iPhone|iPad|iPod/i)) {
+          // iOS-ზე არ ვცვლით ფოკუსს, მხოლოდ კურსორის პოზიციას
+          if (focusedElementRef.current.setSelectionRange) {
+            focusedElementRef.current.setSelectionRange(newPosition, newPosition);
+            cursorPositionRef.current = {
+              start: newPosition,
+              end: newPosition
+            };
+          }
+        } else {
+          // სხვა მოწყობილობებზე ჩვეულებრივი ქცევა
+          focusedElementRef.current.focus();
+          if (focusedElementRef.current.setSelectionRange) {
+            focusedElementRef.current.setSelectionRange(newPosition, newPosition);
+            cursorPositionRef.current = {
+              start: newPosition,
+              end: newPosition
+            };
+          }
         }
       }
     }, 10);
   }
 
-  const letters = [
-    {
-      theLetter: "ა",
-      modify: [
-        { desc: "ნაზალური", hex: "\u10FC" },
-      ],
-    },
-    {
-      theLetter: "ე",
-      modify: [
-        // { desc: "მოკლე", hex: "\u0306" },
-        // { desc: "ზემოკლე", hex: "\u0302" },
-        // { desc: "გრძელი", hex: "\u0304" },
-        // { desc: "თავისუფალი", hex: "\u2322" },
-
-        // { desc: "ნაზალური", hex: "\u10FC" },
-        // { desc: "გრძელი&ნაზალური", hex: "\u0304\u10FC" },
-        { desc: "ზეგრძელი", hex: "\u0302" },
-        // { desc: "თავისუფალი&ნაზალური", hex: "\u0302" },
-        // { desc: "თავისუფალი&გრძელი", hex: "\u0302" },
-        // { desc: "ინტენსიურიური", hex: "\u10FC" },
-        // { desc: "ინტენსიურიური", hex: "\u10FC" },
-        // { desc: "ლატერალური", hex: "\u10FC" },
-        // { desc: "მჟღერი", hex: "\u10FC" },
-      ],
-    },
-    {
-      theLetter: "ი",
-      modify: [
-        // { desc: "მოკლე", hex: "\u0306" },
-        // { desc: "ზემოკლე", hex: "\u0302" },
-        // { desc: "გრძელი", hex: "\u0304" },
-        { desc: "თავისუფალი", hex: "\u2322" },
-
-        // { desc: "ნაზალური", hex: "\u10FC" },
-        // { desc: "გრძელი&ნაზალური", hex: "\u0304\u10FC" },
-      ],
-    },
-    {
-      theLetter: "ო",
-      modify: [
-        // { desc: "მოკლე", hex: "\u0306" },
-        // { desc: "ზემოკლე", hex: "\u0302" },
-        { desc: "გრძელი", hex: "\u0304" },
-        // { desc: "თავისუფალი", hex: "\u2322" },
-        // { desc: "ნაზალური", hex: "\u10FC" },
-        // { desc: "გრძელი&ნაზალური", hex: "\u0304\u10FC" },
-      ],
-    },
-    {
-      theLetter: "უ",
-      modify: [
-        // { desc: "მოკლე", hex: "\u0306" },
-        { desc: "ზემოკლე", hex: "\u0302" },
-        // { desc: "გრძელი", hex: "\u0304" },
-        // { desc: "თავისუფალი", hex: "\u2322" },
-
-        // { desc: "ნაზალური", hex: "\u10FC" },
-        // { desc: "გრძელი&ნაზალური", hex: "\u0304\u10FC" },
-      ],
-    },
-    {
-      theLetter: "ჲ",
-      modify: [
-        { desc: "მოკლე", hex: "\u0306" },
-        // { desc: "ზემოკლე", hex: "\u0302" },
-        // { desc: "გრძელი", hex: "\u0304" },
-        // { desc: "თავისუფალი", hex: "\u2322" },
-
-        // { desc: "ნაზალური", hex: "\u10FC" },
-        // { desc: "გრძელი&ნაზალური", hex: "\u0304\u10FC" },
-      ],
-    },
-    // { theLetter: "ჲ", modify: [1, 2, 3, 4, 5, 6] },
-    // { theLetter: "ჴ", modify: [1, 2, 3, 4, 5, 6] },
-    // { theLetter: "ჸ", modify: [1, 2, 3, 4, 5, 6] },
-    // { theLetter: "ჼ", modify: [1, 2, 3, 4, 5, 6] },
-    // { theLetter: "ₔ", modify: [1, 2, 3, 4, 5, 6] },
-    {
-      theLetter: "ჰ",
-      modify: [{ desc: "მჟღერი ჰ", hex: "\u0327" }],
-    },
-    // { theLetter: "έ", modify: [1, 2, 3, 4, 5, 6] },
-    // { theLetter: "ჳ", modify: [1, 2, 3, 4, 5, 6] },
-    // { theLetter: "ჺ", modify: [1, 2, 3, 4, 5, 6] },
-    // { theLetter: "ჶ", modify: [1, 2, 3, 4, 5, 6] },
-    // { theLetter: "ჹ", modify: [1, 2, 3, 4, 5, 6] },
-    // { theLetter: "ჱ", modify: [1, 2, 3, 4, 5, 6] },
-    // { theLetter: "ჷ", modify: [1, 2, 3, 4, 5, 6] },
-    // { theLetter: "¸", modify: [1, 2, 3, 4, 5, 6] },
-  ];
   const diacretials = ["\u10FC", "\u0302", "\u0306", "\u0304", "\u2322", "\u0327", "\u02D6"];
   const trueLetters = ["ჲ", "ჺ", "ჴ", "ჸ", "ჵ", "ჳ", "ჶ", "ჹ", "ჷ", "ჱ", "®", "°"];
-  // ჱ ჶ ჹ ჷ ჳ ® °
-  // ]
+
   function handleKeyboardButtonClick(letter) {
     // შევამოწმოთ რომ ველი არჩეულია და არსებობს
     if (!inputName || !textState || typeof textState[inputName] === 'undefined') {
@@ -218,49 +170,42 @@ export default function KeyboardWrapper(props) {
     // დავაბრუნოთ ფოკუსი და დავაყენოთ კურსორი სწორ პოზიციაში
     setTimeout(() => {
       if (focusedElementRef.current) {
-        focusedElementRef.current.focus();
-
-        if (focusedElementRef.current.setSelectionRange) {
-          focusedElementRef.current.setSelectionRange(newPosition, newPosition);
-
-          // ასევე განვაახლოთ ჩვენი დამახსოვრებული პოზიცია
-          cursorPositionRef.current = {
-            start: newPosition,
-            end: newPosition
-          };
+        // ამ ხაზის შეცვლა iOS-ზე კლავიატურის დასატოვებლად
+        if (navigator.userAgent.match(/iPhone|iPad|iPod/i)) {
+          // iOS-ზე არ ვცვლით ფოკუსს, მხოლოდ კურსორის პოზიციას
+          if (focusedElementRef.current.setSelectionRange) {
+            focusedElementRef.current.setSelectionRange(newPosition, newPosition);
+            cursorPositionRef.current = {
+              start: newPosition,
+              end: newPosition
+            };
+          }
+        } else {
+          // სხვა მოწყობილობებზე ჩვეულებრივი ქცევა
+          focusedElementRef.current.focus();
+          if (focusedElementRef.current.setSelectionRange) {
+            focusedElementRef.current.setSelectionRange(newPosition, newPosition);
+            cursorPositionRef.current = {
+              start: newPosition,
+              end: newPosition
+            };
+          }
         }
       }
     }, 10);
   }
 
+  // კლავიატურის კლასები
+  const keyboardClasses = `keyboard ${mobileKeyboardVisible ? 'mobile-keyboard-visible' : ''}`;
+
   return (
-    <div className="keyboard">
+    <div className={keyboardClasses}>
       {keyboardKey ? (
         <div className="letters">
-          {/* {letters.map((letter, index) => (
-            <div className="" key={index}>
-              {letter.modify.map((diacretial, dIndex) => (
-                <div
-                // className="keyboard-button"
-                // onClick={() => handleClick(diacretial)}
-                >
-                  <button className="keyboard-button"
-                    key={`${index}-${dIndex}`}
-                    onClick={() => handleClick(diacretial)}>
-                    {diacretial.hex}
-                  </button>
-                </div>
-              ))}
-            </div>
-          ))} */}
           <div className="diacretials">
             {diacretials.map((diacretial, index) => (
-              <div
-              // className="keyboard-button"
-              // onClick={() => handleClick(diacretial)}
-              >
+              <div key={index}>
                 <button className="keyboard-button"
-                  key={index}
                   onClick={() => handleKeyboardButtonClick(diacretial)}>
                   {diacretial}
                 </button>
@@ -268,12 +213,8 @@ export default function KeyboardWrapper(props) {
             ))}
           </div>
           {trueLetters.map((letter, index) => (
-            <div
-            // className="keyboard-button"
-            // onClick={() => handleClick(letter)}
-            >
+            <div key={index}>
               <button className="keyboard-button"
-                key={index}
                 onClick={() => handleKeyboardButtonClick(letter)}>
                 {letter}
               </button>
