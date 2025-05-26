@@ -3,17 +3,28 @@
   padding: 0;
   box-sizing: border-box;
 }
+
 .keyboard {
-  position: sticky;
+  position: sticky; // ვტოვებთ მხოლოდ ამ position თვისებას
   bottom: 0;
-  // top: 10px;
-  left: 100%;
-  // padding: 5px;
-  width: fit-content;
-  max-width: 100%;
+  left: auto; 
+  right: 0;
+  width: auto;
+  max-width: 336px;
+  margin-left: auto;
   border-radius: .5em;
   background-color: #cae8ca;
   border: 2px solid #4caf50;
+  // შევქმნათ კონტეინერი ღილაკისთვის
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 0;
+    z-index: 0;
+  }
 
   .letters {
     display: flex;
@@ -30,20 +41,11 @@
     .keyboard-button {
       background-color: rgb(190, 190, 247);
       margin: .3em;
-      // padding: 0.5em;
       padding: .1em .7em .3em .7em;
       border-radius: .3em;
       font-size: 1.2em;
-      // width: 1.5em;
       cursor: pointer;
       box-sizing: border-box;
-
-      // .letter {
-      //   font-family: "Times New Roman", Times, serif;
-      //   background-color: rgb(216, 33, 33);
-      //   font-size: 2em;
-      //   padding: 0.3em;
-      //   margin: 0.5em;
 
       .modifier {
         font-feature-settings: "liga" off;
@@ -52,31 +54,29 @@
     }
   }
 
+  // ღილაკი აბსოლუტური პოზიციონირებით
   .keyboard-key {
     background-color: #4c56af;
     color: white;
-    position: sticky;
-    width: fit-content;
-    padding: .1em;
-    border-radius: .3em;
-    // bottom: 100px;
+    position: absolute;
+    width: 40px;
+    height: 30px;
+    padding: .3em;
+    border-radius: 5px 5px 0 0;
     font-size: 1.2em;
-    top: 10px;
-    left: 100%;
+    top: -30px; // კლავიატურის ზემოთ 30px-ით
+    right: 20px; // მარჯვენა მხრიდან 20px დაშორებით
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.2);
+    z-index: 10;
+    
+    &:hover {
+      background-color: #3a42a0;
+    }
   }
-
-
-
-  h3 {
-    // background-color: red;
-    // padding-left: 10%;
-    // width: 2em;
-
-  }
-
-  // 
-
 }
 
 // CSS ცვლადი კლავიატურის სიმაღლისთვის
@@ -86,11 +86,20 @@
 
 // iOS კლავიატურის ზემოთ განთავსებისთვის
 .keyboard.mobile-keyboard-visible {
-  position: sticky;
+  position: sticky; // შეუცვლელი
   bottom: var(--keyboard-height);
   z-index: 1000;
-  background-color: white;
-  transform: translateZ(0); // GPU აქსელერაცია
+  background-color: #cae8ca;
+  transform: translateZ(0);
+}
+
+// ზოგადი ფიქსი sticky-ს გასამართად სხვადასხვა ბრაუზერში
+.keyboard {
+  /* Safari-სთვის და სხვა ბრაუზერებისთვის */
+  position: -webkit-sticky;
+  position: sticky;
+  /* კლავიატურას გადავიყვანთ საკუთარ სტეკინგ კონტექსტში */
+  isolation: isolate;
 }
 
 // iOS-თვის დამატებითი მხარდაჭერა
@@ -105,4 +114,15 @@
   .keyboard {
     padding-bottom: env(safe-area-inset-bottom, 0);
   }
+}
+
+// დავრწმუნდეთ, რომ მშობელ კონტეინერს აქვს საკმარისი სიმაღლე
+html, body {
+  min-height: 100%;
+  height: 100%;
+}
+
+body {
+  position: relative;
+  overflow-x: hidden;
 }
