@@ -84,14 +84,13 @@
   --keyboard-height: 0px;
 }
 
-// მხოლოდ მობილური კლავიატურის ზემოთ განთავსებისთვის
+// iOS კლავიატურის ზემოთ განთავსებისთვის
 .keyboard.mobile-keyboard-visible {
   position: sticky;
   bottom: var(--keyboard-height);
   z-index: 1000;
   background-color: white;
-  transform: translateZ(0); // მთლიანი ელემენტის GPU აქსელერაცია
-  transition: bottom 0.1s; // გლუვი გადასვლა
+  transform: translateZ(0); // GPU აქსელერაცია
 }
 
 // iOS-თვის დამატებითი მხარდაჭერა

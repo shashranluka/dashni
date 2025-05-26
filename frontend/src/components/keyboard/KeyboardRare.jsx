@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import "./Keyboard.scss";
 import Keyboard from "react-simple-keyboard";
-// ამ კომპონენტისთვის გადმოცემულ reduceერ ფუნქციას საჭიროა ჰქონდეს შესაბამირი action "CHANGE_INPUT"
+
 export default function KeyboardWrapper(props) {
   const { setLetter, inputName, inputValue, textState, dispatchText } = props;
   const [keyboardKey, setKeyboardKey] = useState(false);
@@ -12,8 +12,13 @@ export default function KeyboardWrapper(props) {
 
   // რეფერენსი ფოკუსში მყოფი ელემენტისთვის
   const focusedElementRef = useRef(null);
-  // დავამატოთ კურსორის პოზიციის დასამახსოვრებლად
+  // კურსორის პოზიციის დასამახსოვრებლად
   const cursorPositionRef = useRef({ start: 0, end: 0 });
+  // ტექსტის მნიშვნელობის დასამახსოვრებლად
+  const textValueRef = useRef('');
+  
+  // ვამოწმებთ არის თუ არა iOS მოწყობილობა
+  const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
 
   // მობილური კლავიატურის დეტექციისთვის
   useEffect(() => {
@@ -46,20 +51,45 @@ export default function KeyboardWrapper(props) {
     };
   }, []);
 
-  // დავიჭიროთ დოკუმენტის ფოკუსირებული ელემენტი
+  // ფოკუსის და კურსორის პოზიციის თრეკინგი
   useEffect(() => {
+    // iOS-ზე ფოკუსს ვამოწმებთ ინტერვალით, რადგან focusin/focusout ივენთები
+    // ხშირად არასწორად მუშაობს iOS-ზე სასურველი შედეგისთვის
+    let focusCheckInterval;
+    
+    const startFocusChecking = () => {
+      if (isIOS) {
+        focusCheckInterval = setInterval(() => {
+          const activeElement = document.activeElement;
+          if (activeElement && (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA')) {
+            focusedElementRef.current = activeElement;
+            
+            // ასევე ვინახავთ კურსორის პოზიციას
+            if (activeElement.selectionStart !== undefined) {
+              cursorPositionRef.current = {
+                start: activeElement.selectionStart,
+                end: activeElement.selectionEnd
+              };
+            }
+            
+            // ვინახავთ ტექსტის მნიშვნელობას
+            if (inputName && textState && textState[inputName] !== undefined) {
+              textValueRef.current = textState[inputName];
+            }
+          }
+        }, 300); // შემოწმება ყოველ 300მს-ში
+      }
+    };
+    
+    // არა-iOS მოწყობილობებისთვის სტანდარტული მიდგომა
     const handleFocus = () => {
-      // დავიმახსოვროთ რომელი ელემენტია ფოკუსში input-ებიდან და textarea-დან
-      if (document.activeElement.tagName === 'INPUT' ||
-        document.activeElement.tagName === 'TEXTAREA') {
+      if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') {
         focusedElementRef.current = document.activeElement;
       }
     };
 
-    // დავამატოთ ფუნქცია კურსორის პოზიციის დასამახსოვრებლად
     const handleSelectionChange = () => {
-      if (document.activeElement.tagName === 'INPUT' ||
-        document.activeElement.tagName === 'TEXTAREA') {
+      if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') {
         const activeElement = document.activeElement;
         cursorPositionRef.current = {
           start: activeElement.selectionStart,
@@ -69,78 +99,69 @@ export default function KeyboardWrapper(props) {
     };
 
     // დავამატოთ ლისენერები
-    document.addEventListener('focusin', handleFocus);
-    document.addEventListener('click', handleSelectionChange);
-    document.addEventListener('keyup', handleSelectionChange);
-    document.addEventListener('mouseup', handleSelectionChange);
+    if (!isIOS) {
+      document.addEventListener('focusin', handleFocus);
+      document.addEventListener('click', handleSelectionChange);
+      document.addEventListener('keyup', handleSelectionChange);
+      document.addEventListener('mouseup', handleSelectionChange);
+    } else {
+      startFocusChecking();
+    }
 
     return () => {
-      // გავასუფთავოთ ლისენერები კომპონენტის გაუქმებისას
-      document.removeEventListener('focusin', handleFocus);
-      document.removeEventListener('click', handleSelectionChange);
-      document.removeEventListener('keyup', handleSelectionChange);
-      document.removeEventListener('mouseup', handleSelectionChange);
+      if (!isIOS) {
+        document.removeEventListener('focusin', handleFocus);
+        document.removeEventListener('click', handleSelectionChange);
+        document.removeEventListener('keyup', handleSelectionChange);
+        document.removeEventListener('mouseup', handleSelectionChange);
+      } else if (focusCheckInterval) {
+        clearInterval(focusCheckInterval);
+      }
     };
-  }, []);
+  }, [isIOS, inputName, textState]);
 
   function handleKeyboardKeyClick() {
     setKeyboardKey(!keyboardKey);
   }
 
-  function handleClick(diacretial) {
-    // შევამოწმოთ რომ ველი არჩეულია და არსებობს
-    if (!inputName || !textState || typeof textState[inputName] === 'undefined') {
-      console.warn("არ არის არჩეული ველი ან მისი სახელი არასწორია:", inputName);
-      return;
-    }
-
-    const currentText = textState[inputName];
-    const { start, end } = cursorPositionRef.current;
-
-    // სიმბოლოს ჩასმა კურსორის პოზიციაში
-    const newText = currentText.substring(0, start) +
-      diacretial.hex +
-      currentText.substring(end);
-
+  // iOS-ისთვის დაყოვნებადი ტექსტის შეცვლის ფუნქცია - გამოიყენებს preventDefault
+  // შეტყობინების დაყოვნება შეიძლება დაგვეხმაროს ფოკუსის შენარჩუნებაში
+  const updateTextWithDelay = (newText, newPosition) => {
+    // ამჟამინდელი ტექსტის შენახვა
+    const prevText = textValueRef.current;
+    
     // სტეიტის განახლება
     dispatchText({
       type: "CHANGE_INPUT",
       payload: { name: inputName, value: newText },
     });
-
-    // ახალი კურსორის პოზიცია სიმბოლოს შემდეგ
-    const newPosition = start + diacretial.hex.length;
-
-    // დავაბრუნოთ ფოკუსი და დავაყენოთ კურსორი სწორ პოზიციაში
-    setTimeout(() => {
-      if (focusedElementRef.current) {
-        // ამ ხაზის შეცვლა iOS-ზე კლავიატურის დასატოვებლად
-        if (navigator.userAgent.match(/iPhone|iPad|iPod/i)) {
-          // iOS-ზე არ ვცვლით ფოკუსს, მხოლოდ კურსორის პოზიციას
-          if (focusedElementRef.current.setSelectionRange) {
+    
+    // განახლებული ტექსტის დამახსოვრება
+    textValueRef.current = newText;
+    
+    // iOS-ზე კურსორის პოზიციის განახლება დაყოვნებით
+    if (isIOS && focusedElementRef.current) {
+      // iOS-ზე ზოგი ბრაუზერი ხანდახან ტექსტს თვითონ ცვლის, ამიტომ ვაკეთებთ შემოწმებას
+      setTimeout(() => {
+        if (focusedElementRef.current.value !== newText) {
+          focusedElementRef.current.value = newText;
+        }
+        
+        if (focusedElementRef.current.setSelectionRange) {
+          try {
             focusedElementRef.current.setSelectionRange(newPosition, newPosition);
+            // განვაახლოთ კურსორის პოზიცია
             cursorPositionRef.current = {
               start: newPosition,
               end: newPosition
             };
-          }
-        } else {
-          // სხვა მოწყობილობებზე ჩვეულებრივი ქცევა
-          focusedElementRef.current.focus();
-          if (focusedElementRef.current.setSelectionRange) {
-            focusedElementRef.current.setSelectionRange(newPosition, newPosition);
-            cursorPositionRef.current = {
-              start: newPosition,
-              end: newPosition
-            };
+          } catch (e) {
+            console.warn("კურსორის პოზიციის დაყენება ვერ მოხერხდა", e);
           }
         }
-      }
-    }, 10);
-  }
-
-  const diacretials = ["\u10FC", "\u0302", "\u0306", "\u0304", "\u2322", "\u0327", "\u02D6"];
-  const trueLetters = ["ჲ", "ჺ", "ჴ", "ჸ", "ჵ", "ჳ", "ჶ", "ჹ", "ჷ", "ჱ", "®", "°"];
+      }, 50);
+    }
+  };
 
   function handleKeyboardButtonClick(letter) {
     // შევამოწმოთ რომ ველი არჩეულია და არსებობს
@@ -148,52 +169,54 @@ export default function KeyboardWrapper(props) {
       console.warn("არ არის არჩეული ველი ან მისი სახელი არასწორია:", inputName);
       return;
     }
-    console.log("handleKeyboardButtonClick", letter);
+    
+    // თუ ფოკუსირებული ელემენტი არ არის, ვიპოვოთ ინფუთი სახელით
+    if (!focusedElementRef.current && inputName) {
+      const possibleInputs = document.querySelectorAll(`input[name="${inputName}"], textarea[name="${inputName}"]`);
+      if (possibleInputs.length > 0) {
+        focusedElementRef.current = possibleInputs[0];
+      }
+    }
 
     const currentText = textState[inputName];
     const { start, end } = cursorPositionRef.current;
 
     // სიმბოლოს ჩასმა კურსორის პოზიციაში
-    const newText = currentText.substring(0, start) +
-      letter +
-      currentText.substring(end);
+    const newText = currentText.substring(0, start) + letter + currentText.substring(end);
+    
+    // ახალი კურსორის პოზიცია სიმბოლოს შემდეგ
+    const newPosition = start + letter.length;
 
-    // სტეიტის განახლება
+    // iOS-ზე ვიყენებთ სპეციალურ მეთოდს ტექსტის განახლებისთვის
+    if (isIOS) {
+      updateTextWithDelay(newText, newPosition);
+      
+      // ვაჩერებთ ღილაკის ნორმალურ ქცევას iOS-ზე
+      return;
+    }
+
+    // სხვა სისტემებზე ჩვეულებრივი ქცევა
     dispatchText({
       type: "CHANGE_INPUT",
       payload: { name: inputName, value: newText },
     });
 
-    // ახალი კურსორის პოზიცია სიმბოლოს შემდეგ
-    const newPosition = start + letter.length;
-
-    // დავაბრუნოთ ფოკუსი და დავაყენოთ კურსორი სწორ პოზიციაში
     setTimeout(() => {
       if (focusedElementRef.current) {
-        // ამ ხაზის შეცვლა iOS-ზე კლავიატურის დასატოვებლად
-        if (navigator.userAgent.match(/iPhone|iPad|iPod/i)) {
-          // iOS-ზე არ ვცვლით ფოკუსს, მხოლოდ კურსორის პოზიციას
-          if (focusedElementRef.current.setSelectionRange) {
-            focusedElementRef.current.setSelectionRange(newPosition, newPosition);
-            cursorPositionRef.current = {
-              start: newPosition,
-              end: newPosition
-            };
-          }
-        } else {
-          // სხვა მოწყობილობებზე ჩვეულებრივი ქცევა
-          focusedElementRef.current.focus();
-          if (focusedElementRef.current.setSelectionRange) {
-            focusedElementRef.current.setSelectionRange(newPosition, newPosition);
-            cursorPositionRef.current = {
-              start: newPosition,
-              end: newPosition
-            };
-          }
+        focusedElementRef.current.focus();
+        if (focusedElementRef.current.setSelectionRange) {
+          focusedElementRef.current.setSelectionRange(newPosition, newPosition);
+          cursorPositionRef.current = {
+            start: newPosition,
+            end: newPosition
+          };
         }
       }
     }, 10);
   }
+
+  const diacretials = ["\u10FC", "\u0302", "\u0306", "\u0304", "\u2322", "\u0327", "\u02D6"];
+  const trueLetters = ["ჲ", "ჺ", "ჴ", "ჸ", "ჵ", "ჳ", "ჶ", "ჹ", "ჷ", "ჱ", "®", "°"];
 
   // კლავიატურის კლასები
   const keyboardClasses = `keyboard ${mobileKeyboardVisible ? 'mobile-keyboard-visible' : ''}`;
@@ -205,8 +228,16 @@ export default function KeyboardWrapper(props) {
           <div className="diacretials">
             {diacretials.map((diacretial, index) => (
               <div key={index}>
-                <button className="keyboard-button"
-                  onClick={() => handleKeyboardButtonClick(diacretial)}>
+                <button 
+                  className="keyboard-button"
+                  onMouseDown={(e) => {
+                    // მნიშვნელოვანია preventDefault iOS-ზე ფოკუსის შესანარჩუნებლად
+                    if (isIOS) {
+                      e.preventDefault();
+                    }
+                    handleKeyboardButtonClick(diacretial);
+                  }}
+                >
                   {diacretial}
                 </button>
               </div>
@@ -214,8 +245,16 @@ export default function KeyboardWrapper(props) {
           </div>
           {trueLetters.map((letter, index) => (
             <div key={index}>
-              <button className="keyboard-button"
-                onClick={() => handleKeyboardButtonClick(letter)}>
+              <button 
+                className="keyboard-button"
+                onMouseDown={(e) => {
+                  // მნიშვნელოვანია preventDefault iOS-ზე ფოკუსის შესანარჩუნებლად
+                  if (isIOS) {
+                    e.preventDefault();
+                  }
+                  handleKeyboardButtonClick(letter);
+                }}
+              >
                 {letter}
               </button>
             </div>
