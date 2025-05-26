@@ -13,7 +13,7 @@ export default function KeyboardWrapper(props) {
   const [keyboardKey, setKeyboardKey] = useState(false);
   // არჩეული ბარათის ინდექსის სთეითი (ამ კომპონენტში გამოუყენებელია)
   const [chosenCardIndex, setChosenCardIndex] = useState(null);
-  
+
   // მობილური კლავიატურის ჩვენების მდგომარეობის სთეითი
   const [mobileKeyboardVisible, setMobileKeyboardVisible] = useState(false);
 
@@ -23,7 +23,7 @@ export default function KeyboardWrapper(props) {
   const cursorPositionRef = useRef({ start: 0, end: 0 });
   // ტექსტის მიმდინარე მნიშვნელობის შესანახი რეფერენსი
   const textValueRef = useRef('');
-  
+
   // მომხმარებლის მოწყობილობის გამოცნობა, iOS-ზეა თუ არა
   const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
 
@@ -31,14 +31,14 @@ export default function KeyboardWrapper(props) {
   useEffect(() => {
     // თუ ბრაუზერს არ აქვს visualViewport API, გამოვიდეთ
     if (!window.visualViewport) return;
-    
+
     // ფუნქცია, რომელიც ადგენს გახსნილია თუ არა მობილური კლავიატურა
     const detectKeyboard = () => {
       // ფანჯრის სრული სიმაღლე
       const windowHeight = window.innerHeight;
       // ხილული ვიუპორტის სიმაღლე (კლავიატურის გახსნისას მცირდება)
       const viewportHeight = window.visualViewport.height;
-      
+
       // თუ სხვაობა მნიშვნელოვანია, ესე იგი კლავიატურა გახსნილია
       if (windowHeight - viewportHeight > 150) {
         // სთეითის განახლება - კლავიატურა ჩანს
@@ -52,14 +52,14 @@ export default function KeyboardWrapper(props) {
         document.documentElement.style.setProperty('--keyboard-height', '0px');
       }
     };
-    
+
     // ვიზუალურ ვიუპორტზე მოვლენების მსმენელების დამატება
     window.visualViewport.addEventListener('resize', detectKeyboard);
     window.visualViewport.addEventListener('scroll', detectKeyboard);
-    
+
     // პირველადი შემოწმება კომპონენტის ჩატვირთვისას
     detectKeyboard();
-    
+
     // ეფექტიდან გამოსვლისას მსმენელების მოხსნა (memory leak თავიდან ასაცილებლად)
     return () => {
       window.visualViewport.removeEventListener('resize', detectKeyboard);
@@ -71,7 +71,7 @@ export default function KeyboardWrapper(props) {
   useEffect(() => {
     // ინტერვალის ცვლადი iOS-ზე ფოკუსის შესამოწმებლად
     let focusCheckInterval;
-    
+
     // ფოკუსის პერიოდული შემოწმების დაწყების ფუნქცია iOS-ზე
     const startFocusChecking = () => {
       if (isIOS) {
@@ -83,7 +83,7 @@ export default function KeyboardWrapper(props) {
           if (activeElement && (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA')) {
             // ვინახავთ ელემენტს რეფერენსში
             focusedElementRef.current = activeElement;
-            
+
             // ვინახავთ კურსორის პოზიციას
             if (activeElement.selectionStart !== undefined) {
               cursorPositionRef.current = {
@@ -91,7 +91,7 @@ export default function KeyboardWrapper(props) {
                 end: activeElement.selectionEnd
               };
             }
-            
+
             // ვინახავთ ტექსტის მიმდინარე მნიშვნელობას
             if (inputName && textState && textState[inputName] !== undefined) {
               textValueRef.current = textState[inputName];
@@ -100,7 +100,7 @@ export default function KeyboardWrapper(props) {
         }, 300); // შემოწმება ყოველ 300 მილიწამში
       }
     };
-    
+
     // არა-iOS მოწყობილობებისთვის ფოკუსის დაჭერის ფუნქცია
     const handleFocus = () => {
       // თუ ფოკუსირებულია ინფუთი ან ტექსტარეა
@@ -159,16 +159,16 @@ export default function KeyboardWrapper(props) {
   const updateTextWithDelay = (newText, newPosition) => {
     // ამჟამინდელი ტექსტის შენახვა რეფერენსში
     const prevText = textValueRef.current;
-    
+
     // ტექსტის მნიშვნელობის განახლება Redux/Context-ში
     dispatchText({
       type: "CHANGE_INPUT",
       payload: { name: inputName, value: newText },
     });
-    
+
     // განახლებული ტექსტის დამახსოვრება რეფერენსში
     textValueRef.current = newText;
-    
+
     // iOS-ზე კურსორის პოზიციის განახლება დაყოვნებით
     if (isIOS && focusedElementRef.current) {
       // დაყოვნება იძლევა დროს DOM-ის განახლებისთვის
@@ -178,7 +178,7 @@ export default function KeyboardWrapper(props) {
           // პირდაპირ DOM-ში ცვლილება (იშვიათი საჭიროებისთვის)
           focusedElementRef.current.value = newText;
         }
-        
+
         // კურსორის პოზიციის განახლება
         if (focusedElementRef.current.setSelectionRange) {
           try {
@@ -205,7 +205,7 @@ export default function KeyboardWrapper(props) {
       console.warn("არ არის არჩეული ველი ან მისი სახელი არასწორია:", inputName);
       return;
     }
-    
+
     // თუ ფოკუსირებული ელემენტი არ არის, ვცდილობთ მოვძებნოთ inputName-ით
     if (!focusedElementRef.current && inputName) {
       // ვეძებთ ინფუთებს ან ტექსტარეებს მითითებული სახელით
@@ -223,7 +223,7 @@ export default function KeyboardWrapper(props) {
 
     // ახალი ტექსტის შექმნა - სიმბოლოს ჩასმა კურსორის პოზიციაში
     const newText = currentText.substring(0, start) + letter + currentText.substring(end);
-    
+
     // ახალი კურსორის პოზიცია - ჩასმული სიმბოლოს შემდეგ
     const newPosition = start + letter.length;
 
@@ -259,9 +259,91 @@ export default function KeyboardWrapper(props) {
   }
 
   // სპეციალური სიმბოლოების მასივი
-  const diacretials = ["\u10FC", "\u0302", "\u0306", "\u0304", "\u2322", "\u0327", "\u02D6"];
+  // const diacretials = ["\u10FC", "\u2322", "\u02EC", "\u0304", "\u0306", "\u0302", "\u0327"];
+
+  const diacretials = [
+    {
+      mark: "\u2322", // ქვევიდან ღია მრუდი (frown)
+      definition: "ქვევიდან ღია მრუდი"
+    },
+    {
+      mark: "\u02EC", // ტონალური მოდიფიკატორი
+      definition: "ხმოვნების გასაორმაგებლად"
+    },
+    {
+      mark: "\u0304", // მაკრონი (გრძელი ხმოვნის ნიშანი)
+      definition: "მაკრონი (გრძელი ხმოვნის ნიშანი)"
+    },
+    {
+      mark: "\u0306", // ბრევე (მოკლე ხმოვნის ნიშანი)
+      definition: "ბრევე (მოკლე ხმოვნის ნიშანი)"
+    },
+    {
+      mark: "\u0302", // სირკუმფლექსი (წვეტიანი ქუდი)
+      definition: "სირკუმფლექსი"
+    },
+    {
+      mark: "\u0327", // სედილა (ასოს ქვემოთ კაუჭი)
+      definition: "სედილა"
+    }
+  ];
   // იშვიათი ქართული ასოების მასივი
-  const trueLetters = ["ჲ", "ჺ", "ჴ", "ჸ", "ჵ", "ჳ", "ჶ", "ჹ", "ჷ", "ჱ", "®", "°"];
+  // const trueLetters = ["ჲ", "ჺ", "ჴ", "ჸ", "ჵ", "ჳ", "ჶ", "ჹ", "ჷ", "ჱ", "®", "°"];
+  // იშვიათი ქართული ასოების მასივი - ობიექტების მასივის სახით
+  const trueLetters = [
+    {
+      mark: "ჼ", // ფონეტიკური ნიშანი ქართულ "ო"-ზე
+      definition: "მოდიფიკატორი ნარ"
+    },
+    {
+      mark: "ჲ",
+      definition: "ქართული ასო-ბგერა ჲე (ჰიე)"
+    },
+    {
+      mark: "ჺ",
+      definition: "ქართული ხაზგასმული ო (ელიფსის ნიშანი)"
+    },
+    {
+      mark: "ჴ",
+      definition: "ქართული ხარისხიანი ხანი (ჴანი)"
+    },
+    {
+      mark: "ჸ",
+      definition: "ქართული ასო ჸე (ფარინგალური ხშული)"
+    },
+    {
+      mark: "ჵ",
+      definition: "ქართული ჰოე (ჵ)"
+    },
+    {
+      mark: "ჳ",
+      definition: "ქართული ასო-ბგერა ჳე (უი)"
+    },
+    {
+      mark: "ჶ",
+      definition: "ქართული ფი (ფარინგალური ფ)"
+    },
+    {
+      mark: "ჹ",
+      definition: "ქართული ყ-ს ვარიანტი"
+    },
+    {
+      mark: "ჷ",
+      definition: "ქართული შვა (ნეიტრალური ხმოვანი)"
+    },
+    {
+      mark: "ჱ",
+      definition: "ქართული ჱე (ეი)"
+    },
+    // {
+    //   mark: "®",
+    //   definition: "რეგისტრირებული სავაჭრო ნიშანი"
+    // },
+    {
+      mark: "°",
+      definition: "გრადუსის ნიშანი"
+    }
+  ];
 
   // კლავიატურის CSS კლასები - მობილური კლავიატურის ხილვადობის მიხედვით
   const keyboardClasses = `keyboard ${mobileKeyboardVisible ? 'mobile-keyboard-visible' : ''}`;
@@ -276,36 +358,41 @@ export default function KeyboardWrapper(props) {
           <div className="diacretials">
             {diacretials.map((diacretial, index) => (
               <div key={index}>
-                <button 
+                <button
                   className="keyboard-button"
+                  title={diacretial.definition} // ტულტიპად ვიყენებთ განმარტებას
                   onMouseDown={(e) => {
-                    // მნიშვნელოვანია preventDefault iOS-ზე ფოკუსის შესანარჩუნებლად
                     if (isIOS) {
-                      e.preventDefault(); // აჩერებს ბრაუზერის სტანდარტულ ქცევას
+                      e.preventDefault();
                     }
-                    handleKeyboardButtonClick(diacretial);
+                    handleKeyboardButtonClick(diacretial.mark); // გადავცემთ მხოლოდ სიმბოლოს
                   }}
                 >
-                  {diacretial} {/* სიმბოლოს ჩვენება */}
+                  {diacretial.mark} {/* სიმბოლოს ჩვენება */}
                 </button>
               </div>
             ))}
           </div>
           {/* იშვიათი ასოების სექცია */}
           {trueLetters.map((letter, index) => (
-            <div key={index}>
-              <button 
+            <div key={index} className="diacritical-container">
+              <button
                 className="keyboard-button"
+                title={letter.definition}
                 onMouseDown={(e) => {
                   // მნიშვნელოვანია preventDefault iOS-ზე ფოკუსის შესანარჩუნებლად
                   if (isIOS) {
                     e.preventDefault();
                   }
-                  handleKeyboardButtonClick(letter);
+                  handleKeyboardButtonClick(letter.mark);
                 }}
               >
-                {letter} {/* ასოს ჩვენება */}
+                {letter.mark} {/* ასოს ჩვენება */}
               </button>
+              {/* ტულტიპი განმარტებისთვის */}
+              {/* <div className="diacritical-tooltip">
+                {letter.definition}
+              </div> */}
             </div>
           ))}
         </div>
