@@ -1,18 +1,18 @@
 import { useState, useRef } from "react";
 import PropTypes from "prop-types";
-import styles from "./About.module.scss";
+import "./About.scss"; // ჩავანაცვლეთ CSS მოდულის იმპორტი
 
-export default function About({ desc }) {
+export default function About({ desc, compact }) {
   const [isAboutOpen, setIsAboutOpen] = useState(false);
   const buttonRef = useRef(null);
 
   const toggleAbout = () => setIsAboutOpen((prev) => !prev);
 
   return (
-    <section className={styles.about}>
+    <section className={compact ? "about compact" : "about"}>
       <button
         ref={buttonRef}
-        className={styles.aboutToggle}
+        className="aboutToggle"
         onClick={toggleAbout}
         aria-expanded={isAboutOpen}
       >
@@ -20,19 +20,19 @@ export default function About({ desc }) {
       </button>
 
       {isAboutOpen && (
-        <div className={styles.aboutModal}>
-          <div className={styles.aboutContent}>
-            <h2 className={styles.aboutHeader}>
+        <div className="aboutModal">
+          <div className="aboutContent">
+            <h2 className="aboutHeader">
               {desc.h2}
               <button
-                className={styles.closeButton}
+                className="closeButton"
                 onClick={toggleAbout}
                 aria-label="დახურვა"
               >
                 ✕
               </button>
             </h2>
-            <p className={styles.aboutParagraph}>{desc.p}</p>
+            <p className="aboutParagraph">{desc.p}</p>
           </div>
         </div>
       )}
@@ -45,4 +45,9 @@ About.propTypes = {
     h2: PropTypes.string.isRequired,
     p: PropTypes.string.isRequired,
   }).isRequired,
+  compact: PropTypes.bool
+};
+
+About.defaultProps = {
+  compact: false
 };
