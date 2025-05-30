@@ -5,9 +5,9 @@ import CreateSentences from "../components/CreateSentences/CreateSentences";
 import WordsAndMarks from "../components/WordsAndMarks/WordsAndMarks";
 import PartOfSpeech from "../components/PartsOfSpeech";
 
-import Settings from "../components/GameSettings";
+import Settings from "../components/gameSettings/GameSettings";
 import Results from "../components/Results/Results";
-import About from "../components/About";
+import About from "../components/about/About";
 import about from "../about.json";
 import GuessPicture from "../components/GuessPicture/GuessPicture";
 import TellPicture from "../components/TellPicture";

@@ -1,0 +1,92 @@
+.about {
+  position: relative;
+//   margin: 1rem 0;
+  width: 100%;
+}
+
+.aboutToggle {
+  display: inline-block;
+  background-color: #e9ecef;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  border: none;
+  font-size: 1rem;
+  color: #495057;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background-color: #dee2e6;
+  }
+  
+  &::after {
+    content: " ▼";
+    font-size: 0.8rem;
+  }
+}
+
+.aboutModal {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
+  width: 100%;
+  z-index: 100;
+}
+
+.aboutContent {
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border: 1px solid #e0e0e0;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.aboutHeader {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  color: #333;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  color: #777;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: 50%;
+  line-height: 1;
+  
+  &:hover {
+    background-color: #f0f0f0;
+    color: #333;
+  }
+}
+
+.aboutParagraph {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #555;
+}
+
+/* მედია მოთხოვნები მობილური მოწყობილობებისთვის */
+@media (max-width: 768px) {
+  .aboutModal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 500px;
+    z-index: 1000;
+  }
+  
+  .aboutContent {
+    max-height: 70vh;
+  }
+}

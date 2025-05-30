@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 const { Schema } = mongoose;
 
-const SentenceSchema = new Schema(
+const BaSentenceSchema = new Schema(
   {
     userId: {
       type: String,
@@ -23,10 +23,14 @@ const SentenceSchema = new Schema(
       type: String,
       // required: true,
     },
+    language: {
+      type: String,
+      default: "ba",
+    },
   },
   {
     timestamps: true,
   }
 );
 
-export default mongoose.model("SxSentence", SentenceSchema);
+export default mongoose.model("Sentence", BaSentenceSchema);

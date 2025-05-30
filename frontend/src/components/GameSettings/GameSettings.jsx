@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import styles from "./GameSettings.module.scss";
 
 const gameDifficulties = [
   {
@@ -38,8 +39,6 @@ const gameDifficulties = [
   },
 ];
 
-const gameTypes = ["TRANSLATION", "MEANINGS", "SYNONYMS", "ANTONYMS"];
-
 export default function Settings(props) {
   const {
     newGame,
@@ -47,10 +46,10 @@ export default function Settings(props) {
     setPoint,
     setTries,
     setPartOfGame,
-    // dictionarySettings,
     setDictionarySettings,
     setGameType,
   } = props;
+  
   const [chosenDifficulty, setChosenDifficulty] = useState(1);
   const [firstPartState, setFirstPartState] = useState(
     gameDifficulties[0].isFirstVisible
@@ -68,29 +67,15 @@ export default function Settings(props) {
   const [sentencesThirdState, setSentencesThirdState] =
     useState(thirdPartState);
 
-  // console.log("rerender");
-  // useEffect(() => {}, [setChosenDifficulty]);
-
   return (
-    <div className="settings">
-      {/* <h3>აირჩიე ეტაპი</h3>
-      <div className="select_type">
-        {gameTypes.map((type, i) => (
-          <div className="" onClick={() => setGameType(type)}>
-            {type}
-          </div>
-        ))}
-      </div> */}
-      <h3>აირჩიე სირთულე</h3>
-      <div className="flex_center select_difficulty">
+    <div className={styles.settings}>
+      <h3 className={styles.dTitle}>აირჩიე სირთულე</h3>
+      <div className={`${styles.flexCenter} ${styles.selectDifficulty}`}>
         {gameDifficulties.map((gameDifficulty, index) => (
-          // console.log(gameDifficulty);
-
           <div
-            className={chosenDifficulty === index + 1 ? "dItem cItem" : "dItem"}
+            key={index}
+            className={chosenDifficulty === index + 1 ? `${styles.dItem} ${styles.cItem}` : styles.dItem}
             onClick={() => {
-              // console.log(gameDifficulty, index);
-              // setNewGame();
               setChosenDifficulty(index + 1);
               setFirstPartState(gameDifficulty.isFirstVisible);
               setSecondPartState(gameDifficulty.isSecondVisible);
@@ -101,25 +86,24 @@ export default function Settings(props) {
             }}
           >
             {index < 4 ? "მარტივი" : "რთული"}
-            {/* {index + 1} */}
           </div>
         ))}
       </div>
-      <div className="examples">
-        <div className="">
-          <div className="card left_card">
-            <div className={firstPartState}>სიტყვა</div>
-            <div className={secondPartState}>დოშ</div>
+      <div className={styles.examples}>
+        <div>
+          <div className={styles.leftCard}>
+            <div className={styles[firstPartState]}>სიტყვა</div>
+            <div className={styles[secondPartState]}>დოშ</div>
           </div>
         </div>
-        <div className="">
-          <div className="card right_card">
-            <div className={thirdPartState}>დოშ</div>
+        <div>
+          <div className={styles.rightCard}>
+            <div className={styles[thirdPartState]}>დოშ</div>
           </div>
         </div>
       </div>
       <button
-        className="start_button"
+        className={styles.startButton}
         onClick={() => {
           setPoint(0);
           setTries(0);

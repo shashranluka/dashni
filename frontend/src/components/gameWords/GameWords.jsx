@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState } from "react";
 import "../Components.css";
-import GamePanel from "../GamePanel";
+import GamePanel from "../gamePanel/GamePanel";
 import Dictionary from "../Dictionary/Dictionary";
 import CreateSentences from "../CreateSentences/CreateSentences";
 import WordsAndMarks from "../WordsAndMarks/WordsAndMarks";
@@ -8,9 +8,9 @@ import GuessPicture from "../GuessPicture/GuessPicture";
 // import PartOfSpeech from "../components/PartsOfSpeech";
 
 
-import Settings from "../GameSettings";
+import Settings from "../gameSettings/GameSettings";
 import Results from "../Results/Results";
-import About from "../About";
+import About from "../about/About";
 import about from "../../about.json";
 
 function GameWords(props) {

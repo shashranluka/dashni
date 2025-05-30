@@ -1,20 +1,21 @@
 import { useMemo, useRef, useState } from "react";
 import "../Components.css";
-import GamePanel from "../GamePanel";
+import GamePanel from "../gamePanel/GamePanel";
 import Dictionary from "../Dictionary/Dictionary";
 import CreateSentences from "../CreateSentences/CreateSentences";
 import WordsAndMarks from "../WordsAndMarks/WordsAndMarks";
 import GuessPicture from "../GuessPicture/GuessPicture";
+import { splitTextToWords } from "../../utils/tools";
 // import PartOfSpeech from "../components/PartsOfSpeech";
 
 
-import Settings from "../GameSettings";
+import Settings from "../GameSettings/GameSettings";
 import Results from "../Results/Results";
-import About from "../About";
-import about from "../../about.json";
 
 function Game(props) {
-  console.log(props)
+  const { wordsFromLexicon, chosenSentences } = props.gameData;
+  console.log(props, "props.gameData", wordsFromLexicon, chosenSentences);
+
   const [point, setPoint] = useState(0);
   const [tries, setTries] = useState(0);
   const [partOfGame, setPartOfGame] = useState(0);
@@ -28,21 +29,26 @@ function Game(props) {
     thirdPartState: "third_visible",
   });
   const [gameType, setGameType] = useState("TRANSLATION");
+  const textFromSentences = chosenSentences.map(sentence => sentence.sentence).join(" ");
+  const wordsFromSentences = splitTextToWords(textFromSentences);
+  console.log("Text from sentences:", textFromSentences, "Words from sentences:", wordsFromSentences);
 
   // შემთხვევითად ამოირჩევა წინადადებები ყოველი თავიდან და დაიშლება ობიექტებად, რომლებიც wordsForCards მასივში მიმდევრობით ჩალაგდება
   // console.log(props);
   const iSentence = useRef();
   const marksAmount = useRef(0);
-  const wordsFromLexicon = props.gameData.wordsFromLexicon;
+  // const wordsFromLexicon = props.gameData.wordsFromLexicon;
   const storeCollectedWords = props.storeCollectedWords;
-  const chosenSentences = props.gameData.chosenSentences;
-  const wordsFromSentences = props.gameData.wordsFromSentences;
+  // const chosenSentences = props.gameData.chosenSentences;
+  // const wordsFromSentences = props.gameData.wordsFromSentences;
   const setReturnedData = props.setReturnedData;
   // console.log(props,typeof(storeCollectedWords),storeCollectedWords)
+  console.log(chosenSentences, "chosenSentences");
   const sentencesData = useMemo(() => {
     const sentencesData = chosenSentences.map((el) => {
       const marks = [",", ".", ":", ";", "!", "?"];
       // const usedMarks = [];
+      console.log(el.sentence, "el.sentence");
       const words = el.sentence
         .replace('"', "")
         .replace('"', "")
@@ -61,7 +67,7 @@ function Game(props) {
             wordObj.word = word;
           }
           wordObj.isDone = false;
-          
+
           return wordObj;
         });
       return { ...el, words: words, isDone: false };
@@ -82,7 +88,7 @@ function Game(props) {
         setPartOfGame={setPartOfGame}
         numberOfParts={4}
       />
-      <About partOfGame={partOfGame} desc={about.partsOfGame[partOfGame]} />
+      
       <div>
         {partOfGame === 0 ? (
           <div>

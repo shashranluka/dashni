@@ -1,3 +1,7 @@
+import About from "../about/About";
+import about from "../../about.json";
+import styles from "./GamePanel.module.scss";
+
 export default function GamePanel(props) {
   const { point, setPoint, tries, setTries, partOfGame, setPartOfGame, numberOfParts } = props;  
   // დინამიურად გავაკეთოთ თამაშის ღილაკების რენდერი numberOfParts-ის მიხედვით
@@ -8,7 +12,7 @@ export default function GamePanel(props) {
     buttons.push(
       <button
         key="settings"
-        className={partOfGame === 0 ? "opened_game" : ""}
+        className={partOfGame === 0 ? styles.openedGame : styles.closedGame}
         onClick={() => {
           setPartOfGame(0);
         }}
@@ -32,7 +36,7 @@ export default function GamePanel(props) {
       buttons.push(
         <button
           key={i}
-          className={partOfGame === i ? "opened_game" : "closed_game"}
+          className={partOfGame === i ? styles.openedGame : styles.closedGame}
           onClick={() => {
             setPartOfGame(i);
             setPoint(0);
@@ -48,19 +52,20 @@ export default function GamePanel(props) {
   };
 
   return (
-    <div className="topic-div">
-      <div className="result">
-        <div className="point">
+    <div className={styles.topicDiv}>
+      <About partOfGame={partOfGame} desc={about.partsOfGame[partOfGame]} />
+      <div className={styles.result}>
+        <div className={styles.point}>
           {point}
-          <div className="qula">ქულა</div>
+          <div className={styles.qula}>ქულა</div>
         </div>
         /
-        <div className="tries">
+        <div className={styles.tries}>
           {tries}
-          <div className="cda">ცდა</div>
+          <div className={styles.cda}>ცდა</div>
         </div>
       </div>
-      <div className="game_part_buttons">
+      <div className={styles.gamePartButtons}>
         {renderGameButtons()}
       </div>
     </div>

@@ -29,4 +29,4 @@ const SentenceSchema = new Schema(
   }
 );
 
-export default mongoose.model("SxSentence", SentenceSchema);
+export default mongoose.model("Sentence", SentenceSchema);

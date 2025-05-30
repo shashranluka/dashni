@@ -9,6 +9,9 @@ function Home() {
         <Link className="link" to="/words">
           <div className="feature">სიტყვები</div>
         </Link>
+        <Link className="link" to="/sentences">
+          <div className="feature">წინადადებები</div>
+        </Link>
     </div>
   );
 }

@@ -2,12 +2,14 @@
   height: 80vh;
   background-color: #f1fdf7;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   // padding: 100px 0px;
 
   .link {
     text-decoration: none;
+    margin: 1em;
 
     .feature {
       background-color: rgb(93, 235, 215);

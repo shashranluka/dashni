@@ -1,0 +1,124 @@
+/* GamePanel კომპონენტის სტილები - Mobile First მიდგომით */
+
+/* ძირითადი კონტეინერი */
+.topicDiv {
+  color: #8f8f8f;
+  display: flex;
+//   flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+//   padding: 0.5rem;
+}
+
+/* შედეგების ბლოკი */
+.result {
+  display: flex;
+  margin: auto;
+  margin-right: 20px;
+  color: rgb(117, 128, 117);
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+/* ქულები და ცდები */
+.point, .tries {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ქულა/ცდა წარწერები */
+.qula, .cda {
+  color: white;
+  font-size: 8px;
+  text-align: center;
+}
+
+/* თამაშის ღილაკების კონტეინერი */
+.gamePartButtons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
+  gap: 0.3rem;
+//   margin-top: 0.5rem;
+}
+
+/* გახსნილი თამაშის ღილაკი */
+.openedGame {
+  background-color: #91764a;
+  color: white;
+}
+
+/* დახურული თამაშის ღილაკი */
+.closedGame {
+  background-color: rgb(126, 133, 153);
+  border: none;
+  color: rgb(26, 26, 128);
+  border-radius: 3px;
+  padding: 0.7em;
+  margin: 0.3em;
+  cursor: pointer;
+}
+
+/* საერთო ღილაკის სტილი */
+.gamePartButtons button {
+  background-color: rgb(126, 133, 153);
+  height: fit-content;
+  border: none;
+  color: rgb(26, 26, 128);
+  border-radius: 3px;
+  padding: 0.5em;
+  margin: 0.3em;
+  cursor: pointer;
+}
+
+/* ტაბლეტებისთვის */
+@media (min-width: 600px) {
+  .topicDiv {
+    padding: 0.75rem;
+  }
+  
+  .result {
+    margin-bottom: 1.5rem;
+  }
+  
+  .qula, .cda {
+    font-size: 10px;
+  }
+  
+  .gamePartButtons {
+    gap: 0.5rem;
+  }
+  
+  .gamePartButtons button {
+    padding: 0.8em;
+  }
+}
+
+/* დესკტოპისთვის */
+@media (min-width: 768px) {
+  .topicDiv {
+    padding: 1rem;
+    max-width: 90%;
+    margin: 0 auto;
+  }
+  
+  .result {
+    margin-bottom: 2rem;
+  }
+  
+  .qula, .cda {
+    font-size: 12px;
+  }
+  
+  .gamePartButtons {
+    gap: 0.7rem;
+    margin-top: 1rem;
+  }
+  
+  .gamePartButtons button {
+    padding: 0.9em;
+  }
+}
