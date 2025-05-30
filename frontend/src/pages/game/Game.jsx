@@ -1,19 +1,19 @@
 import { useMemo, useRef, useState } from "react";
-import "../components/Components.css";
-import Dictionary from "../components/Dictionary/Dictionary";
-import CreateSentences from "../components/CreateSentences/CreateSentences";
-import WordsAndMarks from "../components/WordsAndMarks/WordsAndMarks";
-import PartOfSpeech from "../components/PartsOfSpeech";
+import "../../components/Components.css";
+import Dictionary from "../../components/Dictionary/Dictionary";
+import CreateSentences from "../../components/CreateSentences/CreateSentences";
+import WordsAndMarks from "../../components/WordsAndMarks/WordsAndMarks";
+import PartOfSpeech from "../../components/PartsOfSpeech";
 
-import Settings from "../components/gameSettings/GameSettings";
-import Results from "../components/Results/Results";
-import About from "../components/about/About";
-import about from "../about.json";
-import GuessPicture from "../components/GuessPicture/GuessPicture";
-import TellPicture from "../components/TellPicture";
+import Settings from "../../components/gameSettings/GameSettings";
+import Results from "../../components/Results/Results";
+import About from "../../components/about/About";
+import about from "../../about.json";
+import GuessPicture from "../../components/GuessPicture/GuessPicture";
+import TellPicture from "../../components/TellPicture";
 
-import tushetians from "../joined.json";
-import lexicon from "../lexicon.json";
+import tushetians from "../../joined.json";
+import lexicon from "../../lexicon.json";
 
 function Game() {
   const [point, setPoint] = useState(0);

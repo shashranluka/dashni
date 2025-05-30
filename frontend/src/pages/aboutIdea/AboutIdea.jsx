@@ -1,4 +1,4 @@
-import dataAbout from "../data/aboutData/aboutVideos.json";
+import dataAbout from "../../data/aboutData/aboutVideos.json";
 
 export default function AboutGame() {
   console.log(dataAbout);

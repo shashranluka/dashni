@@ -19,7 +19,7 @@ import MyGigs from "./pages/myGigs/MyGigs";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 // import Pay from "./pages/pay/Pay";
 import Success from "./pages/success/Success";
-import Game from "./pages/Game";
+import Game from "./pages/game/Game";
 // <<<<<<< HEAD
 import Sentences from "./pages/sentences/Sentences";
 import Words from "./pages/words/Words";
