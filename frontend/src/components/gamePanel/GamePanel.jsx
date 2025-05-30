@@ -1,6 +1,6 @@
 import About from "../about/About";
 import about from "../../about.json";
-import styles from "./GamePanel.module.scss";
+import "./GamePanel.scss"; // შევცვალეთ მოდულური იმპორტი ჩვეულებრივი scss-ით
 
 export default function GamePanel(props) {
   const { point, setPoint, tries, setTries, partOfGame, setPartOfGame, numberOfParts } = props;  
@@ -12,7 +12,7 @@ export default function GamePanel(props) {
     buttons.push(
       <button
         key="settings"
-        className={partOfGame === 0 ? styles.openedGame : styles.closedGame}
+        className={partOfGame === 0 ? "openedGame" : "closedGame"}
         onClick={() => {
           setPartOfGame(0);
         }}
@@ -36,7 +36,7 @@ export default function GamePanel(props) {
       buttons.push(
         <button
           key={i}
-          className={partOfGame === i ? styles.openedGame : styles.closedGame}
+          className={partOfGame === i ? "openedGame" : "closedGame"}
           onClick={() => {
             setPartOfGame(i);
             setPoint(0);
@@ -52,20 +52,20 @@ export default function GamePanel(props) {
   };
 
   return (
-    <div className={styles.topicDiv}>
+    <div className="topicDiv">
       <About partOfGame={partOfGame} desc={about.partsOfGame[partOfGame]} />
-      <div className={styles.result}>
-        <div className={styles.point}>
+      <div className="result">
+        <div className="point">
           {point}
-          <div className={styles.qula}>ქულა</div>
+          <div className="qula">ქულა</div>
         </div>
         /
-        <div className={styles.tries}>
+        <div className="tries">
           {tries}
-          <div className={styles.cda}>ცდა</div>
+          <div className="cda">ცდა</div>
         </div>
       </div>
-      <div className={styles.gamePartButtons}>
+      <div className="gamePartButtons">
         {renderGameButtons()}
       </div>
     </div>

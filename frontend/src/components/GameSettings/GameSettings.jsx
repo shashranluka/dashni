@@ -1,5 +1,5 @@
 import { useState } from "react";
-import styles from "./GameSettings.module.scss";
+import "./GameSettings.scss"; // შევცვალეთ მოდულის იმპორტი
 
 const gameDifficulties = [
   {
@@ -68,13 +68,13 @@ export default function Settings(props) {
     useState(thirdPartState);
 
   return (
-    <div className={styles.settings}>
-      <h3 className={styles.dTitle}>აირჩიე სირთულე</h3>
-      <div className={`${styles.flexCenter} ${styles.selectDifficulty}`}>
+    <div className="settings">
+      <h3 className="dTitle">აირჩიე სირთულე</h3>
+      <div className="flexCenter selectDifficulty">
         {gameDifficulties.map((gameDifficulty, index) => (
           <div
             key={index}
-            className={chosenDifficulty === index + 1 ? `${styles.dItem} ${styles.cItem}` : styles.dItem}
+            className={chosenDifficulty === index + 1 ? "dItem cItem" : "dItem"}
             onClick={() => {
               setChosenDifficulty(index + 1);
               setFirstPartState(gameDifficulty.isFirstVisible);
@@ -89,21 +89,21 @@ export default function Settings(props) {
           </div>
         ))}
       </div>
-      <div className={styles.examples}>
+      <div className="examples">
         <div>
-          <div className={styles.leftCard}>
-            <div className={styles[firstPartState]}>სიტყვა</div>
-            <div className={styles[secondPartState]}>დოშ</div>
+          <div className="leftCard">
+            <div className={firstPartState}>სიტყვა</div>
+            <div className={secondPartState}>დოშ</div>
           </div>
         </div>
         <div>
-          <div className={styles.rightCard}>
-            <div className={styles[thirdPartState]}>დოშ</div>
+          <div className="rightCard">
+            <div className={thirdPartState}>დოშ</div>
           </div>
         </div>
       </div>
       <button
-        className={styles.startButton}
+        className="startButton"
         onClick={() => {
           setPoint(0);
           setTries(0);

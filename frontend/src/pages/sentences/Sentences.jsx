@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import styles from "./Sentences.module.scss";
+import "./Sentences.scss"; // შევცვალეთ მოდულის იმპორტი
 import newRequest from "../../utils/newRequest";
 import GameSentences from "../../components/gameSentences/GameSentences";
 import getCurrentUser from "../../utils/getCurrentUser";
@@ -187,21 +187,21 @@ function Sentences() {
   };
 
   return (
-    <div className={styles.sentencesPage}>
+    <div className="sentencesPage">
       {!isLanguageSelected ? (
-        <div className={styles.languageSelectionContainer}>
-          <h1 className={styles.pageTitle}>წინადადებები</h1>
+        <div className="languageSelectionContainer">
+          <h1 className="pageTitle">წინადადებები</h1>
 
-          <h2 className={styles.sectionTitle}>აირჩიეთ ენა</h2>
+          <h2 className="sectionTitle">აირჩიეთ ენა</h2>
 
-          {error && <div className={styles.errorMessage}>{error}</div>}
+          {error && <div className="errorMessage">{error}</div>}
 
-          <div className={styles.languageSelectionForm}>
-            {/* <label htmlFor="language-select" className={styles.selectLabel}>ენა:</label> */}
-            <div className={styles.selectContainer}>
+          <div className="languageSelectionForm">
+            {/* <label htmlFor="language-select" className="selectLabel">ენა:</label> */}
+            <div className="selectContainer">
               <select
                 id="language-select"
-                className={styles.languageSelect}
+                className="languageSelect"
                 value={selectedLanguage}
                 onChange={(e) => handleLanguageSelect(e.target.value)}
                 disabled={isLoading}
@@ -216,12 +216,12 @@ function Sentences() {
                   </option>
                 ))}
               </select>
-              <div className={styles.selectArrow}>▼</div>
+              <div className="selectArrow">▼</div>
             </div>
 
             {selectedLanguage && !isLoading && !isLanguageSelected && (
               <button
-                className={styles.selectConfirmBtn}
+                className="selectConfirmBtn"
                 onClick={() => handleLanguageSelect(selectedLanguage)}
               >
                 არჩევა
@@ -230,50 +230,50 @@ function Sentences() {
           </div>
 
           {isLoading && (
-            <div className={styles.loadingIndicator}>
-              <div className={styles.spinner}></div>
+            <div className="loadingIndicator">
+              <div className="spinner"></div>
               <p>ენის შემოწმება...</p>
             </div>
           )}
 
-          {/* <p className={styles.helpText}>
+          {/* <p className="helpText">
             აირჩიეთ ენა თამაშის დასაწყებად. თამაშის დროს გეჩვენებათ არჩეულ ენაზე წინადადებები.
           </p> */}
         </div>
       ) : (
-        <div className={styles.statsParamsContainer}>
-          <div className={styles.header}>
+        <div className="statsParamsContainer">
+          <div className="header">
             <button
-              className={styles.backButton}
+              className="backButton"
               onClick={() => setIsLanguageSelected(false)}
               aria-label="ენის არჩევანზე დაბრუნება"
             >
-              <span className={styles.backIcon}>←</span>
+              <span className="backIcon">←</span>
             </button>
-            <h1 className={styles.pageTitle}>წინადადებები</h1>
+            <h1 className="pageTitle">წინადადებები</h1>
           </div>
 
-          <h2 className={styles.languageHeader}>
+          <h2 className="languageHeader">
             {languages.find(l => l.id === selectedLanguage)?.name}
           </h2>
 
-          {error && <div className={styles.errorMessage}>{error}</div>}
+          {error && <div className="errorMessage">{error}</div>}
 
-          <section className={styles.collapsibleSection}>
+          <section className="collapsibleSection">
             <button
-              className={styles.sectionToggleBtn}
+              className="sectionToggleBtn"
               onClick={toggleGameParams}
               aria-expanded={showGameParams}
             >
-              <span className={styles.toggleIcon}>{showGameParams ? '▼' : '►'}</span>
-              <h3 className={styles.sectionTitle}>თამაშის პარამეტრები</h3>
+              <span className="toggleIcon">{showGameParams ? '▼' : '►'}</span>
+              <h3 className="sectionTitle">თამაშის პარამეტრები</h3>
             </button>
 
             {showGameParams && (
-              <div className={styles.sectionContent}>
-                <form className={styles.paramsForm} onSubmit={(e) => e.preventDefault()}>
-                  <div className={styles.formGroup}>
-                    <div className={styles.labelWithInput}>
+              <div className="sectionContent">
+                <form className="paramsForm" onSubmit={(e) => e.preventDefault()}>
+                  <div className="formGroup">
+                    <div className="labelWithInput">
                       <label htmlFor="amount">
                         წინადადებების რაოდენობა:
                       </label>
@@ -293,10 +293,10 @@ function Sentences() {
                             }
                           }
                         }}
-                        className={styles.inlineNumberInput}
+                        className="inlineNumberInput"
                       />
                     </div>
-                    <div className={styles.inputContainer}>
+                    <div className="inputContainer">
                       <input
                         type="range"
                         id="amount"
@@ -304,14 +304,14 @@ function Sentences() {
                         max={statistics?.totalCount || 10}
                         value={amount}
                         onChange={handleRangeChange}
-                        className={styles.rangeInput}
+                        className="rangeInput"
                         ref={amountRef}
                       />
                     </div>
                   </div>
 
-                  <div className={styles.formGroup}>
-                    <div className={styles.labelWithInput}>
+                  <div className="formGroup">
+                    <div className="labelWithInput">
                       <label htmlFor="withPictures">
                         სურათიანი წინადადებები:
                       </label>
@@ -327,10 +327,10 @@ function Sentences() {
                             setWithPictures(value);
                           }
                         }}
-                        className={styles.inlineNumberInput}
+                        className="inlineNumberInput"
                       />
                     </div>
-                    <div className={styles.inputContainer}>
+                    <div className="inputContainer">
                       <input
                         type="range"
                         id="withPictures"
@@ -338,18 +338,18 @@ function Sentences() {
                         max={Math.min(amount, statistics?.withPicturesCount || 5)}
                         value={withPictures}
                         onChange={handleRangeChange}
-                        className={styles.rangeInput}
+                        className="rangeInput"
                         ref={withPicturesRef}
                       />
                     </div>
                   </div>
 
-                  <div className={styles.formGroup}>
+                  <div className="formGroup">
                     <label>
                       საიდან ამოარჩიოს წინადადებები:
                     </label>
-                    <div className={styles.radioOptions}>
-                      <label className={styles.radioOption}>
+                    <div className="radioOptions">
+                      <label className="radioOption">
                         <input
                           type="radio"
                           name="source"
@@ -357,13 +357,13 @@ function Sentences() {
                           checked={source === "all"}
                           onChange={handleSourceChange}
                         />
-                        <span className={styles.radioLabel}>ყველა</span>
+                        <span className="radioLabel">ყველა</span>
                         {statistics && (
-                          <span className={styles.statBadge}>{statistics.totalCount}</span>
+                          <span className="statBadge">{statistics.totalCount}</span>
                         )}
                       </label>
 
-                      <label className={styles.radioOption}>
+                      <label className="radioOption">
                         <input
                           type="radio"
                           name="source"
@@ -372,13 +372,13 @@ function Sentences() {
                           onChange={handleSourceChange}
                           disabled={!statistics || statistics.publicCount === 0}
                         />
-                        <span className={styles.radioLabel}>საჯარო</span>
+                        <span className="radioLabel">საჯარო</span>
                         {statistics && (
-                          <span className={styles.statBadge}>{statistics.publicCount}</span>
+                          <span className="statBadge">{statistics.publicCount}</span>
                         )}
                       </label>
 
-                      <label className={styles.radioOption}>
+                      <label className="radioOption">
                         <input
                           type="radio"
                           name="source"
@@ -387,40 +387,40 @@ function Sentences() {
                           onChange={handleSourceChange}
                           disabled={!statistics || statistics.userCount === 0}
                         />
-                        <span className={styles.radioLabel}>ჩემი დამატებული</span>
+                        <span className="radioLabel">ჩემი დამატებული</span>
                         {statistics && statistics.userCount > 0 && (
-                          <span className={styles.statBadge}>{statistics.userCount}</span>
+                          <span className="statBadge">{statistics.userCount}</span>
                         )}
                       </label>
                     </div>
                   </div>
 
                   {statistics && statistics.themeStats && Object.keys(statistics.themeStats).length > 0 && (
-                    <div className={styles.formGroup + ' ' + styles.themesGroup}>
-                      <div className={styles.themesHeader}>
+                    <div className="formGroup themesGroup">
+                      <div className="themesHeader">
                         <button
                           type="button"
-                          className={styles.themesToggleBtn}
+                          className="themesToggleBtn"
                           onClick={toggleThemesSelector}
                         >
                           {showThemesSelector ? "დამალე თემები" : "აირჩიე თემები"}
                           {selectedThemes.length > 0 && (
-                            <span className={styles.selectedCount}>
+                            <span className="selectedCount">
                               (არჩეულია: {selectedThemes.length})
                             </span>
                           )}
                         </button>
-                        {/* <span className={styles.themesCount}>
+                        {/* <span className="themesCount">
                           (სულ: {Object.keys(statistics.themeStats).length} თემა)
                         </span> */}
                       </div>
 
                       {showThemesSelector && (
-                        <div className={styles.themesCheckboxes}>
+                        <div className="themesCheckboxes">
                           {Object.entries(statistics.themeStats)
                             .sort(([, countA], [, countB]) => countB - countA)
                             .map(([theme, count]) => (
-                              <label key={theme} className={styles.themeCheckbox}>
+                              <label key={theme} className="themeCheckbox">
                                 <input
                                   type="checkbox"
                                   name="themes"
@@ -428,11 +428,11 @@ function Sentences() {
                                   checked={selectedThemes.includes(theme)}
                                   onChange={() => handleThemeToggle(theme)}
                                 />
-                                <span className={styles.checkboxLabel}>{theme}</span>
-                                <span className={styles.themeCount}>{count}</span>
-                                <div className={styles.themeBar}>
+                                <span className="checkboxLabel">{theme}</span>
+                                <span className="themeCount">{count}</span>
+                                <div className="themeBar">
                                   <div
-                                    className={styles.themeProgress}
+                                    className="themeProgress"
                                     style={{ width: `${(count / statistics.totalCount) * 100}%` }}
                                   ></div>
                                 </div>
@@ -449,13 +449,13 @@ function Sentences() {
 
           <button
             type="button"
-            className={styles.startGameBtn}
+            className="startGameBtn"
             onClick={handleToggleGame}
             disabled={isLoading}
           >
             {isLoading ? (
-              <span className={styles.loadingText}>
-                <span className={styles.spinnerSmall}></span>
+              <span className="loadingText">
+                <span className="spinnerSmall"></span>
                 მოთხოვნა...
               </span>
             ) : (
