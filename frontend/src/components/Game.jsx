@@ -6,7 +6,7 @@ import Dictionary from "./Dictionary/Dictionary";
 // import WordsAndMarks from "../components/WordsAndMarks";
 // import PartOfSpeech from "../components/PartsOfSpeech";
 
-import Settings from "./gameSettings/GameSettings";
+import Settings from "./GameSettings/GameSettings";
 import Results from "./Results/Results";
 import About from "./about/About";
 import about from "../about.json";

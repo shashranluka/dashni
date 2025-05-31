@@ -5,7 +5,7 @@ import CreateSentences from "../../components/CreateSentences/CreateSentences";
 import WordsAndMarks from "../../components/WordsAndMarks/WordsAndMarks";
 import PartOfSpeech from "../../components/PartsOfSpeech";
 
-import Settings from "../../components/gameSettings/GameSettings";
+import Settings from "../../components/GameSettings/GameSettings";
 import Results from "../../components/Results/Results";
 import About from "../../components/about/About";
 import about from "../../about.json";

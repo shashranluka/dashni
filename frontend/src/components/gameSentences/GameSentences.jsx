@@ -9,7 +9,7 @@ import { splitTextToWords } from "../../utils/tools";
 // import PartOfSpeech from "../components/PartsOfSpeech";
 
 
-import Settings from "../gameSettings/GameSettings";
+import Settings from "../GameSettings/GameSettings";
 import Results from "../Results/Results";
 
 function Game(props) {
