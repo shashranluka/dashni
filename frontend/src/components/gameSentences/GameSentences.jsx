@@ -14,9 +14,9 @@ import Results from "../Results/Results";
 
 function Game(props) {
   const { wordsFromLexicon, chosenSentences } = props.gameData;
-  console.log(props, "props.gameData", wordsFromLexicon, chosenSentences);
+  // console.log(props, "props.gameData", wordsFromLexicon, chosenSentences);
 
-  const [point, setPoint] = useState(0);
+  const [points, setPoints] = useState(0);
   const [tries, setTries] = useState(0);
   const [partOfGame, setPartOfGame] = useState(0);
   const [newGame, setNewGame] = useState(0);
@@ -31,7 +31,7 @@ function Game(props) {
   const [gameType, setGameType] = useState("TRANSLATION");
   const textFromSentences = chosenSentences.map(sentence => sentence.sentence).join(" ");
   const wordsFromSentences = splitTextToWords(textFromSentences);
-  console.log("Text from sentences:", textFromSentences, "Words from sentences:", wordsFromSentences);
+  // console.log("Text from sentences:", textFromSentences, "Words from sentences:", wordsFromSentences);
 
   // შემთხვევითად ამოირჩევა წინადადებები ყოველი თავიდან და დაიშლება ობიექტებად, რომლებიც wordsForCards მასივში მიმდევრობით ჩალაგდება
   // console.log(props);
@@ -43,12 +43,12 @@ function Game(props) {
   // const wordsFromSentences = props.gameData.wordsFromSentences;
   const setReturnedData = props.setReturnedData;
   // console.log(props,typeof(storeCollectedWords),storeCollectedWords)
-  console.log(chosenSentences, "chosenSentences");
+  // console.log(chosenSentences, "chosenSentences");
   const sentencesData = useMemo(() => {
     const sentencesData = chosenSentences.map((el) => {
       const marks = [",", ".", ":", ";", "!", "?"];
       // const usedMarks = [];
-      console.log(el.sentence, "el.sentence");
+      // console.log(el.sentence, "el.sentence");
       const words = el.sentence
         .replace('"', "")
         .replace('"', "")
@@ -74,14 +74,14 @@ function Game(props) {
     });
     return sentencesData;
   }, []);
-  console.log(sentencesData)
+  // console.log(sentencesData)
   // const wordsFromSentences = useMemo(()=>);
 
   return (
     <div className="chapter">
       <GamePanel
-        point={point}
-        setPoint={setPoint}
+        points={points}
+        setPoints={setPoints}
         tries={tries}
         setTries={setTries}
         partOfGame={partOfGame}
@@ -97,7 +97,7 @@ function Game(props) {
               setNewGame={setNewGame}
               dictionarySettings={dictionarySettings}
               setDictionarySettings={setDictionarySettings}
-              setPoint={setPoint}
+              setPoints={setPoints}
               setTries={setTries}
               setGameType={setGameType}
               setPartOfGame={setPartOfGame}
@@ -106,8 +106,8 @@ function Game(props) {
         ) : partOfGame === 1 ? (
           <div className="">
             <Dictionary
-              point={point}
-              setPoint={setPoint}
+              points={points}
+              setPoints={setPoints}
               tries={tries}
               setTries={setTries}
               firstPartState={dictionarySettings.firstPartState}
@@ -123,8 +123,8 @@ function Game(props) {
         ) : partOfGame === 2 ? (
           <div className="">
             <CreateSentences
-              point={point}
-              setPoint={setPoint}
+              points={points}
+              setPoints={setPoints}
               tries={tries}
               setTries={setTries}
               wordsFromSentences={wordsFromSentences}
@@ -136,8 +136,8 @@ function Game(props) {
         ) : partOfGame === 3 ? (
           <div className="">
             <WordsAndMarks
-              point={point}
-              setPoint={setPoint}
+              points={points}
+              setPoints={setPoints}
               tries={tries}
               setTries={setTries}
               sentencesData={sentencesData}
@@ -150,8 +150,8 @@ function Game(props) {
           //   <div className="">
           //     <GuessPicture
           //       sentences={sentencesData}
-          //       point={point}
-          //       setPoint={setPoint}
+          //       points={points}
+          //       setPoints={setPoints}
           //       tries={tries}
           //       setTries={setTries}
           //       setPartOfGame={setPartOfGame}
@@ -160,8 +160,8 @@ function Game(props) {
           // ) : partOfGame === 5 ? (
           //   <div className="">
           //     <TellPicture
-          //       point={point}
-          //       setPoint={setPoint}
+          //       points={points}
+          //       setPoints={setPoints}
           //       tries={tries}
           //       setTries={setTries}
           //       wordsForCards={wordsFromSentences}
@@ -172,7 +172,7 @@ function Game(props) {
           //   </div>
         ) : partOfGame === 6 ? (
           <div className="">
-            <Results point={point} tries={tries} sentences={sentencesData} wordsFromLexicon={wordsFromLexicon} setReturnedData={setReturnedData} storeCollectedWords={storeCollectedWords} />
+            <Results points={points} tries={tries} sentences={sentencesData} wordsFromLexicon={wordsFromLexicon} setReturnedData={setReturnedData} storeCollectedWords={storeCollectedWords} />
           </div>
         ) : null}
       </div>

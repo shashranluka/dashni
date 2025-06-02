@@ -43,7 +43,7 @@ export default function Settings(props) {
   const {
     newGame,
     setNewGame,
-    setPoint,
+    setPoints,
     setTries,
     setPartOfGame,
     setDictionarySettings,
@@ -105,7 +105,7 @@ export default function Settings(props) {
       <button
         className="startButton"
         onClick={() => {
-          setPoint(0);
+          setPoints(0);
           setTries(0);
           setPartOfGame(1);
           setNewGame(newGame + 1);

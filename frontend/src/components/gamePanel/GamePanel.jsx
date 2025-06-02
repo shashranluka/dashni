@@ -3,7 +3,7 @@ import about from "../../about.json";
 import "./GamePanel.scss"; // შევცვალეთ მოდულური იმპორტი ჩვეულებრივი scss-ით
 
 export default function GamePanel(props) {
-  const { point, setPoint, tries, setTries, partOfGame, setPartOfGame, numberOfParts } = props;  
+  const { points, setPoints, tries, setTries, partOfGame, setPartOfGame, numberOfParts } = props;  
   // დინამიურად გავაკეთოთ თამაშის ღილაკების რენდერი numberOfParts-ის მიხედვით
   const renderGameButtons = () => {
     const buttons = [];
@@ -39,7 +39,7 @@ export default function GamePanel(props) {
           className={partOfGame === i ? "openedGame" : "closedGame"}
           onClick={() => {
             setPartOfGame(i);
-            setPoint(0);
+            setPoints(0);
             setTries(0);
           }}
         >
@@ -55,8 +55,8 @@ export default function GamePanel(props) {
     <div className="topicDiv">
       <About partOfGame={partOfGame} desc={about.partsOfGame[partOfGame]} />
       <div className="result">
-        <div className="point">
-          {point}
+        <div className="points">
+          {points}
           <div className="qula">ქულა</div>
         </div>
         /
