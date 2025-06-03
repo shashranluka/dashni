@@ -1,4 +1,5 @@
 .dictionary{
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -31,20 +32,22 @@
       background-color: rgb(211, 183, 146);
     }
   }
+  .fixed-won-word {
+    background-color: #00FF00;
+    padding: 1em;
+    border: black;
+    border-radius: 1em;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    font-size: 2em;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100%;
+  }
 }
 .hidden {
   display: none;
-}
-.fixed-won-word {
-  background-color: gold;
-  padding: 1em;
-  border: black;
-  border-radius: 1em;
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  font-size: 2em;
-  transform: translate(-50%, -50%);
 }
 // .position-fixed-right {
 //   background-color: red;

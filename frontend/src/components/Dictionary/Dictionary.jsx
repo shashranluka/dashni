@@ -90,9 +90,9 @@ export default function Dictionary(props) {
             </div>
           </div>
         ))}
-        <div className={isFixedVisible ? "fixed-won-word" : "hidden"}>
-          {wonWord[0].translation} - {wonWord[0].word}
-        </div>
+      </div>
+      <div className={isFixedVisible ? "fixed-won-word" : "hidden"}>
+        {wonWord[0].translation} - {wonWord[0].word}
       </div>
     </div>
   )
