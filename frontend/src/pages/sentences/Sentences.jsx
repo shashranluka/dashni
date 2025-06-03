@@ -242,7 +242,7 @@ function Sentences() {
         </div>
       ) : (
         <div className="statsParamsContainer">
-          <div className="header">
+          <div className="sentencesHeader">
             <button
               className="backButton"
               onClick={() => setIsLanguageSelected(false)}

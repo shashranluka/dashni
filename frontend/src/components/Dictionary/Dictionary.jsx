@@ -63,10 +63,20 @@ export default function Dictionary(props) {
     <div className="dictionary">
       <div className="topSpace">
         {/* topSpace */}
-        <div className="chosenWord">
-          {topData[chosenWordIndex].word}
-        </div>
-        <div className="nextButton" onClick={clickNextHandler}>შემდეგი</div>
+        {
+          bottomData.length > 0 ? (
+            <div className="topDataDiv">
+              <div className="chosenWordCard">
+                {topData[chosenWordIndex].translation}
+              </div>
+              <div className="nextButton" onClick={clickNextHandler}></div>
+            </div>
+          ) : (
+            <div className="next_game">
+              <button onClick={() => setPartOfGame(2)}>შემდეგი ეტაპი</button>
+            </div>
+          )
+        }
       </div>
       <div className="bottomSpace">
         {bottomData.map((card, index) => (
@@ -84,5 +94,6 @@ export default function Dictionary(props) {
           {wonWord[0].translation} - {wonWord[0].word}
         </div>
       </div>
-    </div>)
+    </div>
+  )
 }

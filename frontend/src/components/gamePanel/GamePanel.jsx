@@ -12,7 +12,7 @@ export default function GamePanel(props) {
     buttons.push(
       <button
         key="settings"
-        className={partOfGame === 0 ? "openedGame" : "closedGame"}
+        className={partOfGame === 0 ? "gameButton openedGame" : "gameButton closedGame"}
         onClick={() => {
           setPartOfGame(0);
         }}
