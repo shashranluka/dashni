@@ -6,6 +6,7 @@ import Dictionary from "../Dictionary/Dictionary";
 import CreateSentences from "../CreateSentences/CreateSentences";
 import WordsAndMarks from "../WordsAndMarks/WordsAndMarks";
 import GuessPicture from "../GuessPicture/GuessPicture";
+import TellPicture from "../TellPicture/TellPicture";
 import { splitTextToWords } from "../../utils/tools";
 // import PartOfSpeech from "../components/PartsOfSpeech";
 
@@ -19,7 +20,7 @@ function Game(props) {
 
   const [points, setPoints] = useState(0);
   const [tries, setTries] = useState(0);
-  const [partOfGame, setPartOfGame] = useState(0);
+  const [partOfGame, setPartOfGame] = useState(1);
   const [newGame, setNewGame] = useState(0);
   const [isVisibleBack, setIsVisibleBack] = useState(false);
   const [isVisibleFront, setIsVisibleFront] = useState(false);
@@ -87,24 +88,26 @@ function Game(props) {
         setTries={setTries}
         partOfGame={partOfGame}
         setPartOfGame={setPartOfGame}
-        numberOfParts={4}
+        numberOfParts={6}
       />
       
       <div>
-        {partOfGame === 0 ? (
-          <div>
-            <Settings
-              newGame={newGame}
-              setNewGame={setNewGame}
-              dictionarySettings={dictionarySettings}
-              setDictionarySettings={setDictionarySettings}
-              setPoints={setPoints}
-              setTries={setTries}
-              setGameType={setGameType}
-              setPartOfGame={setPartOfGame}
-            />
-          </div>
-        ) : partOfGame === 1 ? (
+        {
+        // partOfGame === 0 ? (
+        //   <div>
+        //     <Settings
+        //       newGame={newGame}
+        //       setNewGame={setNewGame}
+        //       dictionarySettings={dictionarySettings}
+        //       setDictionarySettings={setDictionarySettings}
+        //       setPoints={setPoints}
+        //       setTries={setTries}
+        //       setGameType={setGameType}
+        //       setPartOfGame={setPartOfGame}
+        //     />
+        //   </div>
+        // ) : 
+        partOfGame === 1 ? (
           <div className="">
             <Dictionary
               points={points}
@@ -147,30 +150,30 @@ function Game(props) {
               setPartOfGame={setPartOfGame}
             />
           </div>
-          // ) : partOfGame === 4 ? (
-          //   <div className="">
-          //     <GuessPicture
-          //       sentences={sentencesData}
-          //       points={points}
-          //       setPoints={setPoints}
-          //       tries={tries}
-          //       setTries={setTries}
-          //       setPartOfGame={setPartOfGame}
-          //     />
-          //   </div>
-          // ) : partOfGame === 5 ? (
-          //   <div className="">
-          //     <TellPicture
-          //       points={points}
-          //       setPoints={setPoints}
-          //       tries={tries}
-          //       setTries={setTries}
-          //       wordsForCards={wordsFromSentences}
-          //       isBackVisible={isBackVisible}
-          //       sentences={sentencesData}
-          //       setPartOfGame={setPartOfGame}
-          //     />
-          //   </div>
+          ) : partOfGame === 4 ? (
+            <div className="">
+              <GuessPicture
+                sentencesData={sentencesData}
+                points={points}
+                setPoints={setPoints}
+                tries={tries}
+                setTries={setTries}
+                setPartOfGame={setPartOfGame}
+              />
+            </div>
+          ) : partOfGame === 5 ? (
+            <div className="">
+              <TellPicture
+                points={points}
+                setPoints={setPoints}
+                tries={tries}
+                setTries={setTries}
+                wordsForCards={wordsFromSentences}
+                isBackVisible={isBackVisible}
+                sentencesData={sentencesData}
+                setPartOfGame={setPartOfGame}
+              />
+            </div>
         ) : partOfGame === 6 ? (
           <div className="">
             <Results points={points} tries={tries} sentences={sentencesData} wordsFromLexicon={wordsFromLexicon} setReturnedData={setReturnedData} storeCollectedWords={storeCollectedWords} />

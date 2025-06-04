@@ -10,7 +10,7 @@ import Results from "../../components/Results/Results";
 import About from "../../components/about/About";
 import about from "../../about.json";
 import GuessPicture from "../../components/GuessPicture/GuessPicture";
-import TellPicture from "../../components/TellPicture";
+import TellPicture from "../../components/TellPicture/TellPicture";
 
 import tushetians from "../../joined.json";
 import lexicon from "../../lexicon.json";
