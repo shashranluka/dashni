@@ -5,10 +5,7 @@ import upload from "../../utils/upload";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import newRequest from "../../utils/newRequest";
 import { useNavigate } from "react-router-dom";
-// const Diacritical = "&#x0304;";
-// const Diacritical =
-//   "<div><span>nested &#x0304;</span> <span>stuff</span></div>";
-console.log("a&#x0304;");
+
 const Add = () => {
   const [singleFile, setSingleFile] = useState(undefined);
   const [files, setFiles] = useState([]);

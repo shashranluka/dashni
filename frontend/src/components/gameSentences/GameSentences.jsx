@@ -1,5 +1,6 @@
 import { useMemo, useRef, useState } from "react";
-import "../Components.css";
+// import "../Components.css";
+import "./GameSentences.scss";
 import GamePanel from "../gamePanel/GamePanel";
 import Dictionary from "../Dictionary/Dictionary";
 import CreateSentences from "../CreateSentences/CreateSentences";
@@ -78,7 +79,7 @@ function Game(props) {
   // const wordsFromSentences = useMemo(()=>);
 
   return (
-    <div className="chapter">
+    <div className="gameSentences chapter">
       <GamePanel
         points={points}
         setPoints={setPoints}

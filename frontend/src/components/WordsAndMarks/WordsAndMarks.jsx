@@ -1,121 +1,133 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import "./WordsAndMarks.scss";
 
 export default function WordsAndMarks(props) {
-  const { sentencesData, point, setPoint, tries, setTries, setPartOfGame } =
-    props;
-  const [clickedWord, setClickedWord] = useState();
-  const [clickedMark, setClickedMark] = useState();
-  const [isSecond, setIsSecond] = useState(false);
+  const { sentencesData, points, setPoints, tries, setTries, setPartOfGame } = props;
 
-  const markAfterWord = useRef();
-  const chosenMark = useRef();
-  const wordId = useRef();
-  const markId = useRef();
-  const wordsWithMarks = useMemo(() => {
-    console.log(sentencesData)
+  // მომხმარებლის არჩეული ელემენტები - ინახავს მხოლოდ ინდექსებს
+  const [clickedWord, setClickedWord] = useState(null);
+  const [clickedMark, setClickedMark] = useState(null);
+
+  // თამაშის მთავარი მონაცემები
+  const [wordsWithMarks, setWordsWithMarks] = useState([]);
+  const [marks, setMarks] = useState([]);
+
+  // საწყისი მონაცემების მომზადება
+  useEffect(() => {
+    // სიტყვების მომზადება - უბრალოდ ვიყენებთ არსებულ თვისებებს
     const words = sentencesData
       .map((el) => el.words)
       .sort(() => 0.5 - Math.random())
       .flat();
-    return words;
-  }, []);
-  const marks = useMemo(() => {
-    const marks = [];
-    wordsWithMarks.forEach((el) => {
-      if (el.mark) {
-        marks.push({ mark: el.mark, typeOfSign: "mark" });
+    
+    setWordsWithMarks(words);
+    
+    // სასვენი ნიშნების მომზადება - მხოლოდ რაც გვჭირდება
+    const allMarks = [];
+    words.forEach((word) => {
+      if (word.mark) {
+        allMarks.push({ mark: word.mark });
       }
     });
-    return marks;
-  }, []);
+    
+    setMarks(allMarks);
+  }, [sentencesData]);
 
-  function clickHendler(el, index, wordOrMark) {
-    console.log("მინიჭებამდე");
-    if (wordOrMark == "word") {
-      markAfterWord.current = el.mark ? el.mark : false;
-      wordId.current = index;
+  // სიტყვაზე ან ნიშანზე დაჭერის დამუშავება
+  const handleClick = (item, index, type) => {
+    if (type === "word") {
+      // სიტყვაზე დაჭერა - მხოლოდ ინდექსს ვინახავთ
       setClickedWord(index);
-      console.log("კლიკი", markAfterWord.current);
-    } else if (wordOrMark == "mark") {
-      chosenMark.current = el.mark;
-      markId.current = index;
+    } else if (type === "mark") {
+      // სასვენ ნიშანზე დაჭერა
       setClickedMark(index);
-    }
-    console.log("შედარდება", wordsWithMarks, markAfterWord.current, chosenMark.current, markAfterWord.current == chosenMark.current);
-    if (markAfterWord.current == chosenMark.current) {
-      console.log("დაემთხვა", wordsWithMarks[wordId.current]);
-      wordsWithMarks.splice(wordId.current + 1, 0, {
-        word: "",
-        mark: el.mark,
-        wordOrMark: "mark",
-      });
-      console.log(wordsWithMarks[wordId.current].mark, "wordmark");
-      wordsWithMarks[clickedWord].mark = "";
-      marks.splice(markId.current, 1);
-      markAfterWord.current = null;
-      wordId.current = null;
-      chosenMark.current = null;
-      markId.current = null;
-      setClickedMark(false);
-      setClickedWord(false);
-      console.log("დაემთხვა, შემდეგ", wordsWithMarks);
-
-      setPoint(point + 1);
-      setTries(tries + 1);
-    } else {
-      if (isSecond) {
-        setTries(tries + 1);
-      } else {
-        setIsSecond(true);
+      
+      // თუ უკვე არჩეულია სიტყვა, შევამოწმოთ დამთხვევა
+      if (clickedWord !== null) {
+        const selectedWord = wordsWithMarks[clickedWord];
+        const isCorrectMatch = selectedWord.mark === item.mark;
+        
+        if (isCorrectMatch) {
+          // სწორი დამთხვევა
+          const newWordsWithMarks = [...wordsWithMarks];
+          
+          // ვნიშნავთ, რომ ეს სიტყვა უკვე დამატჩებულია
+          newWordsWithMarks[clickedWord] = {
+            ...newWordsWithMarks[clickedWord],
+            isMatched: true  // ნიშანი ნაპოვნია
+          };
+          
+          setWordsWithMarks(newWordsWithMarks);
+          
+          // წავშალოთ გამოყენებული ნიშანი
+          const newMarks = [...marks];
+          newMarks.splice(index, 1);
+          setMarks(newMarks);
+          
+          // განვაახლოთ ქულები და მცდელობები
+          setPoints(points + 1);
+          setTries(tries + 1);
+          
+          // გავასუფთაოთ არჩეული ელემენტები
+          setClickedWord(null);
+          setClickedMark(null);
+        } else {
+          // არასწორი დამთხვევა
+          setTries(tries + 1);
+          setClickedMark(null);  // მხოლოდ ნიშანს ვასუფთავებთ
+        }
       }
     }
-  }
-  // console.log(chosenMark,wordsAndMarks)
+  };
+
   return (
     <div className="words_and_marks">
+      {/* სიტყვების სექცია */}
       <div className="words_wout_marks">
-        {wordsWithMarks.map((el, index) => (
-          <div className="">
-            {el.word ? (
-              <div
-                className={
-                  clickedWord === index ? "word_card clicked_card" : "word_card"
-                }
-                onClick={() => {
-                  clickHendler(el, index, "word");
-                }}
-              >
-                {el.word}
-                {/* <div className="div"></div> */}
-              </div>
-            ) : (
-              <div className="mark_among_words">{el.mark}</div>
+        {wordsWithMarks.map((wordItem, wordIndex) => (
+          <div className="word-container" key={`word-${wordIndex}`}>
+            {/* სიტყვის ბარათი - გამარტივებული კლასის მინიჭება */}
+            <div
+              className={`word_card ${clickedWord === wordIndex ? 'clicked_card' : ''}`}
+              onClick={() => handleClick(wordItem, wordIndex, "word")}
+            >
+              {wordItem.word}
+            </div>
+            
+            {/* სასვენი ნიშანი - ჩანს მხოლოდ როცა დამატჩებულია */}
+            {wordItem.isMatched && (
+              <div className="mark_among_words">{wordItem.mark}</div>
             )}
           </div>
-          // )
         ))}
       </div>
+      
+      {/* სასვენი ნიშნების სექცია */}
       <div className="marks">
-        {marks.map((el, index) => (
+        {marks.map((markItem, markIndex) => (
           <div
-            className={clickedMark === index ? "mark clicked_mark" : "mark"}
-            onClick={() => {
-              clickHendler(el, index, "mark");
-            }}
+            key={`mark-${markIndex}`}
+            className={`mark ${clickedMark === markIndex ? 'clicked_mark' : ''}`}
+            onClick={() => handleClick(markItem, markIndex, "mark")}
           >
-            {el.mark}
+            {markItem.mark}
           </div>
         ))}
       </div>
-      <div className="next_game">
-        {marks.length === 0 ? (
-          <div className="">
-            <button onClick={() => setPartOfGame(4)}>შემდეგი ეტაპი</button>
-            <button onClick={() => setPartOfGame(6)}>შედეგები</button>
+      
+      {/* ნავიგაციის სექცია - გამარტივებული პირობა */}
+      {marks.length === 0 && (
+        <div className="next_game">
+          <div className="button-container">
+            <button onClick={() => setPartOfGame(4)} className="next-button">
+              შემდეგი ეტაპი
+            </button>
+            <button onClick={() => setPartOfGame(6)} className="results-button">
+              შედეგები
+            </button>
           </div>
-        ) : null}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

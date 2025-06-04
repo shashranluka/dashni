@@ -33,12 +33,12 @@ function Sentences() {
 
   // ხელმისაწვდომი ენების მასივი
   const languages = [
-    { id: "ba", name: "თუშური", flag: "🏔️" },
-    { id: "en", name: "ინგლისური", flag: "🇬🇧" },
-    { id: "ge", name: "გერმანული", flag: "🇬🇪" },
-    { id: "ge", name: "ესპანური", flag: "🇬🇪" },
-    { id: "ge", name: "ფრანგული", flag: "🇬🇪" },
-    { id: "ge", name: "სხვა", flag: "🇬🇪" },
+    { id: "ba", name: "თუშური" },
+    { id: "en", name: "ინგლისური" },
+    { id: "de", name: "გერმანული" },
+    { id: "es", name: "ესპანური" },
+    { id: "fr", name: "ფრანგული" },
+    { id: "sx", name: "სხვა" },
     // შეგიძლიათ დაამატოთ სხვა ენები საჭიროებისამებრ
   ];
 
