@@ -2,10 +2,6 @@ import { useMemo, useRef, useState } from "react";
 import "../Components.css";
 import GamePanel from "../gamePanel/GamePanel";
 import Dictionary from "../Dictionary/Dictionary";
-import CreateSentences from "../CreateSentences/CreateSentences";
-import WordsAndMarks from "../WordsAndMarks/WordsAndMarks";
-import GuessPicture from "../GuessPicture/GuessPicture";
-// import PartOfSpeech from "../components/PartsOfSpeech";
 
 
 import Settings from "../GameSettings/GameSettings";
@@ -14,9 +10,9 @@ import About from "../about/About";
 import about from "../../about.json";
 
 function GameWords(props) {
-  const [point, setPoint] = useState(0);
+  const [points, setPoints] = useState(0);
   const [tries, setTries] = useState(0);
-  const [partOfGame, setPartOfGame] = useState(0);
+  const [partOfGame, setPartOfGame] = useState(1);
   const [newGame, setNewGame] = useState(0);
   const [isVisibleBack, setIsVisibleBack] = useState(false);
   const [isVisibleFront, setIsVisibleFront] = useState(false);
@@ -33,8 +29,8 @@ function GameWords(props) {
   return (
     <div className="chapter">
       <GamePanel
-        point={point}
-        setPoint={setPoint}
+        points={points}
+        setPoints={setPoints}
         tries={tries}
         setTries={setTries}
         partOfGame={partOfGame}
@@ -50,7 +46,7 @@ function GameWords(props) {
               setNewGame={setNewGame}
               dictionarySettings={dictionarySettings}
               setDictionarySettings={setDictionarySettings}
-              setPoint={setPoint}
+              setPoints={setPoints}
               setTries={setTries}
               setGameType={setGameType}
               setPartOfGame={setPartOfGame}
@@ -59,8 +55,8 @@ function GameWords(props) {
         ) : partOfGame === 1 ? (
           <div className="">
             <Dictionary
-              point={point}
-              setPoint={setPoint}
+              points={points}
+              setPoints={setPoints}
               tries={tries}
               setTries={setTries}
               firstPartState={dictionarySettings.firstPartState}

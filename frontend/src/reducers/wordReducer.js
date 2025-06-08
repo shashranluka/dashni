@@ -27,6 +27,12 @@ export const formReducer = (state, action) => {
         ...initialState,
         language: state.language, // ენის ველი არ იწმინდება
       };
+    // formReducer ფუნქციაში დაამატეთ:
+    case 'UPDATE_MULTIPLE_FIELDS':
+      return {
+        ...state,
+        ...action.fields
+      };
     default:
       return state;
   }

@@ -1,4 +1,4 @@
-import React, { useReducer, useState, useRef, useEffect } from 'react';
+import React, { useReducer, useState, useRef } from 'react';
 import './AddWordsData.scss'; // სტილის ფაილი
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios'; // დავამატოთ axios-ის იმპორტი
@@ -11,7 +11,7 @@ const AddWordsData = () => {
   const [wordsData, setWordsData] = useState([]);
   const [showAdditionalFields, setShowAdditionalFields] = useState(false); // ნარინჯისფერი ყუთის მართვა
   const [expandedWordIndex, setExpandedWordIndex] = useState(null); // აქტიური სიტყვა
-  const [isTranslating, setIsTranslating] = useState(false); // თარგმნის პროცესის მდგომარეობა
+
 
   const [inputName, setInputName] = useState("");
   const [inputValue, setInputValue] = useState("");
@@ -29,90 +29,10 @@ const AddWordsData = () => {
   const [newLanguage, setNewLanguage] = useState({ code: "", name: "" }); // ახალი ენის მონაცემები
 
   const queryClient = useQueryClient();
-  const wordInputRef = useRef(null);
-  
-  // inputName და inputValue-ს განახლება როცა formData იცვლება
-  useEffect(() => {
-    if (inputName) {
-      setInputValue(formData[inputName] || '');
-    }
-  }, [formData, inputName]);
-
   const handleInputClick = (e) => {
     setInputName(e.target.name);
     setInputValue(e.target.value);
   };
-
-  // თარგმნის ფუნქცია
-  const translateWord = async (word, sourceLang) => {
-  try {
-    const response = await axios.post('https://translation.googleapis.com/language/translate/v2', null, {
-      params: {
-        q: word,
-        source: sourceLang,
-        target: 'ka',
-        key: 'YOUR_API_KEY_HERE' // აქ ჩასვით თქვენი API გასაღები
-      }
-    });
-    
-    // შემდეგ API-სგან მიღებული მონაცემებით შეავსეთ ობიექტი
-    const translationData = {
-      translation: response.data.data.translations[0].translatedText,
-      // სხვა ინფორმაციისთვის შეიძლება სხვა API-ების გამოყენება დაგჭირდეთ
-      definition: "", // მაგ. Dictionary API-დან
-      baseForm: "", // მაგ. Lemmatizer API-დან
-      usageExamples: "" // მაგ. Examples API-დან
-    };
-    
-    return translationData;
-  } catch (error) {
-    console.error('თარგმნის შეცდომა:', error);
-    throw error;
-  }
-};
-
-  // ავტომატური თარგმნის ფუნქცია
-  const handleAutoTranslate = async () => {
-    // შევამოწმოთ, არის თუ არა სიტყვა და ენა არჩეული
-    if (!formData.word.trim()) {
-      alert('გთხოვთ, შეიყვანოთ სიტყვა თარგმნისთვის');
-      return;
-    }
-    
-    if (!formData.language || formData.language === 'custom') {
-      alert('გთხოვთ, აირჩიოთ ენა');
-      return;
-    }
-    
-    try {
-      setIsTranslating(true);
-      
-      // გამოვიძახოთ თარგმნის ფუნქცია
-      const translationData = await translateWord(formData.word, formData.language);
-      
-      // განვაახლოთ ფორმის მონაცემები მიღებული შედეგებით
-      dispatch({ 
-        type: 'UPDATE_MULTIPLE_FIELDS', 
-        fields: {
-          translation: translationData.translation,
-          definition: translationData.definition,
-          baseForm: translationData.baseForm,
-          usageExamples: translationData.usageExamples
-        }
-      });
-      
-      // თუ დამატებითი ველები არ არის გამოჩენილი, გამოვაჩინოთ
-      if (!showAdditionalFields) {
-        setShowAdditionalFields(true);
-      }
-      
-    } catch (error) {
-      alert(`თარგმნის შეცდომა: ${error.message}`);
-    } finally {
-      setIsTranslating(false);
-    }
-  };
-  
   // useMutation ჰუკის განახლება axios-ით
   const saveWordsMutation = useMutation({
     mutationFn: async (data) => {
@@ -124,7 +44,6 @@ const AddWordsData = () => {
 
       console.log('მონაცემები გასაგზავნად', wordsWithPrivacy);
       const response = await newRequest.post('/words', wordsWithPrivacy);
-
       return response.data;
     },
     onSuccess: (data) => {
@@ -205,6 +124,9 @@ const AddWordsData = () => {
     dispatch({ type: 'UPDATE_FIELD', field: 'language', value: '' });
   };
 
+  // დავამატოთ რეფერენსი word input-ისთვის
+  const wordInputRef = useRef(null);
+
   const handleAddWord = (e) => {
     if (
       formData.word.trim() &&
@@ -219,7 +141,6 @@ const AddWordsData = () => {
         if (wordInputRef.current) {
           wordInputRef.current.focus();
           setInputName("word"); // ვაცნობოთ keyboard-ს რომელი ველია ფოკუსში
-          setInputValue("");
         }
       }, 10);
     } else {
@@ -317,27 +238,17 @@ const AddWordsData = () => {
           </div>
           <div className="form-group">
             <label htmlFor="word">სიტყვა:</label>
-            <div className="input-with-button">
-              <input
-                type="text"
-                id="word"
-                name="word"
-                ref={wordInputRef} // დავამატოთ რეფერენსი
-                value={formData.word}
-                onChange={handleChange}
-                placeholder="შეიყვანეთ სიტყვა"
-                onClick={handleInputClick}
-                required
-              />
-              <button 
-                type="button" 
-                className="translate-button"
-                onClick={handleAutoTranslate}
-                disabled={isTranslating || !formData.word.trim() || !formData.language}
-              >
-                {isTranslating ? "..." : "ავტომატური თარგმნა"}
-              </button>
-            </div>
+            <input
+              type="text"
+              id="word"
+              name="word"
+              ref={wordInputRef} // დავამატოთ რეფერენსი
+              value={formData.word}
+              onChange={handleChange}
+              placeholder="შეიყვანეთ სიტყვა"
+              onClick={handleInputClick}
+              required
+            />
           </div>
           <div className="form-group">
             <label htmlFor="translation">თარგმანი:</label>
@@ -414,36 +325,32 @@ const AddWordsData = () => {
       {/* დამატებული სიტყვების ჩვენება */}
       <div className="saved-words">
         <h3>დამატებული სიტყვები:</h3>
-        {wordsData.length === 0 ? (
-          <p>ჯერ არ არის დამატებული სიტყვები</p>
-        ) : (
-          wordsData.map((word, index) => (
-            <div key={index} className="saved-word">
-              <div className="word-header">
-                <p onClick={() => toggleWordDetails(index)} className="word-title">
-                  {word.word}
-                </p>
-                <button
-                  className="delete-button"
-                  onClick={() => handleDeleteWord(index)}
-                >
-                  წაშლა
-                </button>
-              </div>
-              {expandedWordIndex === index && (
-                <div className="word-details">
-                  {/* ვაჩვენოთ ენის სახელი და არა კოდი */}
-                  <p><strong>ენა:</strong> {getLanguageName(word.language)}</p>
-                  <p><strong>თარგმანი:</strong> {word.translation}</p>
-                  {word.definition && <p><strong>განმარტება:</strong> {word.definition}</p>}
-                  {word.partOfSpeech && <p><strong>მეტყველების ნაწილი:</strong> {word.partOfSpeech}</p>}
-                  {word.baseForm && <p><strong>საწყისი ფორმა:</strong> {word.baseForm}</p>}
-                  {word.usageExamples && <p><strong>გამოყენების მაგალითები:</strong> {word.usageExamples}</p>}
-                </div>
-              )}
+        {wordsData.map((word, index) => (
+          <div key={index} className="saved-word">
+            <div className="word-header">
+              <p onClick={() => toggleWordDetails(index)} className="word-title">
+                {word.word}
+              </p>
+              <button
+                className="delete-button"
+                onClick={() => handleDeleteWord(index)}
+              >
+                წაშლა
+              </button>
             </div>
-          ))
-        )}
+            {expandedWordIndex === index && (
+              <div className="word-details">
+                {/* ვაჩვენოთ ენის სახელი და არა კოდი */}
+                <p><strong>ენა:</strong> {getLanguageName(word.language)}</p>
+                <p><strong>თარგმანი:</strong> {word.translation}</p>
+                <p><strong>განმარტება:</strong> {word.definition}</p>
+                {word.partOfSpeech && <p><strong>მეტყველების ნაწილი:</strong> {word.partOfSpeech}</p>}
+                {word.baseForm && <p><strong>საწყისი ფორმა:</strong> {word.baseForm}</p>}
+                {word.usageExamples && <p><strong>გამოყენების მაგალითები:</strong> {word.usageExamples}</p>}
+              </div>
+            )}
+          </div>
+        ))}
       </div>
       {/* მონაცემების შენახვის ღილაკი */}
       <button

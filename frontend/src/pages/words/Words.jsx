@@ -8,7 +8,7 @@ import "./Words.scss";
 import { useQuery } from "@tanstack/react-query";
 // API მოთხოვნების გასაგზავნი ფუნქციის იმპორტი
 import newRequest from "../../utils/newRequest";
-import GameWords from "../../components/gameWords/GameWords";
+import GameWords from "../../components/GameWords/GameWords";
 import getCurrentUser from "../../utils/getCurrentUser"; // დაამატეთ ეს იმპორტი
 
 // Words კომპონენტის განსაზღვრა - სიტყვების თამაშისთვის
@@ -26,7 +26,7 @@ function Words() {
   // ჩატვირთვის პროცესის მდგომარეობის ცვლადი
   const [isLoading, setIsLoading] = useState(false);
   // სიტყვების რაოდენობის ცვლადი
-  const [amount, setAmount] = useState(10);
+  const [amount, setAmount] = useState(22);
   // სიტყვების ტიპის არჩევისთვის ცვლადები
   const [selectedTypes, setSelectedTypes] = useState({
     mine: currentUser ? false : false, // თავდაპირველად არჩეული არ არის
