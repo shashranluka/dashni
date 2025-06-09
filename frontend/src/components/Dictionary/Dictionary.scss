@@ -28,8 +28,20 @@
     width: 100%;
     flex-wrap: wrap;
     border: 1px solid yellowgreen;
+    gap:12px;
+    padding: 1em;
     .card{
-      background-color: rgb(211, 183, 146);
+      background-color: rgb(92, 196, 222);
+      font-size: 1.2em;
+      font-weight: 500;
+      
+      // დამატებითი კლასი დამალული ტექსტისთვის
+      &.hidden-text {
+        .cardFront {
+          color: rgb(92, 196, 222); // იგივე ფერი რაც ფონს აქვს
+          visibility: hidden; // ან გამოიყენეთ ეს, უფრო უსაფრთხოა
+        }
+      }
     }
   }
   .fixed-won-word {

@@ -25,4 +25,4 @@ dist-ssr
 *.sw?
 
 # Configuration files
-baseUrl.js
+# baseUrl.js

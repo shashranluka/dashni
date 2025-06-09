@@ -14,8 +14,9 @@ export default function Dictionary(props) {
   } = props;
   const [chosenWordIndex, setChosenWordIndex] = useState(0);
   const [wonWord, setWonWord] = useState([{ word: "", translation: "" }]);
-
   const [isFixedVisible, setIsFixedVisible] = useState(false);
+  // დავამატოთ სტეიტი არასწორად არჩეული ბარათების ინდექსებისთვის
+  const [wrongIndices, setWrongIndices] = useState([]);
 
   const topData = useMemo(() => getShuffled(cardsData), []);
   const bottomData = useMemo(() => getShuffled(cardsData), []);
@@ -25,18 +26,30 @@ export default function Dictionary(props) {
     setChosenWordIndex((prevIndex) => (prevIndex + 1) % topData.length);
     setTries(tries + 1);
   }
+  
   function clickCardHandler(index) {
     if (topData[chosenWordIndex].word === bottomData[index].word) {
+      // სწორი პასუხის შემთხვევაში
       setPoints(points + 1);
       setTries(tries + 1);
       wonWords.push(topData.splice(chosenWordIndex, 1)[0]);
       setWonWord(bottomData.splice(index, 1));
       setIsFixedVisible(true);
+      
+      // სწორი პასუხის შემთხვევაში გავასუფთაოთ ყველა არასწორი ინდექსი
+      setWrongIndices([]);
+      
       setTimeout(() => {
         setIsFixedVisible(false);
       }, 3000);
     } else {
+      // არასწორი პასუხის შემთხვევაში
       setTries(tries + 1);
+      
+      // დავამატოთ ინდექსი არასწორების სიაში, თუ უკვე არ არის
+      if (!wrongIndices.includes(index)) {
+        setWrongIndices(prev => [...prev, index]);
+      }
     }
   }
 
@@ -60,9 +73,13 @@ export default function Dictionary(props) {
       </div>
       <div className="bottomSpace">
         {bottomData.map((card, index) => (
-          <div key={index} className="card" onClick={() => {
-            clickCardHandler(index);
-          }}>
+          <div 
+            key={index} 
+            className={`card ${wrongIndices.includes(index) ? 'hidden-text' : ''}`} 
+            onClick={() => {
+              clickCardHandler(index);
+            }}
+          >
             <div className="cardFront">
               {card.word}
             </div>
