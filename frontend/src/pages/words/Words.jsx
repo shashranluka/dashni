@@ -2,14 +2,12 @@
 import React, { useEffect, useRef, useState } from "react";
 // CSS სტილების იმპორტი
 import "./Words.scss";
-// GameWords კომპონენტის იმპორტი (ამჟამად გამორთულია)
-// import GameWords from "../../components/gameWords/GameWords";
 // React Query ბიბლიოთეკიდან useQuery hook-ის იმპორტი API მოთხოვნებისთვის
 import { useQuery } from "@tanstack/react-query";
 // API მოთხოვნების გასაგზავნი ფუნქციის იმპორტი
 import newRequest from "../../utils/newRequest";
 import GameWords from "../../components/GameWords/GameWords";
-import getCurrentUser from "../../utils/getCurrentUser"; // დაამატეთ ეს იმპორტი
+import getCurrentUser from "../../utils/getCurrentUser";
 
 // Words კომპონენტის განსაზღვრა - სიტყვების თამაშისთვის
 function Words() {
@@ -32,6 +30,12 @@ function Words() {
     mine: currentUser ? false : false, // თავდაპირველად არჩეული არ არის
     public: true // საჯარო ყოველთვის არჩეულია
   });
+  
+  // დავამატოთ ვალიდაციის შეცდომების ცვლადები
+  const [validationErrors, setValidationErrors] = useState({
+    language: false,
+    types: false
+  });
 
   // DOM ელემენტებზე წვდომისთვის რეფერენსები:
   // სიტყვების რაოდენობის ველზე წვდომისთვის რეფერენსი
@@ -41,23 +45,32 @@ function Words() {
 
   // ასინქრონული ფუნქცია სიტყვების API-დან გამოსახმობად
   const fetchWords = async () => {
+    // საწყისი მდგომარეობისთვის გავასუფთაოთ ვალიდაციის შეცდომები
+    setValidationErrors({ language: false, types: false });
+    
     // ვამოწმებთ, არსებობს თუ არა ენის რეფერენსი
     if (!languageRef.current) return;
 
     // ველებიდან მნიშვნელობების ამოღება
     const language = languageRef.current.value;
-
+    
     // ვალიდაცია - ამოწმებს, რომ შეყვანილია აუცილებელი მონაცემები
+    let isValid = true;
+    
     if (!language) {
-      alert("გთხოვთ, მიუთითოთ ენა");
-      return;
+      // ენის ველის გაწითლება
+      setValidationErrors(prev => ({ ...prev, language: true }));
+      isValid = false;
     }
 
     // ვალიდაცია - ერთი ტიპი მაინც უნდა იყოს არჩეული
     if (!selectedTypes.mine && !selectedTypes.public) {
-      alert("გთხოვთ, აირჩიოთ სიტყვების ტიპი (ჩემი ან საჯარო)");
-      return;
+      setValidationErrors(prev => ({ ...prev, types: true }));
+      isValid = false;
     }
+    
+    // თუ ვალიდაცია ვერ გაიარა, გამოვიდეთ ფუნქციიდან
+    if (!isValid) return;
 
     // ჩატვირთვის მდგომარეობის ჩართვა
     setIsLoading(true);
@@ -113,6 +126,8 @@ function Words() {
       // თუ თამაში აქტიურია, დასრულდეს
       setGameDataCollected(false);
       setIsStarted(false);
+      // გავასუფთაოთ ვალიდაციის შეცდომები
+      setValidationErrors({ language: false, types: false });
     }
   };
 
@@ -156,8 +171,14 @@ function Words() {
             id="language"
             ref={languageRef}
             defaultValue=""
-            className="styled-select"
+            className={`styled-select ${validationErrors.language ? 'validation-error' : ''}`}
             disabled={isStarted}
+            onChange={() => {
+              // შეცდომის გასუფთავება ველის შეცვლისას
+              if (validationErrors.language) {
+                setValidationErrors(prev => ({ ...prev, language: false }));
+              }
+            }}
           >
             <option value="" disabled>აირჩიეთ ენა</option>
             <option value="ba"> თუშური</option>
@@ -167,6 +188,9 @@ function Words() {
             <option value="de"> გერმანული</option>
             <option value="sx"> სხვა</option>
           </select>
+          {/* {validationErrors.language && (
+            <div className="error-message">გთხოვთ, აირჩიოთ ენა</div>
+          )} */}
         </div>
 
         {/* სიტყვების რაოდენობის არჩევის ინფუთი სლაიდერით და ხელით შესაყვანი ველით */}
@@ -221,13 +245,19 @@ function Words() {
             <label>
               <i className="fas fa-filter"></i> სიტყვების ტიპი:
             </label>
-            <div className="type-selection-cards">
+            <div className={`type-selection-cards ${validationErrors.types ? 'validation-error' : ''}`}>
               <div 
                 className={`type-card ${selectedTypes.mine ? 'selected' : ''}`}
-                onClick={() => setSelectedTypes(prev => ({
-                  ...prev,
-                  mine: !prev.mine
-                }))}
+                onClick={() => {
+                  setSelectedTypes(prev => ({
+                    ...prev,
+                    mine: !prev.mine
+                  }));
+                  // შეცდომის გასუფთავება არჩევისას
+                  if (validationErrors.types) {
+                    setValidationErrors(prev => ({ ...prev, types: false }));
+                  }
+                }}
               >
                 <div className="type-checkbox">
                   <input 
@@ -245,10 +275,16 @@ function Words() {
               
               <div 
                 className={`type-card ${selectedTypes.public ? 'selected' : ''}`}
-                onClick={() => setSelectedTypes(prev => ({
-                  ...prev,
-                  public: !prev.public
-                }))}
+                onClick={() => {
+                  setSelectedTypes(prev => ({
+                    ...prev,
+                    public: !prev.public
+                  }));
+                  // შეცდომის გასუფთავება არჩევისას
+                  if (validationErrors.types) {
+                    setValidationErrors(prev => ({ ...prev, types: false }));
+                  }
+                }}
               >
                 <div className="type-checkbox">
                   <input 
@@ -264,6 +300,9 @@ function Words() {
                 </div>
               </div>
             </div>
+            {validationErrors.types && (
+              <div className="error-message">გთხოვთ, აირჩიეთ სიტყვების ტიპი</div>
+            )}
           </div>
         )}
 
