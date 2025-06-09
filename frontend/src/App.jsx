@@ -28,7 +28,7 @@ import MySentencesTest from "./pages/mySentences/MySentencesTest";
 import MyRoom from "./pages/myRoom/MyRoom";
 import MySchool from "./pages/MySchool/MySchool";
 // =======
-import AddWordsData from "./pages/addWordsData/AddWordsData";
+import AddWordsData from "./pages/AddWordsData/AddWordsData_temp";
 import AddVideoData from "./pages/addVideoData/AddVideoData";
 import MyVideoDatas from "./pages/myVideoDatas.copy/MyVideoDatas";
 import VideoData from "./pages/videoData/VideoData";
