@@ -23,10 +23,14 @@ const SentenceSchema = new Schema(
       type: String,
       // required: true,
     },
+    isPrivate: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,
   }
 );
 
-export default mongoose.model("Sentence", SentenceSchema);
+export default mongoose.model("BaSentence", SentenceSchema);
