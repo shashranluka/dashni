@@ -263,38 +263,50 @@ export default function KeyboardWrapper(props) {
 
   const diacretials = [
     {
+      mark: "ჼ", // ფონეტიკური ნიშანი ქართულ "ო"-ზე
+      definition: "მოდიფიკატორი ნარ"
+    },
+    {
       mark: "\u2322", // ქვევიდან ღია მრუდი (frown)
       definition: "ქვევიდან ღია მრუდი"
     },
     {
-      mark: "\u02EC", // ტონალური მოდიფიკატორი
-      definition: "ხმოვნების გასაორმაგებლად"
-    },
-    {
-      mark: "\u0304", // მაკრონი (გრძელი ხმოვნის ნიშანი)
-      definition: "მაკრონი (გრძელი ხმოვნის ნიშანი)"
+      mark: "\u0327", // სედილა (ასოს ქვემოთ კაუჭი)
+      definition: "სედილა"
     },
     {
       mark: "\u0306", // ბრევე (მოკლე ხმოვნის ნიშანი)
       definition: "ბრევე (მოკლე ხმოვნის ნიშანი)"
     },
     {
+      mark: "\u02EC", // ტონალური მოდიფიკატორი
+      definition: "თანხმოვნების გასაორმაგებლად"
+    },
+    {
+      mark: "\u0304", // მაკრონი (გრძელი ხმოვნის ნიშანი)
+      definition: "მაკრონი (გრძელი ხმოვნის ნიშანი)"
+    },
+    {
       mark: "\u0302", // სირკუმფლექსი (წვეტიანი ქუდი)
       definition: "სირკუმფლექსი"
     },
     {
-      mark: "\u0327", // სედილა (ასოს ქვემოთ კაუჭი)
-      definition: "სედილა"
-    }
+      mark: "°",
+      definition: "გრადუსის ნიშანი"
+    },
+    {
+      mark: "\u0303", // სედილა (ასოს ქვემოთ კაუჭი)
+      definition: "ტილდა (ხმოვნების ნიშანი)"
+    },
+    {
+      mark: "\u0308", // სედილა (ასოს ქვემოთ კაუჭი)
+      definition: "უმლაუტი (ასოს ზედა ნაწილში ორი წერტილი)"
+    },
   ];
   // იშვიათი ქართული ასოების მასივი
   // const trueLetters = ["ჲ", "ჺ", "ჴ", "ჸ", "ჵ", "ჳ", "ჶ", "ჹ", "ჷ", "ჱ", "®", "°"];
   // იშვიათი ქართული ასოების მასივი - ობიექტების მასივის სახით
   const trueLetters = [
-    {
-      mark: "ჼ", // ფონეტიკური ნიშანი ქართულ "ო"-ზე
-      definition: "მოდიფიკატორი ნარ"
-    },
     {
       mark: "ჲ",
       definition: "ქართული ასო-ბგერა ჲე (ჰიე)"
@@ -339,10 +351,6 @@ export default function KeyboardWrapper(props) {
     //   mark: "®",
     //   definition: "რეგისტრირებული სავაჭრო ნიშანი"
     // },
-    {
-      mark: "°",
-      definition: "გრადუსის ნიშანი"
-    }
   ];
 
   // კლავიატურის CSS კლასები - მობილური კლავიატურის ხილვადობის მიხედვით
@@ -359,7 +367,7 @@ export default function KeyboardWrapper(props) {
             {diacretials.map((diacretial, index) => (
               <div key={index}>
                 <button
-                  className="keyboard-button"
+                  className="modifier-keyboard-button keyboard-button"
                   title={diacretial.definition} // ტულტიპად ვიყენებთ განმარტებას
                   onMouseDown={(e) => {
                     if (isIOS) {
@@ -377,7 +385,7 @@ export default function KeyboardWrapper(props) {
           {trueLetters.map((letter, index) => (
             <div key={index} className="diacritical-container">
               <button
-                className="keyboard-button"
+                className="letter-keyboard-button keyboard-button"
                 title={letter.definition}
                 onMouseDown={(e) => {
                   // მნიშვნელოვანია preventDefault iOS-ზე ფოკუსის შესანარჩუნებლად

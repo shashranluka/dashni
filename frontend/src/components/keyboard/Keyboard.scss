@@ -1,4 +1,4 @@
-*{
+* {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -7,12 +7,12 @@
 .keyboard {
   position: sticky; // ვტოვებთ მხოლოდ ამ position თვისებას
   bottom: 0;
-  left: auto; 
+  left: auto;
   right: 0;
   width: auto;
   max-width: 336px;
   margin-left: auto;
-  border-radius: .5em;
+  border-radius: 0.5em;
   background-color: #cae8ca;
   border: 2px solid #4caf50;
   // შევქმნათ კონტეინერი ღილაკისთვის
@@ -31,27 +31,40 @@
     flex-wrap: wrap;
     justify-content: space-around;
 
-    .diacretials{
+    .diacretials {
       display: flex;
       flex-wrap: wrap;
       justify-content: space-between;
       width: 100%;
       background-color: #4caf50;
+      padding: .3em;
+      
+      .modifier-keyboard-button {
+        margin: 0.1em 0.7em 0.3em 0.7em;
+        // margin: 0.7em;
+        background-color: #cae8ca;
+      }
     }
+
     .keyboard-button {
       background-color: rgb(190, 190, 247);
-      margin: .3em;
-      padding: .1em .7em .3em .7em;
-      border-radius: .3em;
+      // margin: 0.3em;
+      padding: 0.1em 0.7em 0.3em 0.7em;
+      border-radius: 0.3em;
       font-size: 1.2em;
       cursor: pointer;
       box-sizing: border-box;
-
-      .modifier {
-        font-feature-settings: "liga" off;
-        color: #4caf50;
-      }
     }
+
+    .letter-keyboard-button{
+      margin: 0.3em 0.5em;
+      // margin: .3em;
+    }
+
+    //       .modifier- {
+    //   font-feature-settings: "liga" off;
+    //   color: #4caf50;
+    // }
   }
 
   // ღილაკი აბსოლუტური პოზიციონირებით
@@ -61,7 +74,7 @@
     position: absolute;
     width: 40px;
     height: 30px;
-    padding: .3em;
+    padding: 0.3em;
     border-radius: 5px 5px 0 0;
     font-size: 1.2em;
     top: -30px; // კლავიატურის ზემოთ 30px-ით
@@ -72,7 +85,7 @@
     justify-content: center;
     box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.2);
     z-index: 10;
-    
+
     &:hover {
       background-color: #3a42a0;
     }
@@ -117,7 +130,8 @@
 }
 
 // დავრწმუნდეთ, რომ მშობელ კონტეინერს აქვს საკმარისი სიმაღლე
-html, body {
+html,
+body {
   min-height: 100%;
   height: 100%;
 }

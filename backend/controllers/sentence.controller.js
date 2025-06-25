@@ -1,4 +1,5 @@
-import Sentence from "../models/baSentence.model.js";
+import Sentence from "../models/sentence.model.js";
+import BaSentence from "../models/baSentence.model.js";
 import createError from "../utils/createError.js";
 import { getWordsBy } from "../utils/getWords.js"; // Assuming this is the correct path to the utility function
 // import { getWords } from "./word.controller.js";
@@ -56,16 +57,16 @@ export const getSentences = async (req, res, next) => {
     let Model;
     switch (language) {
       case "ba":
-        Model = Sentence;
+        Model = BaSentence;
         break;
       // case "ge":
-      //   Model = GeSentence;
+      //   Model = Sentence;
       //   break;
       // case "en":
       //   Model = EnSentence;
       //   break;
-      default:
-        Model = Sentence; // Default to BaSentence if no language is specified
+      // default:
+      //   Model = Sentence; // Default to BaSentence if no language is specified
     }
 
     // თუ მოთხოვნილია ენის წინადადებების შესახებ სტატისტიკა
