@@ -3,13 +3,9 @@ const { Schema } = mongoose;
 
 const TextSchema = new Schema(
   {
-    itself:"",
     userId: {
       type: String,
       required: true,
-    },
-    title: {
-      type: String,
     },
     text: {
       type: String,
@@ -19,13 +15,13 @@ const TextSchema = new Schema(
       type: String,
       // required: true,
     },
-    additionalInfo: {
+    picture: {
       type: String,
-      default: "",
+      // default: 0,
     },
-    language: {
+    theme: {
       type: String,
-      required: true,
+      // required: true,
     },
   },
   {
@@ -33,4 +29,4 @@ const TextSchema = new Schema(
   }
 );
 
-export default mongoose.model("Text", TextSchema);
+export default mongoose.model("deText", TextSchema);

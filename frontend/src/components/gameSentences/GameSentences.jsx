@@ -40,11 +40,11 @@ function Game(props) {
   const iSentence = useRef();
   const marksAmount = useRef(0);
   // const wordsFromLexicon = props.gameData.wordsFromLexicon;
-  const storeCollectedWords = props.storeCollectedWords;
+  const setGameWon = props.setGameWon;
   // const chosenSentences = props.gameData.chosenSentences;
   // const wordsFromSentences = props.gameData.wordsFromSentences;
   const setReturnedData = props.setReturnedData;
-  // console.log(props,typeof(storeCollectedWords),storeCollectedWords)
+  // console.log(props,typeof(setGameWon),setGameWon)
   // console.log(chosenSentences, "chosenSentences");
   const sentencesData = useMemo(() => {
     const sentencesData = chosenSentences.map((el) => {
@@ -176,7 +176,7 @@ function Game(props) {
             </div>
         ) : partOfGame === 6 ? (
           <div className="">
-            <Results points={points} tries={tries} sentences={sentencesData} wordsFromLexicon={wordsFromLexicon} setReturnedData={setReturnedData} storeCollectedWords={storeCollectedWords} />
+            <Results points={points} tries={tries} sentences={sentencesData} wordsFromLexicon={wordsFromLexicon} setReturnedData={setReturnedData} setGameWon={setGameWon} />
           </div>
         ) : null}
       </div>

@@ -1,0 +1,400 @@
+.my-page-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  
+  .page-header {
+    text-align: center;
+    margin-bottom: 30px;
+    
+    h1 {
+      font-size: 2rem;
+      color: #333;
+      margin-bottom: 10px;
+    }
+    
+    p {
+      color: #666;
+      font-size: 1rem;
+    }
+  }
+  
+  // ტაბების ნავიგაცია
+  .tabs-navigation {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 30px;
+    
+    .tab-btn {
+      padding: 12px 24px;
+      background-color: #f8f9fa;
+      border: none;
+      border-bottom: 3px solid transparent;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      
+      i {
+        font-size: 1.1rem;
+      }
+      
+      &:hover {
+        background-color: #e9ecef;
+      }
+      
+      &.active {
+        border-bottom: 3px solid #007bff;
+        color: #007bff;
+        font-weight: 500;
+      }
+    }
+  }
+  
+  // სექციის სათაურები
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    
+    h2 {
+      font-size: 1.5rem;
+      color: #333;
+    }
+    
+    .add-btn {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background-color: #28a745;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 4px;
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+      
+      &:hover {
+        background-color: #218838;
+        transform: translateY(-2px);
+      }
+      
+      &:active {
+        transform: translateY(0);
+      }
+    }
+  }
+  
+  // ტექსტების გრიდი
+  .texts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    
+    .text-card {
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      transition: transform 0.2s;
+      
+      &:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      }
+      
+      .text-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 15px;
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #e9ecef;
+        
+        .language-badge {
+          font-size: 1.2rem;
+        }
+        
+        .text-actions {
+          .delete-btn {
+            background: none;
+            border: none;
+            color: #dc3545;
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 5px;
+            
+            &:hover {
+              color: #bd2130;
+            }
+          }
+        }
+      }
+      
+      .text-content {
+        padding: 15px;
+        
+        .text-original {
+          font-size: 1rem;
+          margin-bottom: 10px;
+          color: #212529;
+        }
+        
+        .text-translation {
+          font-size: 0.9rem;
+          color: #6c757d;
+          font-style: italic;
+          padding-top: 10px;
+          border-top: 1px dashed #dee2e6;
+        }
+      }
+      
+      .text-additional-info {
+        padding: 0 15px 15px;
+        font-size: 0.85rem;
+        color: #6c757d;
+        background-color: #f8f9fa;
+        border-radius: 4px;
+        margin: 0 15px 15px;
+        padding: 10px;
+      }
+      
+      .text-footer {
+        padding: 10px 15px;
+        background-color: #f8f9fa;
+        border-top: 1px solid #e9ecef;
+        font-size: 0.8rem;
+        color: #6c757d;
+        text-align: right;
+      }
+    }
+  }
+  
+  // სიტყვების გრიდი
+  .words-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    
+    .word-card {
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      transition: transform 0.2s;
+      
+      &:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      }
+      
+      .word-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 15px;
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #e9ecef;
+        
+        .language-badge {
+          font-size: 1.2rem;
+        }
+        
+        .word-actions {
+          .delete-btn {
+            background: none;
+            border: none;
+            color: #dc3545;
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 5px;
+            
+            &:hover {
+              color: #bd2130;
+            }
+          }
+        }
+      }
+      
+      .word-content {
+        padding: 15px;
+        
+        .word-original {
+          font-size: 1.2rem;
+          margin-bottom: 10px;
+          color: #212529;
+        }
+        
+        .word-translation {
+          font-size: 1rem;
+          color: #495057;
+          margin-bottom: 10px;
+        }
+        
+        .word-definition {
+          font-size: 0.9rem;
+          color: #6c757d;
+          font-style: italic;
+        }
+      }
+      
+      .word-examples {
+        padding: 0 15px 15px;
+        
+        h4 {
+          font-size: 0.9rem;
+          margin-bottom: 8px;
+          color: #495057;
+        }
+        
+        ul {
+          margin: 0;
+          padding-left: 20px;
+          
+          li {
+            font-size: 0.85rem;
+            color: #6c757d;
+            margin-bottom: 5px;
+          }
+        }
+      }
+      
+      .word-footer {
+        padding: 10px 15px;
+        background-color: #f8f9fa;
+        border-top: 1px solid #e9ecef;
+        font-size: 0.8rem;
+        color: #6c757d;
+        text-align: right;
+      }
+    }
+  }
+  
+  // მდგომარეობის ელემენტები
+  .loading-spinner {
+    text-align: center;
+    padding: 30px;
+    color: #6c757d;
+    font-size: 1rem;
+  }
+  
+  .error-message {
+    text-align: center;
+    padding: 30px;
+    color: #dc3545;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    
+    i {
+      font-size: 2rem;
+      margin-bottom: 10px;
+    }
+  }
+  
+  .empty-state {
+    text-align: center;
+    padding: 50px 20px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    
+    i {
+      font-size: 3rem;
+      color: #adb5bd;
+      margin-bottom: 15px;
+    }
+    
+    p {
+      color: #6c757d;
+      margin-bottom: 20px;
+    }
+    
+    .add-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background-color: #28a745;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 4px;
+      text-decoration: none;
+      font-size: 1rem;
+      transition: all 0.2s;
+      
+      &:hover {
+        background-color: #218838;
+      }
+    }
+  }
+  
+  // ავტორიზაციის შეტყობინება
+  .auth-message {
+    text-align: center;
+    padding: 50px 20px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    max-width: 500px;
+    margin: 100px auto;
+    
+    i {
+      font-size: 3rem;
+      color: #6c757d;
+      margin-bottom: 20px;
+    }
+    
+    h2 {
+      color: #343a40;
+      margin-bottom: 15px;
+    }
+    
+    p {
+      color: #6c757d;
+      margin-bottom: 25px;
+    }
+    
+    .auth-btn {
+      display: inline-block;
+      background-color: #007bff;
+      color: white;
+      padding: 10px 25px;
+      border-radius: 4px;
+      text-decoration: none;
+      font-size: 1rem;
+      transition: all 0.2s;
+      
+      &:hover {
+        background-color: #0069d9;
+      }
+    }
+  }
+}
+
+// მობილური მოწყობილობებისთვის
+@media (max-width: 768px) {
+  .my-page-container {
+    padding: 15px;
+    
+    .page-header {
+      h1 {
+        font-size: 1.5rem;
+      }
+    }
+    
+    .texts-grid, .words-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .tabs-navigation {
+      .tab-btn {
+        flex: 1;
+        padding: 10px;
+        font-size: 0.9rem;
+        justify-content: center;
+      }
+    }
+  }
+}

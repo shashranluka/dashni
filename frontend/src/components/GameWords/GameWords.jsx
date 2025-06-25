@@ -25,7 +25,8 @@ function GameWords(props) {
   const [gameType, setGameType] = useState("TRANSLATION");
 
   const wordsFromLexicon = props.gameData.words;
-
+  const setGameWon = props.setGameWon;
+  console.log(props, "props.gameData", wordsFromLexicon, partOfGame);
   return (
     <div className="chapter">
       <GamePanel
@@ -67,6 +68,18 @@ function GameWords(props) {
               isVisibleFront={isVisibleFront}
               isVisibleBack={isVisibleBack}
               gameType={gameType}
+            />
+          </div>
+        ) : partOfGame === 2 ? (
+          <div className="">
+            <Results
+              // sentences={props.gameData.sentences}
+              point={points}
+              tries={tries}
+              wordsFromLexicon={wordsFromLexicon}
+              setReturnedData={props.setReturnedData}
+              storeCollectedWords={props.storeCollectedWords}
+              setGameWon={setGameWon}
             />
           </div>
         ) : null}

@@ -1,4 +1,4 @@
-// React-ის საჭირო მოდულების იმპორტი: useState კომპონენტის მდგომარეობისთვის, useEffect ეფექტებისთვის, useRef DOM ელემენტებზე წვდომისთვის
+// React-ის საჭირო მოდულების იმპორტი
 import React, { useEffect, useRef, useState } from "react";
 // CSS სტილების იმპორტი
 import "./Words.scss";
@@ -13,10 +13,13 @@ import getCurrentUser from "../../utils/getCurrentUser";
 function Words() {
   // მიმდინარე მომხმარებლის მიღება localStorage-დან
   const currentUser = getCurrentUser();
-  
+
   // თამაშის მდგომარეობის ცვლადები:
   // გამოხმობილი სიტყვების და მეტადატა შენახვა
   const [gameData, setGameData] = useState({});
+  const [gameWon, setGameWon] = useState(false);
+  // დავამატოთ ეს state ფუნქციის თავში
+  const [saveLoading, setSaveLoading] = useState(false);
   // თამაშის მდგომარეობის ცვლადი (დაწყებულია თუ არა)
   const [isStarted, setIsStarted] = useState(false);
   // ფლაგი იმის აღსანიშნავად, თუ მონაცემები მზადაა გამოსატანად
@@ -24,13 +27,13 @@ function Words() {
   // ჩატვირთვის პროცესის მდგომარეობის ცვლადი
   const [isLoading, setIsLoading] = useState(false);
   // სიტყვების რაოდენობის ცვლადი
-  const [amount, setAmount] = useState(22);
+  const [amount, setAmount] = useState(5);
   // სიტყვების ტიპის არჩევისთვის ცვლადები
   const [selectedTypes, setSelectedTypes] = useState({
     mine: currentUser ? false : false, // თავდაპირველად არჩეული არ არის
     public: true // საჯარო ყოველთვის არჩეულია
   });
-  
+
   // დავამატოთ ვალიდაციის შეცდომების ცვლადები
   const [validationErrors, setValidationErrors] = useState({
     language: false,
@@ -43,20 +46,33 @@ function Words() {
   // ენის არჩევის ველზე წვდომისთვის რეფერენსი
   const languageRef = useRef();
 
+  // დავამატოთ ტექსტის შესადგენი სტეიტები
+  const [text, setText] = useState("");
+  // საჭიროა დაემატოს თარგმანის state
+  const [translation, setTranslation] = useState("");
+  // კომპონენტის თავში დავამატოთ ახალი state
+  const [additionalInfo, setAdditionalInfo] = useState("");
+
+  // დავამატოთ თარგმანის ვალიდაციის ცვლადი
+  const [textValidationErrors, setTextValidationErrors] = useState({
+    text: false,
+    translation: false
+  });
+
   // ასინქრონული ფუნქცია სიტყვების API-დან გამოსახმობად
   const fetchWords = async () => {
     // საწყისი მდგომარეობისთვის გავასუფთაოთ ვალიდაციის შეცდომები
     setValidationErrors({ language: false, types: false });
-    
+
     // ვამოწმებთ, არსებობს თუ არა ენის რეფერენსი
     if (!languageRef.current) return;
 
     // ველებიდან მნიშვნელობების ამოღება
     const language = languageRef.current.value;
-    
+
     // ვალიდაცია - ამოწმებს, რომ შეყვანილია აუცილებელი მონაცემები
     let isValid = true;
-    
+
     if (!language) {
       // ენის ველის გაწითლება
       setValidationErrors(prev => ({ ...prev, language: true }));
@@ -68,7 +84,7 @@ function Words() {
       setValidationErrors(prev => ({ ...prev, types: true }));
       isValid = false;
     }
-    
+
     // თუ ვალიდაცია ვერ გაიარა, გამოვიდეთ ფუნქციიდან
     if (!isValid) return;
 
@@ -117,8 +133,56 @@ function Words() {
     }
   };
 
-  // თამაშის დაწყება/დასრულების ფუნქციის ლოგიკა
+  // სიტყვაზე დაჭერის ფუნქცია - გამარტივებული
+  const handleWordSelect = (word) => {
+    // დავამატოთ სიტყვა წინადადებას დაშორებით
+    setText(prev => prev.length > 0 ? `${prev} ${word.word}` : word.word);
+  };
+
+  // წინადადების გასუფთავების ფუნქცია - გამარტივებული
+  const handleClearSentence = () => {
+    setText("");
+  };
+
+  // წინადადების გაზიარების ფუნქცია - გამარტივებული
+  const handleShareSentence = () => {
+    if (text.length === 0) return;
+
+    if (navigator.share) {
+      navigator.share({
+        title: 'ჩემი შედგენილი წინადადება',
+        text: text,
+      })
+        .catch(error => console.log('გაზიარების შეცდომა:', error));
+    } else {
+      // საკოპირებლად ბუფერში
+      navigator.clipboard.writeText(text)
+        .then(() => alert('წინადადება დაკოპირებულია'))
+        .catch(err => console.log('კოპირების შეცდომა:', err));
+    }
+  };
+
+  // სასვენი ნიშნის დამატების ფუნქცია
+  const handlePunctuationSelect = (mark) => {
+    // დავამატოთ სასვენი ნიშანი წინადადებას
+    setText(prev => prev + mark);
+  };
+
+  // თარგმანის შენახვის ფუნქცია
+  const handleTranslationChange = (e) => {
+    setTranslation(e.target.value);
+  };
+
+  // დამატებითი ინფორმაციის შენახვის ფუნქცია
+  const handleAdditionalInfoChange = (e) => {
+    setAdditionalInfo(e.target.value);
+  };
+
+  // თამაშის გადატვირთვისას წინადადების გასუფთავება
   const handleToggleGame = () => {
+    setGameWon(false);
+    setText(""); // წინადადების გასუფთავება
+
     if (!isStarted) {
       // თუ თამაში არ დაწყებულა, დაიწყოს
       fetchWords();
@@ -130,6 +194,64 @@ function Words() {
       setValidationErrors({ language: false, types: false });
     }
   };
+
+
+  // დავამატოთ შენახვის ფუნქცია
+  const handleSaveSentence = async () => {
+    console.log("შენახვის ფუნქცია დაიძრა");
+    // გავასუფთაოთ წინა ვალიდაციის შეცდომები
+    setTextValidationErrors({ text: false, translation: false });
+    
+    // შევამოწმოთ ორივე ველი
+    let isValid = true;
+    
+    if (!text || text.trim() === "") {
+      setTextValidationErrors(prev => ({ ...prev, text: true }));
+      isValid = false;
+    }
+    
+    if (!translation || translation.trim() === "") {
+      setTextValidationErrors(prev => ({ ...prev, translation: true }));
+      isValid = false;
+    }
+    
+    // თუ ველები არ არის შევსებული, გამოვიდეთ ფუნქციიდან
+    if (!isValid) return;
+
+    try {
+      // ჩავტვირთოთ ინდიკატორი
+      setSaveLoading(true);
+
+      // მონაცემების მომზადება ბაზაში შესანახად
+      const textData = {
+        text: text,
+        translation: translation,
+        additionalInfo: additionalInfo,
+        language: gameData.language,
+        words: gameData.words.map(word => word._id)
+      };
+
+      // API მოთხოვნის გაგზავნა ტექსტის შესანახად
+      const response = await newRequest.post('/texts', textData);
+
+      // წარმატებული შენახვის შეტყობინება
+      alert('ტექსტი წარმატებით შეინახულია!');
+
+      // გავასუფთაოთ ველები წარმატებული შენახვის შემდეგ
+      setText("");
+      setTranslation("");
+      setAdditionalInfo("");
+      setTextValidationErrors({ text: false, translation: false });
+
+    } catch (error) {
+      console.error("ტექსტის შენახვისას მოხდა შეცდომა:", error);
+      alert(`შენახვა ვერ მოხერხდა: ${error.response?.data?.message || error.message}`);
+    } finally {
+      // გავთიშოთ ჩატვირთვის ინდიკატორი
+      setSaveLoading(false);
+    }
+  };
+  console.log(gameWon, "gameWon",textValidationErrors);
 
   // JSX - კომპონენტის ვიზუალური ნაწილი
   return (
@@ -246,7 +368,7 @@ function Words() {
               <i className="fas fa-filter"></i> სიტყვების ტიპი:
             </label>
             <div className={`type-selection-cards ${validationErrors.types ? 'validation-error' : ''}`}>
-              <div 
+              <div
                 className={`type-card ${selectedTypes.mine ? 'selected' : ''}`}
                 onClick={() => {
                   setSelectedTypes(prev => ({
@@ -260,10 +382,10 @@ function Words() {
                 }}
               >
                 <div className="type-checkbox">
-                  <input 
-                    type="checkbox" 
-                    checked={selectedTypes.mine} 
-                    onChange={() => {}} 
+                  <input
+                    type="checkbox"
+                    checked={selectedTypes.mine}
+                    onChange={() => { }}
                     disabled={isStarted}
                   />
                 </div>
@@ -272,8 +394,8 @@ function Words() {
                   <span>ჩემი</span>
                 </div>
               </div>
-              
-              <div 
+
+              <div
                 className={`type-card ${selectedTypes.public ? 'selected' : ''}`}
                 onClick={() => {
                   setSelectedTypes(prev => ({
@@ -287,10 +409,10 @@ function Words() {
                 }}
               >
                 <div className="type-checkbox">
-                  <input 
-                    type="checkbox" 
-                    checked={selectedTypes.public} 
-                    onChange={() => {}} 
+                  <input
+                    type="checkbox"
+                    checked={selectedTypes.public}
+                    onChange={() => { }}
                     disabled={isStarted}
                   />
                 </div>
@@ -359,9 +481,165 @@ function Words() {
               <span className="value">{gameData.words?.length || 0}</span>
             </div>
           </div>
-          <GameWords gameData={gameData} />
+          <GameWords gameData={gameData} setGameWon={setGameWon} />
+          <div className="">
+            {gameWon && (
+              <div className="game-won-message">
+                <p>მოპოვებული სიტყვები: {gameData.words?.length || 0}</p>
+
+                {gameData.words?.length > 0 && (
+                  <div className="text-builder">
+                    <h3>შეადგინეთ წინადადება მოპოვებული სიტყვებით</h3>
+
+                    <div className="text-container">
+                      <div className="text-label">
+                        <span>თქვენი წინადადება:</span>
+                        <div className="text-actions">
+                          <button
+                            className="clear-btn"
+                            onClick={handleClearSentence}
+                            disabled={text.length === 0}
+                          >
+                            <i className="fas fa-trash"></i> გასუფთავება
+                          </button>
+                          {/* <button
+                            className="share-btn"
+                            onClick={handleShareSentence}
+                            disabled={text.length === 0}
+                          >
+                            <i className="fas fa-share-alt"></i> გაზიარება
+                          </button> */}
+                        </div>
+                      </div>
+
+                      {/* შერჩეული სიტყვების ბარათების ნაცვლად პირდაპირ ვაჩვენებთ ტექსტს */}
+                      {text.length > 0 ? (
+                        <div className={`text-text ${textValidationErrors.text ? 'validation-error' : ''}`}>
+                          <p>{text}</p>
+                        </div>
+                      ) : (
+                        <div className={`empty-text ${textValidationErrors.text ? 'validation-error' : ''}`}>
+                          <i className="fas fa-arrow-up"></i>
+                          წინადადების შესადგენად დააჭირეთ სიტყვებს ქვემოთ
+                        </div>
+                      )}
+                      
+                      {/* ვაჩვენოთ შეცდომის შეტყობინება საჭიროებისას */}
+                      {/* {textValidationErrors.text && (
+                        <div className="error-message">წინადადება აუცილებელია</div>
+                      )} */}
+                    </div>
+                    {/* სიტყვების ბარათები */}
+                    <div className="word-cards-container">
+                      {gameData.words.map((word, index) => (
+                        <div
+                          key={index}
+                          className="word-card"
+                          onClick={() => handleWordSelect(word)}
+                        >
+                          <span className="word">{word.word}</span>
+                          {/* <span className="translation">{word.translation}</span> */}
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* წინადადების კონტეინერი */}
+
+                    {/* სასვენი ნიშნების კონტეინერი - გადმოვიტანეთ text-builder-ის შიგნით */}
+                    <div className="punctuation-container">
+                      {/* <div className="punctuation-title">სასვენი ნიშნები:</div> */}
+                      <div className="punctuation-marks">
+                        {['.', ',', '!', '?', ':', ';'].map((mark, index) => (
+                          <button
+                            key={index}
+                            className="punctuation-mark"
+                            onClick={() => handlePunctuationSelect(mark)}
+                          >
+                            {mark}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* თარგმანის ველი - გადმოვიტანეთ text-builder-ის შიგნით */}
+                    <div className="translation-container">
+                      <div className="translation-title">
+                        <span>თარგმანი:</span>
+                        {translation.length > 0 && (
+                          <button
+                            className="copy-translation-btn"
+                            onClick={() => {
+                              navigator.clipboard.writeText(translation)
+                                .then(() => alert('თარგმანი დაკოპირებულია'))
+                                .catch(err => console.log('კოპირების შეცდომა:', err));
+                            }}
+                          >
+                            <i className="fas fa-copy"></i> კოპირება
+                          </button>
+                        )}
+                      </div>
+                      <textarea
+                        className={`translation-input ${textValidationErrors.translation ? 'validation-error' : ''}`}
+                        placeholder="შეიყვანეთ თქვენი წინადადების თარგმანი..."
+                        value={translation}
+                        onChange={handleTranslationChange}
+                        rows={3}
+                      />
+                      
+                      {/* ვაჩვენოთ შეცდომის შეტყობინება საჭიროებისას */}
+                      {/* {textValidationErrors.translation && (
+                        <div className="error-message">თარგმანი აუცილებელია</div>
+                      )} */}
+                    </div>
+
+                    {/* დამატებითი ინფორმაციის ველი */}
+                    <div className="additional-info-container">
+                      <div className="additional-info-title">
+                        <span>დამატებითი ინფორმაცია:</span>
+                      </div>
+                      <textarea
+                        className="additional-info-input"
+                        placeholder="შეიყვანეთ დამატებითი ინფორმაცია, შენიშვნები ან კომენტარები..."
+                        value={additionalInfo}
+                        onChange={handleAdditionalInfoChange}
+                        rows={3}
+                      />
+                    </div>
+
+                    <div className="save-container">
+                      <button
+                        className="save-text-btn"
+                        onClick={handleSaveSentence}
+                        // disabled={text.length === 0 || saveLoading}
+                      >
+                        {saveLoading ? (
+                          <><span className="spinner-small"></span> ინახება...</>
+                        ) : (
+                          <><i className="fas fa-save"></i> შენახვა ბაზაში</>
+                        )}
+                      </button>
+                      <p className="save-hint">
+                        შეინახეთ წინადადება და თარგმანი თქვენს ანგარიშში მომავალში გამოსაყენებლად
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       )}
+
+      {/* წავშალოთ ეს კოდი - ახლა ეს ელემენტები მხოლოდ თამაშის მოგების შემდეგ გამოჩნდება */}
+      {/* სასვენი ნიშნების კონტეინერი */}
+      {/* <div className="punctuation-container">
+        ...
+      </div> */}
+
+      {/* თარგმანის ველი */}
+      {/* <div className="translation-container">
+        ...
+      </div> */}
     </div>
   );
 }

@@ -12,7 +12,7 @@ export const createSentence = async (req, res, next) => {
     userId: req.userId,
     ...req.body,
   });
-  // console.log("SentenceState", req.body, "newWord", newSentence);
+  console.log("SentenceState", req.body, "newWord", newSentence);
   try {
     const savedSentence = await newSentence.save();
     res.status(201).json(savedSentence);

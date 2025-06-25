@@ -14,7 +14,7 @@ export const createWord = async (req, res, next) => {
 
     for (let i = 0; i < req.body.length; i++) {
       const language = req.body[i].language;
-      console.log("wordsState", req.body[i], "newWord", language);
+      // console.log("wordsState", req.body[i], "newWord", language);
       let Model;
 
       switch (language) {
@@ -64,12 +64,11 @@ export const createWord = async (req, res, next) => {
   }
 };
 
-export const getWords = async (req, res, next) => {  // ასინქრონული ფუნქციის განსაზღვრა, რომელიც იღებს request, response და next პარამეტრებს
-  console.log(req.query, "getWords req");  // ლოგავს მოთხოვნის პარამეტრებს
-  const { userId, amount, language, type, privacy, wordsToTranslate, sort } = req.query;
-  try {  // შეცდომების დასაჭერად try ბლოკი იწყება
-    // თუ მოთხოვნილია მომხმარებლის შეგროვილი სიტყვები
-
+export const getWords = async (req, res, next) => {
+  console.log(req.query, "getWords req");
+  const { userId, amount, language, type, privacy, wordsToTranslate, sort, whatIsNeeded } = req.query;
+  try {
+    console.log("userId", userId, "amount", amount, "language", language, "type", type, "privacy", privacy, "wordsToTranslate", wordsToTranslate, "sort", sort, "whatIsNeeded", whatIsNeeded);
 
     let Model;
     switch (language) {
@@ -98,9 +97,26 @@ export const getWords = async (req, res, next) => {  // ასინქრონ
         Model = Word;
     }
 
-    console.log(privacy, "privacy");
-
-    // თუ მოთხოვნილია შემთხვევითი სიტყვების არჩევა
+    // თუ მოთხოვნილია მომხმარებლის მიერ დამატებული სიტყვები
+    if (userId && whatIsNeeded === "userWords") {
+      console.log("Fetching user added words for userId:", userId);
+      
+      // ვამოწმებთ მომხმარებლის არსებობას
+      const user = await User.findById(userId);
+      if (!user) return res.status(404).json({ error: "User not found" });
+      
+      // მოვძებნოთ მხოლოდ მომხმარებლის მიერ დამატებული სიტყვები
+      const userAddedWords = await Model.find({ 
+        userId: userId,
+        language: language // უზრუნველვყოთ, რომ მხოლოდ მითითებული ენის სიტყვები დაბრუნდეს
+      }).sort({ createdAt: -1 }); // ახლიდან ძველისკენ დალაგება
+      
+      console.log(`Found ${userAddedWords.length} words added by user`);
+      return res.status(200).send(userAddedWords);
+    }
+    
+    // დანარჩენი ლოგიკა რჩება უცვლელი
+    
     // თუ მოთხოვნილია შემთხვევითი სიტყვების არჩევა
     if (type === "random") {
       const limit = parseInt(amount) || 10;
@@ -139,15 +155,17 @@ export const getWords = async (req, res, next) => {  // ასინქრონ
 
       return res.status(200).send(randomWords);
     }
+    
     // თუ მოთხოვნილია კონკრეტული მომხმარებლის სიტყვები
-    if ("userId" in req.query) {  // ამოწმებს არის თუ არა userId პარამეტრი მოთხოვნაში
-      console.log("userId in req.query", userId);  // ლოგავს მომხმარებლის ID-ს
+    if ("userId" in req.query && !whatIsNeeded) {  
+      console.log("userId in req.query", userId,Model);  // ლოგავს მომხმარებლის ID-ს
       const user = await User.findById(userId);  // მონაცემთა ბაზიდან იღებს მომხმარებელს მოწოდებული ID-ით
       if (!user) return res.status(404).json({ error: "User not found" });  // თუ მომხმარებელი არ მოიძებნა, აბრუნებს 404 შეცდომას
 
-      const collectedWordsData = await BaWord.find({  // პოულობს ყველა სიტყვას BaWord მოდელიდან
+      const collectedWordsData = await Model.find({  // პოულობს ყველა სიტყვას BaWord მოდელიდან
         _id: { $in: user.collectedWords }  // სადაც _id არის ერთ-ერთი მომხმარებლის შეგროვილი სიტყვებიდან
       });
+      console.log("collectedWordsData", collectedWordsData);  // ლოგავს მოძიებულ სიტყვებს
       return res.status(200).send(collectedWordsData);  // აბრუნებს მოძიებულ სიტყვებს 200 სტატუს კოდით
     }
 

@@ -41,7 +41,7 @@ export default function Dictionary(props) {
       
       setTimeout(() => {
         setIsFixedVisible(false);
-      }, 3000);
+      }, 1000);
     } else {
       // არასწორი პასუხის შემთხვევაში
       setTries(tries + 1);

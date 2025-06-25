@@ -13,6 +13,7 @@ function Sentences() {
   const [isLoading, setIsLoading] = useState(false);
   const [isStarted, setIsStarted] = useState(false);
   const [gameData, setGameData] = useState({});
+  const [gameWon, setGameWon] = useState(false);
 
   const [error, setError] = useState(null);
   const currentUser = getCurrentUser();
@@ -42,6 +43,7 @@ function Sentences() {
     // შეგიძლიათ დაამატოთ სხვა ენები საჭიროებისამებრ
   ];
 
+  console.log(gameWon, "gameWon");
   // ენის არჩევის დამუშავება
   const handleLanguageSelect = async (langId) => {
     try {
@@ -185,6 +187,12 @@ function Sentences() {
       setIsStarted(false);
     }
   };
+  useEffect(() => {
+    if(gameWon) {
+      console.log("Game won!"); // ან სხვა ლოგიკა, რაც გსურთ თამაშის მოგებისას
+      // Handle game won state
+    }
+  }, [gameWon]);
 
   return (
     <div className="sentencesPage">
@@ -463,7 +471,7 @@ function Sentences() {
             )}
           </button>
           {isStarted && (
-            <GameSentences gameData={gameData} />
+            <GameSentences gameData={gameData} setGameWon={setGameWon} />
           )}
         </div>
       )}
