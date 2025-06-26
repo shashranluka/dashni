@@ -20,10 +20,34 @@ export const createText = async (req, res, next) => {
 };
 
 export const getTexts = async (req, res, next) => {
+  const { userId, language, whatIsNeeded } = req.query;
+  console.log("getTexts userId", userId, "language", language, "whatIsNeeded", whatIsNeeded);
+  
   try {
-    const texts = await Text.find();
+    let query = {};
+    
+    // მომხმარებლის ტექსტების დაბრუნება
+    if (whatIsNeeded === "userTexts" && userId) {
+      query = {
+        userId: userId
+      };
+      
+      // თუ ენა მითითებულია, დავამატოთ ენის ფილტრიც
+      if (language) {
+        query.language = language;
+      }
+    } 
+    // სხვა შემთხვევაში დავაბრუნოთ ყველა ტექსტი (შეიძლება დავამატოთ სხვა პირობებიც)
+    else {
+      // თუ მხოლოდ ენაა მითითებული
+      if (language) {
+        query.language = language;
+      }
+    }
+    
+    const texts = await Text.find(query);
     res.status(200).json(texts);
   } catch (err) {
     next(err);
   }
-}
+};
