@@ -10,9 +10,12 @@ import GameWords from "../../components/GameWords/GameWords";
 import getCurrentUser from "../../utils/getCurrentUser";
 // დავამატოთ ენის კონტექსტის იმპორტი
 import { useLanguage } from "../../context/LanguageContext";
+import { wordsInfo } from "../../data/infoData";
+import InfoButton from "../../components/infoButton/InfoButton";
 
 // Words კომპონენტის განსაზღვრა - სიტყვების თამაშისთვის
 function Words() {
+  console.log("Words კომპონენტი დაიტვირთა", wordsInfo);
   // მიმდინარე მომხმარებლის მიღება localStorage-დან
   const currentUser = getCurrentUser();
   
@@ -243,6 +246,7 @@ function Words() {
   // JSX - კომპონენტის ვიზუალური ნაწილი
   return (
     <div className="words-game-container">
+      <InfoButton infoData={wordsInfo} />
       <h2>სიტყვების თამაში</h2>
       {/* თამაშის მდგომარეობის ინდიკატორი */}
       <div className="game-status-bar">

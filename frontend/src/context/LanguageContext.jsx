@@ -8,11 +8,10 @@ export const useLanguage = () => useContext(LanguageContext);
 
 // კონტექსტის პროვაიდერი
 export default function LanguageProvider({ children }) {
-  console.log("LanguageProvider rendered");
   // ენის სტეიტი, თავდაპირველად localStorage-დან
   const [language, setLanguage] = useState(() => {
     const savedLanguage = localStorage.getItem("selectedLanguage");
-    return savedLanguage || "ka"; // ნაგულისხმევი - ქართული
+    return savedLanguage || "ba"; // ნაგულისხმევი - ქართული
   });
 
   // ენის შეცვლის ფუნქცია

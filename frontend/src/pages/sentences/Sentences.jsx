@@ -5,6 +5,8 @@ import GameSentences from "../../components/gameSentences/GameSentences";
 import getCurrentUser from "../../utils/getCurrentUser";
 import { splitTextToWords } from "../../utils/tools";
 import { useLanguage } from "../../context/LanguageContext";
+import InfoButton from "../../components/infoButton/InfoButton";
+import { sentencesInfo } from "../../data/infoData";
 
 function Sentences() {
   const { language } = useLanguage();
@@ -182,6 +184,7 @@ function Sentences() {
       <div className="statsParamsContainer">
         <div className="sentencesHeader">
           <h1 className="pageTitle">წინადადებები</h1>
+          <InfoButton infoData={sentencesInfo} />
         </div>
 
         <h2 className="languageHeader">{getLanguageName(language)}</h2>

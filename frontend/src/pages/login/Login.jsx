@@ -4,24 +4,48 @@ import newRequest from "../../utils/newRequest";
 import { useNavigate } from "react-router-dom";
 
 function Login() {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loginTryCounter, setLoginTryCounter] = useState("");
   const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
 
+  // მეილის ვალიდაციის ფუნქცია
+  const isValidEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
   const handleSubmit = async (e) => {
-    console.log(e, "e");
     e.preventDefault();
+    
+    // მეილის ფორმატის შემოწმება
+    if (!isValidEmail(email)) {
+      setError("გთხოვთ, შეიყვანოთ მეილის სწორი ფორმატი");
+      return;
+    }
+
+    setError(null);
+    setIsLoading(true);
+    
     try {
-      const res = await newRequest.post("/auth/login", { username, password });
-      console.log("res", res);
+      // ვაგზავნით მეილს username-ის ნაცვლად
+      const res = await newRequest.post("/auth/login", { email, password });
+      
       localStorage.setItem("currentUser", JSON.stringify(res.data));
       navigate("/");
     } catch (err) {
-      setError(err.response.data);
-      setLoginTryCounter(loginTryCounter+" ისევ")
+      // შეცდომის დამუშავება
+      if (err.response && err.response.data) {
+        setError(err.response.data);
+      } else {
+        setError("დაფიქსირდა შეცდომა შესვლისას. გთხოვთ, სცადოთ მოგვიანებით.");
+      }
+      setLoginTryCounter(loginTryCounter + " ისევ");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -29,24 +53,36 @@ function Login() {
     <div className="login">
       <form onSubmit={handleSubmit}>
         <h1>შესვლა</h1>
-        <label htmlFor="">მომხმარებლის სახელი</label>
+        
+        <label htmlFor="email">ელ-ფოსტა</label>
         <input
-          name="username"
-          type="text"
-          required="true"
-          placeholder=""
-          onChange={(e) => setUsername(e.target.value)}
+          id="email"
+          name="email"
+          type="email"
+          required
+          placeholder="example@mail.com"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className={error && error.includes("მეილის") ? "input-error" : ""}
         />
 
-        <label htmlFor="">პაროლი</label>
+        <label htmlFor="password">პაროლი</label>
         <input
+          id="password"
           name="password"
           type="password"
-          required="true"
+          required
+          value={password}
           onChange={(e) => setPassword(e.target.value)}
+          className={error && error.includes("პაროლი") ? "input-error" : ""}
         />
-        <button type="submit">Login</button>
-        {error && error}{loginTryCounter}
+        
+        <button type="submit" disabled={isLoading}>
+          {isLoading ? "იტვირთება..." : "შესვლა"}
+        </button>
+        
+        {error && <div className="error-message">{error}</div>}
+        {loginTryCounter && <div className="login-counter">{loginTryCounter}</div>}
       </form>
     </div>
   );
