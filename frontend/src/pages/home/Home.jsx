@@ -5,7 +5,6 @@ import InfoButton from "../../components/infoButton/InfoButton";
 import { generateInfoData } from "../../data/infoData";
 
 function Home() {
-  console.log(generateInfoData)
   return (
     <div className="home">
       {/* ინფორმაციის ღილაკის კომპონენტი */}

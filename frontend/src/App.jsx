@@ -39,6 +39,7 @@ import MyClass from "./pages/MyClass/MyClass";
 import PrivacyStatement from "./pages/privacyStatement/PrivacyStatement";
 import IntelectualProperty from "./pages/intelectualProperty/IntelectualProperty";
 import LanguageProvider from "./context/LanguageContext";
+import AddTextData from "./pages/addTextData/AddTextData";
 
 function App() {
   const queryClient = new QueryClient();
@@ -183,6 +184,10 @@ function App() {
         {
           path: "/add-data",
           element: <AddData />,
+        },
+        {
+          path: "/add-textdata",
+          element: <AddTextData />,
         },
         {
           path: "/addvideodata",

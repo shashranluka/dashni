@@ -1,18 +1,11 @@
-export const SENTENCE_INITIAL_STATE = {
-  userId: JSON.parse(localStorage.getItem("currentUser"))?._id,
+export const TEXT_INITIAL_STATE = {
+  title: "",
   text: "",
   translation: "",
-  images: [],
-  uri: "",
-  // desc: "",
-  // cat: "",
-  // cover: "",
-  // shortTitle: "",
-  // shortDesc: "",
-  // deliveryTime: 0,
-  // revisionNumber: 0,
-  // features: [],
-  // price: 0,
+  tags: [],
+  themes: [],
+  difficulty: "",
+  isPublic: false,
 };
 
 export const textReducer = (state, action) => {
@@ -22,25 +15,32 @@ export const textReducer = (state, action) => {
         ...state,
         [action.payload.name]: action.payload.value,
       };
-    case "ADD_IMAGES":
+    case "ADD_TAG":
+      if (!state.tags.includes(action.payload)) {
+        return {
+          ...state,
+          tags: [...state.tags, action.payload],
+        };
+      }
+      return state;
+    case "REMOVE_TAG":
       return {
         ...state,
-        cover: action.payload.cover,
-        images: action.payload.images,
+        tags: state.tags.filter((tag) => tag !== action.payload),
       };
-    case "ADD_FEATURE":
+    case "SET_THEMES":
       return {
         ...state,
-        features: [...state.features, action.payload],
+        themes: action.payload,
       };
-    case "REMOVE_FEATURE":
-      return {
-        ...state,
-        features: state.features.filter(
-          (feature) => feature !== action.payload
-        ),
-      };
-
+    case "ADD_THEME":
+      if (!state.themes.includes(action.payload)) {
+        return {
+          ...state,
+          themes: [...state.themes, action.payload],
+        };
+      }
+      return state;
     default:
       return state;
   }

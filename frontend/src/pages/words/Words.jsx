@@ -1,5 +1,7 @@
 // React-ის საჭირო მოდულების იმპორტი
 import React, { useEffect, useRef, useState, useContext } from "react";
+import { Link } from "react-router-dom";
+
 // CSS სტილების იმპორტი
 import "./Words.scss";
 // React Query ბიბლიოთეკიდან useQuery hook-ის იმპორტი API მოთხოვნებისთვის
@@ -581,22 +583,31 @@ function Words() {
                       />
                     </div>
 
-                    <div className="save-container">
-                      <button
-                        className="save-text-btn"
-                        onClick={handleSaveSentence}
-                        // disabled={text.length === 0 || saveLoading}
-                      >
-                        {saveLoading ? (
-                          <><span className="spinner-small"></span> ინახება...</>
-                        ) : (
-                          <><i className="fas fa-save"></i> შენახვა ბაზაში</>
-                        )}
-                      </button>
-                      <p className="save-hint">
-                        შეინახეთ წინადადება და თარგმანი თქვენს ანგარიშში მომავალში გამოსაყენებლად
-                      </p>
-                    </div>
+                    {/* შენახვის კონტეინერს ვაჩვენებთ მხოლოდ ავტორიზებული მომხმარებლისთვის */}
+                    {currentUser ? (
+                      <div className="save-container">
+                        <button
+                          className="save-text-btn"
+                          onClick={handleSaveSentence}
+                        >
+                          {saveLoading ? (
+                            <><span className="spinner-small"></span> ინახება...</>
+                          ) : (
+                            <><i className="fas fa-save"></i> შენახვა ბაზაში</>
+                          )}
+                        </button>
+                        <p className="save-hint">
+                          შეინახეთ წინადადება და თარგმანი თქვენს ანგარიშში მომავალში გამოსაყენებლად
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="login-prompt">
+                        <p>
+                          <i className="fas fa-info-circle"></i> წინადადების შესანახად საჭიროა 
+                          <Link to="/login" className="login-link"> ავტორიზაცია</Link>
+                        </p>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

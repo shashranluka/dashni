@@ -87,7 +87,7 @@ function Navbar() {
                       <Link className="addLink" to={"/addwordsdata"}>
                         სიტყვების დამატება
                       </Link>
-                      <Link className="addLink" to={"/add-data"}>
+                      <Link className="addLink" to={"/add-textdata"}>
                         ტექსტის დამატება
                       </Link>
                       <Link className="logoutlink" onClick={handleLogout}>
