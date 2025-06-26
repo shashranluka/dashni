@@ -37,7 +37,7 @@ function Words() {
   // ჩატვირთვის პროცესის მდგომარეობის ცვლადი
   const [isLoading, setIsLoading] = useState(false);
   // სიტყვების რაოდენობის ცვლადი
-  const [amount, setAmount] = useState(5);
+  const [amount, setAmount] = useState(22);
   // სიტყვების ტიპის არჩევისთვის ცვლადები
   const [selectedTypes, setSelectedTypes] = useState({
     mine: currentUser ? false : false, // თავდაპირველად არჩეული არ არის

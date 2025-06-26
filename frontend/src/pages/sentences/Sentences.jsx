@@ -279,6 +279,7 @@ function Sentences() {
           <h1 className="pageTitle">წინადადებები</h1>
           <InfoButton infoData={sentencesInfo} />
         </div>
+        <div className="">გამოყენებული წინადადებები თუშურ ენაზე აღებულია ადრე შექმნილი თამაშიდან game.tushetians</div>
 
         <h2 className="languageHeader">{getLanguageName(language)}</h2>
 
