@@ -1,5 +1,5 @@
 // React-ის საჭირო მოდულების იმპორტი
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useContext } from "react";
 // CSS სტილების იმპორტი
 import "./Words.scss";
 // React Query ბიბლიოთეკიდან useQuery hook-ის იმპორტი API მოთხოვნებისთვის
@@ -8,11 +8,16 @@ import { useQuery } from "@tanstack/react-query";
 import newRequest from "../../utils/newRequest";
 import GameWords from "../../components/GameWords/GameWords";
 import getCurrentUser from "../../utils/getCurrentUser";
+// დავამატოთ ენის კონტექსტის იმპორტი
+import { useLanguage } from "../../context/LanguageContext";
 
 // Words კომპონენტის განსაზღვრა - სიტყვების თამაშისთვის
 function Words() {
   // მიმდინარე მომხმარებლის მიღება localStorage-დან
   const currentUser = getCurrentUser();
+  
+  // ენის კონტექსტიდან წამოღება
+  const { language } = useLanguage();
 
   // თამაშის მდგომარეობის ცვლადები:
   // გამოხმობილი სიტყვების და მეტადატა შენახვა
@@ -36,15 +41,15 @@ function Words() {
 
   // დავამატოთ ვალიდაციის შეცდომების ცვლადები
   const [validationErrors, setValidationErrors] = useState({
-    language: false,
     types: false
   });
 
   // DOM ელემენტებზე წვდომისთვის რეფერენსები:
   // სიტყვების რაოდენობის ველზე წვდომისთვის რეფერენსი
   const amountRef = useRef();
-  // ენის არჩევის ველზე წვდომისთვის რეფერენსი
-  const languageRef = useRef();
+  
+  // წავშალოთ ენის რეფერენსი, რადგან ახლა კონტექსტიდან მოვა
+  // const languageRef = useRef();
 
   // დავამატოთ ტექსტის შესადგენი სტეიტები
   const [text, setText] = useState("");
@@ -62,31 +67,13 @@ function Words() {
   // ასინქრონული ფუნქცია სიტყვების API-დან გამოსახმობად
   const fetchWords = async () => {
     // საწყისი მდგომარეობისთვის გავასუფთაოთ ვალიდაციის შეცდომები
-    setValidationErrors({ language: false, types: false });
-
-    // ვამოწმებთ, არსებობს თუ არა ენის რეფერენსი
-    if (!languageRef.current) return;
-
-    // ველებიდან მნიშვნელობების ამოღება
-    const language = languageRef.current.value;
-
-    // ვალიდაცია - ამოწმებს, რომ შეყვანილია აუცილებელი მონაცემები
-    let isValid = true;
-
-    if (!language) {
-      // ენის ველის გაწითლება
-      setValidationErrors(prev => ({ ...prev, language: true }));
-      isValid = false;
-    }
+    setValidationErrors({ types: false });
 
     // ვალიდაცია - ერთი ტიპი მაინც უნდა იყოს არჩეული
     if (!selectedTypes.mine && !selectedTypes.public) {
       setValidationErrors(prev => ({ ...prev, types: true }));
-      isValid = false;
+      return;
     }
-
-    // თუ ვალიდაცია ვერ გაიარა, გამოვიდეთ ფუნქციიდან
-    if (!isValid) return;
 
     // ჩატვირთვის მდგომარეობის ჩართვა
     setIsLoading(true);
@@ -107,7 +94,7 @@ function Words() {
         params: {
           userId: currentUser ? currentUser._id : null, // მომხმარებლის ID
           amount,
-          language,
+          language, // კონტექსტიდან წამოღებული ენა
           type: "random",
           privacy,
         },
@@ -116,7 +103,7 @@ function Words() {
       // მიღებული მონაცემების დამახსოვრება სთეითში
       setGameData({
         words: response.data,     // სიტყვების მასივი API-დან
-        language: language,       // არჩეული ენა
+        language: language,       // არჩეული ენა კონტექსტიდან
         amount: amount           // არჩეული რაოდენობა
       });
 
@@ -191,7 +178,7 @@ function Words() {
       setGameDataCollected(false);
       setIsStarted(false);
       // გავასუფთაოთ ვალიდაციის შეცდომები
-      setValidationErrors({ language: false, types: false });
+      setValidationErrors({ types: false });
     }
   };
 
@@ -278,41 +265,25 @@ function Words() {
       <h3>
         {!isLoading && !gameDataCollected && (
           <div className="game-instructions">
-            <p>თამაშის დასაწყებად, აირჩიეთ ენა და სიტყვების რაოდენობა, შემდეგ დააჭირეთ "თამაშის დაწყება" ღილაკს.</p>
+            <p>თამაშის დასაწყებად, აირჩიეთ სიტყვების რაოდენობა და ტიპი, შემდეგ დააჭირეთ "თამაშის დაწყება" ღილაკს.</p>
           </div>
         )}
       </h3>
-      {/* კონტროლების სექცია - ენის არჩევა, სიტყვების რაოდენობა და თამაშის დაწყება */}
+      {/* კონტროლების სექცია - სიტყვების რაოდენობა და თამაშის დაწყება */}
       <div className={`game-controls ${isStarted ? "minimized" : ""}`}>
-        {/* ენის არჩევის ჩამოსაშლელი მენიუ გაუმჯობესებული იკონით */}
+        {/* ენის ჩამოსაშლელი მენიუს ნაცვლად გამოვაჩინოთ მიმდინარე ენა */}
         <div className="control-group">
-          <label htmlFor="language">
-            <i className="fas fa-language"></i> ენა:
+          <label>
+            <i className="fas fa-language"></i> არჩეული ენა:
           </label>
-          <select
-            id="language"
-            ref={languageRef}
-            defaultValue=""
-            className={`styled-select ${validationErrors.language ? 'validation-error' : ''}`}
-            disabled={isStarted}
-            onChange={() => {
-              // შეცდომის გასუფთავება ველის შეცვლისას
-              if (validationErrors.language) {
-                setValidationErrors(prev => ({ ...prev, language: false }));
-              }
-            }}
-          >
-            <option value="" disabled>აირჩიეთ ენა</option>
-            <option value="ba"> თუშური</option>
-            {/* <option value="ka"> ქართული</option> */}
-            <option value="ka"> ქართული</option>
-            <option value="en"> ინგლისური</option>
-            <option value="de"> გერმანული</option>
-            <option value="sx"> სხვა</option>
-          </select>
-          {/* {validationErrors.language && (
-            <div className="error-message">გთხოვთ, აირჩიოთ ენა</div>
-          )} */}
+          <div className="selected-language-display">
+            {language === "ka" ? "🇬🇪 ქართული" :
+             language === "en" ? "🇬🇧 ინგლისური" :
+             language === "de" ? "🇩🇪 გერმანული" :
+             language === "fr" ? "🇫🇷 ფრანგული" :
+             language === "ba" ? "თუშური" : "სხვა"}
+          </div>
+          <p className="language-note">ენის შესაცვლელად გამოიყენეთ ენის ჩამოსაშლელი მენიუ ზედა პანელში</p>
         </div>
 
         {/* სიტყვების რაოდენობის არჩევის ინფუთი სლაიდერით და ხელით შესაყვანი ველით */}

@@ -38,6 +38,8 @@ import GameTushetians from "./pages/gameTushetians/GameTushetians";
 import MyClass from "./pages/MyClass/MyClass";
 import PrivacyStatement from "./pages/privacyStatement/PrivacyStatement";
 import IntelectualProperty from "./pages/intelectualProperty/IntelectualProperty";
+import LanguageProvider from "./context/LanguageContext";
+
 function App() {
   const queryClient = new QueryClient();
   // const [keyboardChosenLetter, setKeyboardChosenLetter] = useState(null);
@@ -47,12 +49,14 @@ function App() {
       <div className="cntn">
         <div className="app">
           <QueryClientProvider client={queryClient}>
-            <Navbar />
-            <div className="outlet">
-              <Outlet />
-            </div>
-            {/* <KeyboardRare setLetter={setKeyboardChosenLetter} /> */}
-            <Footer />
+            <LanguageProvider>
+              <Navbar />
+              <div className="outlet">
+                <Outlet />
+              </div>
+              {/* <KeyboardRare setLetter={setKeyboardChosenLetter} /> */}
+              <Footer />
+            </LanguageProvider>
           </QueryClientProvider>
         </div>
       </div>

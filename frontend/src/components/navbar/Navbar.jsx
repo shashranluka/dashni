@@ -4,22 +4,14 @@ import newRequest from "../../utils/newRequest";
 import "./Navbar.scss";
 // import { get } from "mongoose";
 import getSelectedLanguage from "../../utils/getCurrentLanguage";
+import { useLanguage } from "../../context/LanguageContext";
 
 function Navbar() {
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef(null);
 
-  // დავამატოთ ენის სტეიტი, ნაგულისხმევი ქართული
-  const [language, setLanguage] = useState(() => {
-    console.log("Initializing language state");
-    // ჯერ შევამოწმოთ localStorage-ში არის თუ არა შენახული ენა
-    // const savedLanguage = localStorage.getItem("selectedLanguage");
-    const savedLanguage = getSelectedLanguage(); // ეს ფუნქცია უნდა დააბრუნოს ენა, რომელიც localStorage-შია შენახული
-    console.log("Saved language from localStorage:", savedLanguage);
-    return savedLanguage || "ka"; // თუ არ არის - ვიყენებთ ქართულს
-  });
- console.log("Selected language:", language);
-  const { pathname } = useLocation();
+  // ენის კონტექსტის გამოყენება
+  const { language, changeLanguage } = useLanguage();
 
   // კლიკების დამჭერი useEffect
   useEffect(() => {
@@ -34,12 +26,6 @@ function Navbar() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [dropdownRef]);
-
-  // დავამატოთ ახალი useEffect ენის ცვლილების დასაფიქსირებლად
-  useEffect(() => {
-    // შევინახოთ არჩეული ენა localStorage-ში
-    localStorage.setItem("selectedLanguage", language);
-  }, [language]);
 
   const currentUser = JSON.parse(localStorage.getItem("currentUser"));
   const navigate = useNavigate();
@@ -56,7 +42,7 @@ function Navbar() {
 
   // ენის ცვლილების დამჭერი ფუნქცია
   const handleLanguageChange = (e) => {
-    setLanguage(e.target.value);
+    changeLanguage(e.target.value);
   };
 
   return (
@@ -68,9 +54,11 @@ function Navbar() {
           </Link>
         </div>
 
-        {/* ენის არჩევის ველი ლოგოს შემდეგ */}
+        {/* ენის არჩევის ელემენტი */}
         <div className="language-selector">
           <select
+            id="language-select"
+            name="language"
             value={language}
             onChange={handleLanguageChange}
             className="language-select"

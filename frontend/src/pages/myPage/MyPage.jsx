@@ -4,28 +4,26 @@ import newRequest from "../../utils/newRequest";
 import getCurrentUser from "../../utils/getCurrentUser";
 import "./MyPage.scss";
 import { Link } from "react-router-dom";
+import { useLanguage } from "../../context/LanguageContext";
 
 function MyPage() {
     const currentUser = getCurrentUser();
     const [activeTab, setActiveTab] = useState("texts");
-    const [selectedLanguage, setSelectedLanguage] = useState(() => {
-        // ვამოწმებთ, თუ localStorage-ში უკვე არის ენა შენახული
-        const savedLanguage = localStorage.getItem("selectedLanguage");
-        return savedLanguage || "ka"; // თუ არა, ნაგულისხმევი ქართული
-    });
-    console.log("Current User:", currentUser, selectedLanguage);
-    // ტექსტების გამოხმობა
 
-    // სიტყვების გამოხმობა
+    // ენის კონტექსტის გამოყენება
+    const { language } = useLanguage();
+
+    // სიტყვების გამოხმობა ენის პარამეტრით
     const {
         isLoading: wordsLoading,
         error: wordsError,
         data: words,
         refetch: refetchWords
     } = useQuery({
-        queryKey: ["userWords"],
+        // ენის დამატება queryKey-ში
+        queryKey: ["userWords", language],
         queryFn: () =>
-            newRequest.get(`/words?userId=${currentUser._id}&language=${selectedLanguage}&whatIsNeeded=userWords`).then((res) => res.data),
+            newRequest.get(`/words?userId=${currentUser._id}&language=${language}&whatIsNeeded=userWords`).then((res) => res.data),
         enabled: !!currentUser
     });
 
@@ -37,7 +35,7 @@ function MyPage() {
     } = useQuery({
         queryKey: ["userTexts"],
         queryFn: () =>
-            newRequest.get(`/texts?userId=${currentUser._id}&language=${selectedLanguage}&whatIsNeeded=userTexts`).then((res) => res.data),
+            newRequest.get(`/texts?userId=${currentUser._id}&language=${language}&whatIsNeeded=userTexts`).then((res) => res.data),
         enabled: !!currentUser
     });
     console.log("Texts:", texts);
