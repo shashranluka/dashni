@@ -9,7 +9,7 @@ const TextSchema = new Schema(
     },
     title: {
       type: String,
-      required: true, // სათაური სავალდებულოა
+      // required: true, // სათაური სავალდებულოა
     },
     text: {
       type: String,

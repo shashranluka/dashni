@@ -234,7 +234,6 @@ function Words() {
       setTranslation("");
       setAdditionalInfo("");
       setTextValidationErrors({ text: false, translation: false });
-
     } catch (error) {
       console.error("ტექსტის შენახვისას მოხდა შეცდომა:", error);
       alert(`შენახვა ვერ მოხერხდა: ${error.response?.data?.message || error.message}`);

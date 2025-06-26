@@ -63,10 +63,11 @@ function Navbar() {
             onChange={handleLanguageChange}
             className="language-select"
           >
-            <option value="ka">🇬🇪 ქართული</option>
-            <option value="en">🇬🇧 ინგლისური</option>
-            <option value="de">🇩🇪 გერმანული</option>
-            <option value="fr">🇫🇷 ფრანგული</option>
+            {/* <option value="ka">ქართული</option> */}
+            <option value="en">ინგლისური</option>
+            <option value="ru">რუსული</option>
+            <option value="de">გერმანული</option>
+            <option value="fr">ფრანგული</option>
             <option value="ba">თუშური</option>
           </select>
         </div>

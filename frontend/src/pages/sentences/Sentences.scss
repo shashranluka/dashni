@@ -447,6 +447,52 @@
   justify-content: center;
 }
 
+// მოპოვებული სიტყვების სტილები
+.learned-words-container {
+
+  margin-top: 30px;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  
+  .learned-words-title {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 18px;
+    color: #343a40;
+  }
+  
+  .words-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    // display: grid;
+    // grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    // gap: 12px;
+    
+    .word-item {
+      padding: 12px;
+      background-color: white;
+      border-radius: 6px;
+      border: 1px solid #dee2e6;
+      // display: flex;
+      // flex-direction: column;
+      
+      .word-text {
+        font-weight: 600;
+        color: #343a40;
+        margin-bottom: 5px;
+      }
+      
+      .word-translation {
+        font-size: 14px;
+        color: #6c757d;
+      }
+    }
+  }
+}
+
 // მობილური მოწყობილობების მხარდაჭერა
 @media (max-width: 768px) {
   .sentencesPage {

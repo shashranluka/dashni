@@ -19,6 +19,7 @@ const AddWordsData = () => {
   const [languages, setLanguages] = useState([
     { code: "ba", name: "თუშური" },
     { code: "en", name: "ინგლისური" },
+    { code: "ru", name: "რუსული" },
     { code: "de", name: "გერმანული" },
     { code: "es", name: "ესპანური" },
     { code: "fr", name: "ფრანგული" },

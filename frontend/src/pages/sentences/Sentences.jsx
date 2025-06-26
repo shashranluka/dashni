@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
 import "./Sentences.scss";
 import newRequest from "../../utils/newRequest";
 import GameSentences from "../../components/gameSentences/GameSentences";
@@ -26,6 +27,15 @@ function Sentences() {
   const withPicturesRef = useRef(null);
   const [showStatistics, setShowStatistics] = useState(false);
   const [showGameParams, setShowGameParams] = useState(true);
+  const [text, setText] = useState("");
+  const [translation, setTranslation] = useState("");
+  const [additionalInfo, setAdditionalInfo] = useState("");
+  const [textValidationErrors, setTextValidationErrors] = useState({
+    text: false,
+    translation: false
+  });
+  const [saveLoading, setSaveLoading] = useState(false);
+  
 
   const languages = [
     { id: "ba", name: "თუშური" },
@@ -95,6 +105,11 @@ function Sentences() {
     setSource(e.target.value);
   };
 
+  /*************  ✨ Windsurf Command ⭐  *************/
+  /**
+   * Toggles the visibility of the themes selector.
+   */
+  /*******  f92c018f-4fd0-4a32-b34b-953ec5a8b2b8  *******/
   const toggleThemesSelector = () => {
     setShowThemesSelector((prev) => !prev);
   };
@@ -147,12 +162,12 @@ function Sentences() {
       setIsStarted(true);
     } catch (err) {
       console.error("Error fetching sentences:", err);
-      setError("წინადადებების გამოხმობისას დაფიქსირდა შეცდომა. გთხოვთ, სცადოთ მოგვიანებით.");
+      setError("წინადადებების გამოხმობისას დაფიქსირებული შეცდომა. გთხოვთ, სცადოთ მოგვიანებით.");
     } finally {
       setIsLoading(false);
     }
   };
-
+  console.log("Game data:", gameData, gameWon);
   const toggleStatistics = () => {
     setShowStatistics((prev) => !prev);
   };
@@ -166,6 +181,84 @@ function Sentences() {
       fetchSentences();
     } else {
       setIsStarted(false);
+    }
+  };
+
+  const handleWordSelect = (word) => {
+    // დავამატოთ სიტყვა წინადადებას დაშორებით
+    setText(prev => prev.length > 0 ? `${prev} ${word.word}` : word.word);
+  };
+
+  const handleClearSentence = () => {
+    setText("");
+  };
+
+  const handleTranslationChange = (e) => {
+    setTranslation(e.target.value);
+  };
+
+  const handlePunctuationSelect = (mark) => {
+    // დავამატოთ სასვენი ნიშანი წინადადებას
+    setText(prev => prev + mark);
+  };
+
+  const handleAdditionalInfoChange = (e) => {
+    setAdditionalInfo(e.target.value);
+  };
+
+  const handleSaveSentence = async () => {
+    console.log("შენახვის ფუნქცია დაიძრა");
+    // გავასუფთაოთ წინა ვალიდაციის შეცდომები
+    setTextValidationErrors({ text: false, translation: false });
+    
+    // შევამოწმოთ ორივე ველი
+    let isValid = true;
+    
+    if (!text || text.trim() === "") {
+      setTextValidationErrors(prev => ({ ...prev, text: true }));
+      isValid = false;
+    }
+    
+    if (!translation || translation.trim() === "") {
+      setTextValidationErrors(prev => ({ ...prev, translation: true }));
+      isValid = false;
+    }
+    
+    // თუ ველები არ არის შევსებული, გამოვიდეთ ფუნქციიდან
+    if (!isValid) return;
+
+    try {
+      // ჩავტვირთოთ ინდიკატორი
+      setSaveLoading(true);
+
+      // მონაცემების მომზადება ბაზაში შესანახად
+      const textData = {
+        text: text,
+        translation: translation,
+        additionalInfo: additionalInfo,
+        language: language,
+        // words: gameData.wordsFromLexicon.map(word => word._id)
+      };
+      console.log("Text data to save:", textData);
+
+      // API მოთხოვნის გაგზავნა ტექსტის შესანახად
+      const response = await newRequest.post('/texts', textData);
+
+      // წარმატებული შენახვის შეტყობინება
+      alert('ტექსტი წარმატებით შეინახულია!');
+
+      // გავასუფთაოთ ველები წარმატებული შენახვის შემდეგ
+      setText("");
+      setTranslation("");
+      setAdditionalInfo("");
+      setTextValidationErrors({ text: false, translation: false });
+
+    } catch (error) {
+      console.error("ტექსტის შენახვისას მოხდა შეცდომა:", error);
+      alert(`შენახვა ვერ მოხერხდა: ${error.response?.data?.message || error.message}`);
+    } finally {
+      // გავთიშოთ ჩატვირთვის ინდიკატორი
+      setSaveLoading(false);
     }
   };
 
@@ -411,6 +504,162 @@ function Sentences() {
         {isStarted && (
           <GameSentences gameData={gameData} setGameWon={setGameWon} />
         )}
+
+        {/* დავამატოთ მოპოვებული სიტყვების სექცია */}
+        <div className="">
+          {gameWon && (
+            <div className="game-won-message">
+              <p>მოპოვებული სიტყვები: {gameData.wordsFromLexicon?.length || 0}</p>
+
+              {gameData.wordsFromLexicon?.length > 0 && (
+                <div className="text-builder">
+                  <h3>შეადგინეთ წინადადება მოპოვებული სიტყვებით</h3>
+
+                  <div className="text-container">
+                    <div className="text-label">
+                      <span>თქვენი წინადადება:</span>
+                      <div className="text-actions">
+                        <button
+                          className="clear-btn"
+                          onClick={handleClearSentence}
+                          disabled={text.length === 0}
+                        >
+                          <i className="fas fa-trash"></i> გასუფთავება
+                        </button>
+                        {/* <button
+                                    className="share-btn"
+                                    onClick={handleShareSentence}
+                                    disabled={text.length === 0}
+                                  >
+                                    <i className="fas fa-share-alt"></i> გაზიარება
+                                  </button> */}
+                      </div>
+                    </div>
+
+                    {/* შერჩეული სიტყვების ბარათების ნაცვლად პირდაპირ ვაჩვენებთ ტექსტს */}
+                    {text.length > 0 ? (
+                      <div className={`text-text ${textValidationErrors.text ? 'validation-error' : ''}`}>
+                        <p>{text}</p>
+                      </div>
+                    ) : (
+                      <div className={`empty-text ${textValidationErrors.text ? 'validation-error' : ''}`}>
+                        <i className="fas fa-arrow-up"></i>
+                        წინადადების შესადგენად დააჭირეთ სიტყვებს ქვემოთ
+                      </div>
+                    )}
+
+                    {/* ვაჩვენოთ შეცდომის შეტყობინება საჭიროებისას */}
+                    {/* {textValidationErrors.text && (
+                                <div className="error-message">წინადადება აუცილებელია</div>
+                              )} */}
+                  </div>
+                  {/* სიტყვების ბარათები */}
+                  <div className="word-cards-container">
+                    {gameData.wordsFromLexicon.map((word, index) => (
+                      <div
+                        key={index}
+                        className="word-card"
+                        onClick={() => handleWordSelect(word)}
+                      >
+                        <span className="word">{word.word}</span>
+                        {/* <span className="translation">{word.translation}</span> */}
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* წინადადების კონტეინერი */}
+
+                  {/* სასვენი ნიშნების კონტეინერი - გადმოვიტანეთ text-builder-ის შიგნით */}
+                  <div className="punctuation-container">
+                    {/* <div className="punctuation-title">სასვენი ნიშნები:</div> */}
+                    <div className="punctuation-marks">
+                      {['.', ',', '!', '?', ':', ';'].map((mark, index) => (
+                        <button
+                          key={index}
+                          className="punctuation-mark"
+                          onClick={() => handlePunctuationSelect(mark)}
+                        >
+                          {mark}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* თარგმანის ველი - გადმოვიტანეთ text-builder-ის შიგნით */}
+                  <div className="translation-container">
+                    <div className="translation-title">
+                      <span>თარგმანი:</span>
+                      {/* {translation.length > 0 && (
+                        <button
+                          className="copy-translation-btn"
+                          onClick={() => {
+                            navigator.clipboard.writeText(translation)
+                              .then(() => alert('თარგმანი დაკოპირებულია'))
+                              .catch(err => console.log('კოპირების შეცდომა:', err));
+                          }}
+                        >
+                          <i className="fas fa-copy"></i> კოპირება
+                        </button>
+                      )} */}
+                    </div>
+                    <textarea
+                      className={`translation-input ${textValidationErrors.translation ? 'validation-error' : ''}`}
+                      placeholder="შეიყვანეთ თქვენი წინადადების თარგმანი..."
+                      value={translation}
+                      onChange={handleTranslationChange}
+                      rows={3}
+                    />
+
+                    {/* ვაჩვენოთ შეცდომის შეტყობინება საჭიროებისას */}
+                    {/* {textValidationErrors.translation && (
+                                <div className="error-message">თარგმანი აუცილებელია</div>
+                              )} */}
+                  </div>
+
+                  {/* დამატებითი ინფორმაციის ველი */}
+                  <div className="additional-info-container">
+                    <div className="additional-info-title">
+                      <span>დამატებითი ინფორმაცია:</span>
+                    </div>
+                    <textarea
+                      className="additional-info-input"
+                      placeholder="შეიყვანეთ დამატებითი ინფორმაცია, შენიშვნები ან კომენტარები..."
+                      value={additionalInfo}
+                      onChange={handleAdditionalInfoChange}
+                      rows={3}
+                    />
+                  </div>
+
+                  {/* შენახვის კონტეინერს ვაჩვენებთ მხოლოდ ავტორიზებული მომხმარებლისთვის */}
+                  {currentUser ? (
+                    <div className="save-container">
+                      <button
+                        className="save-text-btn"
+                        onClick={handleSaveSentence}
+                      >
+                        {saveLoading ? (
+                          <><span className="spinner-small"></span> ინახება...</>
+                        ) : (
+                          <><i className="fas fa-save"></i> შენახვა ბაზაში</>
+                        )}
+                      </button>
+                      <p className="save-hint">
+                        შეინახეთ წინადადება და თარგმანი თქვენს ანგარიშში მომავალში გამოსაყენებლად
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="login-prompt">
+                      <p>
+                        <i className="fas fa-info-circle"></i> წინადადების შესანახად საჭიროა
+                        <Link to="/login" className="login-link"> ავტორიზაცია</Link>
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
