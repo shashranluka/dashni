@@ -1,0 +1,52 @@
+.disclaimer-container {
+  background-color: rgba(255, 243, 205, 0.9);
+  border-left: 4px solid #ffc107;
+  padding: 10px 15px;
+  margin: 10px 0;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  
+  .disclaimer-content {
+    display: flex;
+    align-items: center;
+    
+    .disclaimer-icon {
+      color: #856404;
+      font-size: 18px;
+      margin-right: 10px;
+    }
+    
+    .disclaimer-text {
+      margin: 0;
+      font-size: 14px;
+      color: #856404;
+      line-height: 1.4;
+    }
+    
+    .disclaimer-link {
+      color: #0056b3;
+      text-decoration: none;
+      font-weight: 500;
+      
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .disclaimer-container {
+    padding: 8px 12px;
+    
+    .disclaimer-content {
+      .disclaimer-icon {
+        font-size: 16px;
+      }
+      
+      .disclaimer-text {
+        font-size: 13px;
+      }
+    }
+  }
+}

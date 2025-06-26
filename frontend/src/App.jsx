@@ -40,6 +40,7 @@ import PrivacyStatement from "./pages/privacyStatement/PrivacyStatement";
 import IntelectualProperty from "./pages/intelectualProperty/IntelectualProperty";
 import LanguageProvider from "./context/LanguageContext";
 import AddTextData from "./pages/addTextData/AddTextData";
+import Disclaimer from "./components/disclaimer/Disclaimer";
 
 function App() {
   const queryClient = new QueryClient();
@@ -52,6 +53,7 @@ function App() {
           <QueryClientProvider client={queryClient}>
             <LanguageProvider>
               <Navbar />
+              <Disclaimer />
               <div className="outlet">
                 <Outlet />
               </div>
