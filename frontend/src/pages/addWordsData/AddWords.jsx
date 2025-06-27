@@ -16,8 +16,11 @@ const AddWordsData = () => {
   const [inputName, setInputName] = useState("");
   const [inputValue, setInputValue] = useState("");
   // ახლად დამატებული state ცვლადები ენების მართვისთვის
+  // const 
   const [languages, setLanguages] = useState([
     { code: "ba", name: "თუშური" },
+    { code: "ma", name: "მეგრული" },
+    { code: "lu", name: "სვანური" },
     { code: "en", name: "ინგლისური" },
     { code: "ru", name: "რუსული" },
     { code: "de", name: "გერმანული" },

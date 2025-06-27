@@ -146,13 +146,13 @@ function Sentences() {
       const response = await newRequest.get("/sentences", {
         params,
       });
-      console.log("Fetched sentences:", response.data);
+      // console.log("Fetched sentences:", response.data);
       const textFromSentences = response.data.resultSentences
         .map((sentence) => sentence.sentence)
         .join(" ");
-      console.log("Text from sentences:", textFromSentences);
+      // console.log("Text from sentences:", textFromSentences);
       const wordsFromSentences = splitTextToWords(textFromSentences);
-      console.log("Words from sentences:", wordsFromSentences);
+      // console.log("Words from sentences:", wordsFromSentences);
 
       setGameData({
         wordsFromLexicon: response.data.translatedWords || [],
@@ -167,7 +167,7 @@ function Sentences() {
       setIsLoading(false);
     }
   };
-  console.log("Game data:", gameData, gameWon);
+  // console.log("Game data:", gameData, gameWon);
   const toggleStatistics = () => {
     setShowStatistics((prev) => !prev);
   };
@@ -207,7 +207,7 @@ function Sentences() {
   };
 
   const handleSaveSentence = async () => {
-    console.log("შენახვის ფუნქცია დაიძრა");
+    // console.log("შენახვის ფუნქცია დაიძრა");
     // გავასუფთაოთ წინა ვალიდაციის შეცდომები
     setTextValidationErrors({ text: false, translation: false });
     
@@ -239,7 +239,7 @@ function Sentences() {
         language: language,
         // words: gameData.wordsFromLexicon.map(word => word._id)
       };
-      console.log("Text data to save:", textData);
+      // console.log("Text data to save:", textData);
 
       // API მოთხოვნის გაგზავნა ტექსტის შესანახად
       const response = await newRequest.post('/texts', textData);
@@ -264,7 +264,7 @@ function Sentences() {
 
   useEffect(() => {
     if (gameWon) {
-      console.log("Game won!");
+      // console.log("Game won!");
     }
   }, [gameWon]);
 

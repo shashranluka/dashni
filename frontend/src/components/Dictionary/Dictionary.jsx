@@ -1,11 +1,12 @@
 import { useState, useMemo } from "react";
 import "./Dictionary.scss";
 import { getShuffled } from "../../getData";
+import WonWord from "../wonWord/WonWord";
 
 export default function Dictionary(props) {
-  
+
   const {
-    setPartOfGame, 
+    setPartOfGame,
     cardsData,
     points,
     setPoints,
@@ -26,26 +27,26 @@ export default function Dictionary(props) {
     setChosenWordIndex((prevIndex) => (prevIndex + 1) % topData.length);
     setTries(tries + 1);
   }
-  
+
   function clickCardHandler(index) {
     if (topData[chosenWordIndex].word === bottomData[index].word) {
       // სწორი პასუხის შემთხვევაში
       setPoints(points + 1);
       setTries(tries + 1);
       wonWords.push(topData.splice(chosenWordIndex, 1)[0]);
-      setWonWord(bottomData.splice(index, 1));
+      setWonWord(bottomData.splice(index, 1)[0]);
       setIsFixedVisible(true);
-      
+
       // სწორი პასუხის შემთხვევაში გავასუფთაოთ ყველა არასწორი ინდექსი
       setWrongIndices([]);
-      
+
       setTimeout(() => {
         setIsFixedVisible(false);
       }, 1000);
     } else {
       // არასწორი პასუხის შემთხვევაში
       setTries(tries + 1);
-      
+
       // დავამატოთ ინდექსი არასწორების სიაში, თუ უკვე არ არის
       if (!wrongIndices.includes(index)) {
         setWrongIndices(prev => [...prev, index]);
@@ -73,9 +74,9 @@ export default function Dictionary(props) {
       </div>
       <div className="bottomSpace">
         {bottomData.map((card, index) => (
-          <div 
-            key={index} 
-            className={`card ${wrongIndices.includes(index) ? 'hidden-text' : ''}`} 
+          <div
+            key={index}
+            className={`card ${wrongIndices.includes(index) ? 'hidden-text' : ''}`}
             onClick={() => {
               clickCardHandler(index);
             }}
@@ -87,7 +88,20 @@ export default function Dictionary(props) {
         ))}
       </div>
       <div className={isFixedVisible ? "fixed-won-word" : "hidden"}>
-        {wonWord[0].translation} - {wonWord[0].word}
+        {/* {wonWord.translation} - {wonWord.word} */}
+        {/* {wonWord.word.split('').map((letter, index) => (
+          <div key={index} className="letter-card">
+            {letter}
+          </div>
+        ))} */}
+        <WonWord
+          wonWord={wonWord}
+          setIsFixedVisible={setIsFixedVisible}
+          points={points}
+          tries={tries}
+          setPoints={setPoints}
+          setTries={setTries}
+        />
       </div>
     </div>
   )

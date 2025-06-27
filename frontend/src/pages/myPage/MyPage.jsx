@@ -38,8 +38,6 @@ function MyPage() {
             newRequest.get(`/texts?userId=${currentUser._id}&language=${language}&whatIsNeeded=userTexts`).then((res) => res.data),
         enabled: !!currentUser
     });
-    console.log("Texts:", texts);
-    console.log("Words:", words);
     // ტექსტის წაშლის ფუნქცია
     const handleDeleteText = async (id) => {
         if (window.confirm("ნამდვილად გსურთ ტექსტის წაშლა?")) {

@@ -17,7 +17,7 @@ import InfoButton from "../../components/infoButton/InfoButton";
 
 // Words კომპონენტის განსაზღვრა - სიტყვების თამაშისთვის
 function Words() {
-  console.log("Words კომპონენტი დაიტვირთა", wordsInfo);
+  // console.log("Words კომპონენტი დაიტვირთა", wordsInfo);
   // მიმდინარე მომხმარებლის მიღება localStorage-დან
   const currentUser = getCurrentUser();
   
@@ -93,7 +93,7 @@ function Words() {
       } else {
         privacy = "public";
       }
-      console.log("აირჩიეთ სიტყვების ტიპი:", privacy);
+      // console.log("აირჩიეთ სიტყვების ტიპი:", privacy);
       // API მოთხოვნის გაგზავნა შემთხვევითი სიტყვების მისაღებად
       const response = await newRequest.get(`/words`, {
         params: {
@@ -104,7 +104,7 @@ function Words() {
           privacy,
         },
       });
-      console.log("API პასუხი:", response.data);
+      // console.log("API პასუხი:", response.data);
       // მიღებული მონაცემების დამახსოვრება სთეითში
       setGameData({
         words: response.data,     // სიტყვების მასივი API-დან
@@ -190,7 +190,7 @@ function Words() {
 
   // დავამატოთ შენახვის ფუნქცია
   const handleSaveSentence = async () => {
-    console.log("შენახვის ფუნქცია დაიძრა");
+    // console.log("შენახვის ფუნქცია დაიძრა");
     // გავასუფთაოთ წინა ვალიდაციის შეცდომები
     setTextValidationErrors({ text: false, translation: false });
     
@@ -242,7 +242,7 @@ function Words() {
       setSaveLoading(false);
     }
   };
-  console.log(gameWon, "gameWon",textValidationErrors);
+  // console.log(gameWon, "gameWon",textValidationErrors);
 
   // JSX - კომპონენტის ვიზუალური ნაწილი
   return (
