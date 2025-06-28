@@ -26,7 +26,7 @@ function Sentences() {
   const amountRef = useRef(null);
   const withPicturesRef = useRef(null);
   const [showStatistics, setShowStatistics] = useState(false);
-  const [showGameParams, setShowGameParams] = useState(true);
+  const [showGameParams, setShowGameParams] = useState(false);
   const [text, setText] = useState("");
   const [translation, setTranslation] = useState("");
   const [additionalInfo, setAdditionalInfo] = useState("");
@@ -35,6 +35,8 @@ function Sentences() {
     translation: false
   });
   const [saveLoading, setSaveLoading] = useState(false);
+
+  console.log(language);
   
 
   const languages = [

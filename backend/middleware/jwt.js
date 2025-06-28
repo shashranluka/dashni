@@ -3,13 +3,21 @@ import createError from "../utils/createError.js";
 
 export const verifyToken = (req, res, next) => {
   const token = req.cookies.accessToken;
-  if (!token) return next(createError(401,"You are not authenticated!"))
+  
+  if (!token) {
+    return next(createError(401, "არ ხართ ავტორიზებული!"));
+  }
 
-
-  jwt.verify(token, process.env.JWT_KEY, async (err, payload) => {
-    if (err) return next(createError(403,"Token is not valid!"))
-    req.userId = payload.id;
-    req.isSeller = payload.isSeller;
-    next()
+  jwt.verify(token, process.env.JWT_KEY, (err, payload) => {
+    console.log("JWT payload:", payload);
+    if (err) return next(createError(403, "თქვენი ტოკენი არ არის ვალიდური!"));
+    
+    // დავრწმუნდეთ რომ isAdmin ველი მოდის JWT-დან
+    req.user = {
+      id: payload.id,
+      isAdmin: payload.isAdmin || false // დავრწმუნდეთ რომ isAdmin არსებობს
+    };
+    
+    next();
   });
 };

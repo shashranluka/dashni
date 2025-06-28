@@ -1,0 +1,323 @@
+.admin-panel {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  
+  .admin-header {
+    margin-bottom: 30px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 15px;
+    
+    h1 {
+      font-size: 24px;
+      margin-bottom: 5px;
+    }
+    
+    p {
+      color: #666;
+      font-size: 14px;
+    }
+  }
+  
+  .admin-tabs {
+    display: flex;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eee;
+    
+    button {
+      padding: 10px 20px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      color: #666;
+      position: relative;
+      
+      &:hover {
+        color: #333;
+      }
+      
+      &.active {
+        color: #007bff;
+        font-weight: 500;
+        
+        &:after {
+          content: '';
+          position: absolute;
+          bottom: -1px;
+          left: 0;
+          right: 0;
+          height: 2px;
+          background-color: #007bff;
+        }
+      }
+    }
+  }
+  
+  .loading {
+    text-align: center;
+    padding: 30px;
+    color: #666;
+  }
+  
+  .error {
+    background-color: #fff3f3;
+    color: #d32f2f;
+    padding: 15px;
+    border-radius: 5px;
+    margin: 20px 0;
+  }
+}
+
+.languages-manager {
+  .languages-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    
+    h2 {
+      font-size: 20px;
+      margin: 0;
+    }
+    
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      
+      &:hover {
+        background-color: #45a049;
+      }
+    }
+  }
+  
+  .form-container {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .language-form {
+    h3 {
+      margin-top: 0;
+      margin-bottom: 20px;
+      font-size: 18px;
+    }
+    
+    .form-group {
+      margin-bottom: 15px;
+      
+      label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 500;
+      }
+      
+      input, textarea {
+        width: 100%;
+        padding: 8px 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+        
+        &.error {
+          border-color: #d32f2f;
+          background-color: #fff5f5;
+        }
+        
+        &:focus {
+          outline: none;
+          border-color: #007bff;
+        }
+      }
+      
+      &.checkbox {
+        display: flex;
+        align-items: center;
+        
+        label {
+          display: flex;
+          align-items: center;
+          font-weight: normal;
+          
+          input {
+            width: auto;
+            margin-right: 8px;
+          }
+        }
+      }
+      
+      .error-message {
+        color: #d32f2f;
+        font-size: 12px;
+        margin-top: 5px;
+      }
+    }
+    
+    .submit-error {
+      background-color: #fff3f3;
+      padding: 10px;
+      border-radius: 4px;
+      margin-bottom: 15px;
+    }
+    
+    .form-actions {
+      display: flex;
+      gap: 10px;
+      
+      button {
+        padding: 8px 15px;
+        border-radius: 4px;
+        cursor: pointer;
+        border: none;
+        
+        &:first-child {
+          background-color: #007bff;
+          color: white;
+          
+          &:hover {
+            background-color: #0069d9;
+          }
+        }
+        
+        &:last-child {
+          background-color: #6c757d;
+          color: white;
+          
+          &:hover {
+            background-color: #5a6268;
+          }
+        }
+        
+        &:disabled {
+          opacity: 0.7;
+          cursor: not-allowed;
+        }
+      }
+    }
+  }
+  
+  .languages-list {
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      
+      th, td {
+        padding: 12px 15px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+      }
+      
+      th {
+        background-color: #f2f2f2;
+        font-weight: 500;
+      }
+      
+      tr {
+        &:hover {
+          background-color: #f9f9f9;
+        }
+        
+        &.inactive {
+          background-color: #f5f5f5;
+          color: #777;
+        }
+      }
+      
+      .status {
+        display: inline-block;
+        padding: 3px 8px;
+        border-radius: 20px;
+        font-size: 12px;
+        
+        &.active {
+          background-color: #e6f7e6;
+          color: #2e7d32;
+        }
+        
+        &.inactive {
+          background-color: #f5f5f5;
+          color: #777;
+        }
+      }
+      
+      .vowels-preview, .alphabet-preview {
+        max-width: 200px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        
+        em {
+          color: #999;
+          font-style: italic;
+        }
+      }
+      
+      .actions {
+        display: flex;
+        gap: 8px;
+        
+        button {
+          padding: 4px 8px;
+          border: none;
+          border-radius: 3px;
+          font-size: 12px;
+          cursor: pointer;
+          
+          &.edit {
+            background-color: #2196F3;
+            color: white;
+            
+            &:hover {
+              background-color: #0b7dda;
+            }
+          }
+          
+          &.delete {
+            background-color: #f44336;
+            color: white;
+            
+            &:hover {
+              background-color: #da190b;
+            }
+          }
+        }
+      }
+      
+      .no-data {
+        text-align: center;
+        color: #999;
+        font-style: italic;
+        padding: 30px 0;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-panel {
+    padding: 15px;
+    
+    .admin-tabs button {
+      padding: 8px 12px;
+      font-size: 14px;
+    }
+  }
+  
+  .languages-manager {
+    .languages-list {
+      overflow-x: auto;
+      
+      table {
+        min-width: 650px;
+      }
+    }
+  }
+}

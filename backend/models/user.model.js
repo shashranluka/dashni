@@ -36,6 +36,10 @@ const userSchema = new Schema(
     collectedWords: {
       type: Array
     },
+    isAdmin: {
+      type: Boolean,
+      default: false
+    },
     // // img: {
     // //   type: String,
     // //   // required: false,

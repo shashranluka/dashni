@@ -41,6 +41,7 @@ import IntelectualProperty from "./pages/intelectualProperty/IntelectualProperty
 import LanguageProvider from "./context/LanguageContext";
 import AddTextData from "./pages/addTextData/AddTextData";
 import Disclaimer from "./components/disclaimer/Disclaimer";
+import AdminPanel from "./pages/admin/AdminPanel";
 
 function App() {
   const queryClient = new QueryClient();
@@ -206,6 +207,10 @@ function App() {
         {
           path: "/intelectual-property",
           element: <IntelectualProperty />,
+        },
+        {
+          path: "/admin",
+          element: <AdminPanel />,
         },
       ],
     },
