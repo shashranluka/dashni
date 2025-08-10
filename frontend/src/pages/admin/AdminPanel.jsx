@@ -8,7 +8,7 @@ const AdminPanel = () => {
   const [activeTab, setActiveTab] = useState("languages");
   const navigate = useNavigate();
   const currentUser = getCurrentUser();
-  console.log("Current User:", currentUser);
+//   console.log("Current User:", currentUser);
   // გადამისამართება თუ არ არის ადმინი
   useEffect(() => {
     if (!currentUser || !currentUser.isAdmin) {
@@ -41,7 +41,7 @@ const AdminPanel = () => {
 
       <div className="admin-content">
         {activeTab === "languages" && <LanguagesManager />}
-        {activeTab === "users" && <div>მომხმარებლების მართვის სექცია (დასამატებელია)</div>}
+        {activeTab === "users" && <UsersManager />}
       </div>
     </div>
   );
@@ -350,6 +350,206 @@ const LanguagesManager = () => {
               )}
             </tbody>
           </table>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// მომხმარებლების მართვის კომპონენტი
+const UsersManager = () => {
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [editingUser, setEditingUser] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [usersPerPage] = useState(10);
+
+  // მომხმარებლების ჩამოტვირთვა
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        setLoading(true);
+        const response = await newRequest.get("/users/admin");
+        setUsers(response.data);
+        setError(null);
+      } catch (err) {
+        console.error("Error fetching users:", err);
+        setError("მომხმარებლების ჩამოტვირთვა ვერ მოხერხდა");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUsers();
+  }, []);
+
+  // ძიების ფუნქციონალი და გვერდების ნავიგაცია დარჩება უცვლელი
+  const filteredUsers = users.filter(user => 
+    user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    user.email.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const indexOfLastUser = currentPage * usersPerPage;
+  const indexOfFirstUser = indexOfLastUser - usersPerPage;
+  const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
+  const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
+
+  // მომხმარებლის აქტიურობის შეცვლა
+  const handleToggleActive = async (userId, isCurrentlyActive) => {
+    try {
+      const response = await newRequest.put(`/users/${userId}/toggle-active`, {
+        isActive: !isCurrentlyActive
+      });
+      
+      setUsers(prev => 
+        prev.map(user => user._id === userId ? { ...user, isActive: !isCurrentlyActive } : user)
+      );
+    } catch (error) {
+      console.error("Error toggling active status:", error);
+      alert("სტატუსის შეცვლა ვერ მოხერხდა. გთხოვთ, სცადოთ მოგვიანებით.");
+    }
+  };
+
+  // მომხმარებლის როლის შეცვლა (მოდერატორი/ჩვეულებრივი)
+  const handleToggleModerator = async (userId, isCurrentlyModerator) => {
+    try {
+      const response = await newRequest.put(`/users/${userId}/toggle-moderator`, {
+        isModerator: !isCurrentlyModerator
+      });
+      
+      setUsers(prev => 
+        prev.map(user => user._id === userId ? { ...user, isModerator: !isCurrentlyModerator } : user)
+      );
+    } catch (error) {
+      console.error("Error toggling moderator status:", error);
+      alert("როლის შეცვლა ვერ მოხერხდა. გთხოვთ, სცადოთ მოგვიანებით.");
+    }
+  };
+
+  // გვერდის ცვლილება
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  return (
+    <div className="users-manager">
+      <div className="users-header">
+        <h2>მომხმარებლების მართვა</h2>
+        <div className="search-container">
+          <input
+            type="text"
+            placeholder="მოძებნეთ მომხმარებელი..."
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setCurrentPage(1); // დავაბრუნოთ პირველ გვერდზე ძიებისას
+            }}
+            className="search-input"
+          />
+        </div>
+      </div>
+
+      {loading && <div className="loading-indicator">მომხმარებლების სია იტვირთება...</div>}
+      
+      {error && <div className="error-banner">{error}</div>}
+
+      {!loading && (
+        <div className="users-list">
+          <table>
+            <thead>
+              <tr>
+                <th>სახელი</th>
+                <th>ელ. ფოსტა</th>
+                <th>რეგისტრაციის თარიღი</th>
+                <th>სტატუსი</th>
+                <th>როლი</th>
+                <th>მოქმედებები</th>
+              </tr>
+            </thead>
+            <tbody>
+              {currentUsers.map(user => (
+                <tr key={user._id} className={!user.isActive ? "inactive" : ""}>
+                  <td>{user.username}</td>
+                  <td>{user.email}</td>
+                  <td>{new Date(user.createdAt).toLocaleDateString()}</td>
+                  <td>
+                    <span className={`status ${user.isActive ? "active" : "inactive"}`}>
+                      {user.isActive ? "აქტიური" : "არააქტიური"}
+                    </span>
+                  </td>
+                  <td>
+                    <span className={`role ${user.isAdmin ? "admin" : user.isModerator ? "moderator" : "user"}`}>
+                      {user.isAdmin 
+                        ? "ადმინისტრატორი" 
+                        : user.isModerator 
+                          ? "მოდერატორი" 
+                          : "მომხმარებელი"}
+                    </span>
+                  </td>
+                  <td>
+                    <div className="actions">
+                      {/* ადმინის ღილაკის ნაცვლად მოდერატორის ღილაკი */}
+                      {!user.isAdmin && ( // ადმინებს ვერ შევუცვლით როლს
+                        <button
+                          className={user.isModerator ? "remove-moderator" : "make-moderator"}
+                          onClick={() => handleToggleModerator(user._id, user.isModerator)}
+                        >
+                          {user.isModerator ? "მოდერატორის წართმევა" : "მოდერატორად დანიშვნა"}
+                        </button>
+                      )}
+                      <button
+                        className={user.isActive ? "deactivate" : "activate"}
+                        onClick={() => handleToggleActive(user._id, user.isActive)}
+                      >
+                        {user.isActive ? "დეაქტივაცია" : "აქტივაცია"}
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+              {currentUsers.length === 0 && (
+                <tr>
+                  <td colSpan="6" className="no-data">
+                    {searchTerm 
+                      ? "მოძებნილი მომხმარებელი ვერ მოიძებნა" 
+                      : "მომხმარებლები არ არის დამატებული"}
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {totalPages > 1 && (
+        <div className="pagination">
+          <button 
+            onClick={() => paginate(currentPage - 1)} 
+            disabled={currentPage === 1}
+            className="pagination-button"
+          >
+            &laquo; წინა
+          </button>
+          
+          <div className="page-numbers">
+            {Array.from({ length: totalPages }, (_, i) => (
+              <button
+                key={i + 1}
+                onClick={() => paginate(i + 1)}
+                className={`pagination-button ${currentPage === i + 1 ? "active" : ""}`}
+              >
+                {i + 1}
+              </button>
+            ))}
+          </div>
+          
+          <button 
+            onClick={() => paginate(currentPage + 1)} 
+            disabled={currentPage === totalPages}
+            className="pagination-button"
+          >
+            შემდეგი &raquo;
+          </button>
         </div>
       )}
     </div>

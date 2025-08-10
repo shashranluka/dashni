@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 const { Schema } = mongoose;
 
-const VideoDataSchema = new Schema(
+const videoDataSchema = new Schema(
   {
     userId: {
       type: String,
@@ -9,68 +9,44 @@ const VideoDataSchema = new Schema(
     },
     title: {
       type: String,
-      //   required: true,
-    },
-    language: {
-      type: String,
-      //   required: true,
-    },
-    shortTitle: {
-      type: String,
-      // required: true,
-    },
-    desc: {
-      type: Array,
-      // required: true,
+      required: true,
     },
     shortDesc: {
       type: String,
-      // required: true,
+      required: false,
     },
-    images: {
-      type: [String],
-      // required: false,
+    videoUrl: {
+      type: String,
+      required: true,
+    },
+    language: {
+      type: String,
+      required: true,
+    },
+    // ✅ მარტივი Array - ყველა ტიპის subs-ისთვის
+    subs: {
+      type: Array,
+      required: true,
     },
     features: {
       type: [String],
-      // required: false,
+      required: false,
     },
-    // totalStars: {
-    //   type: Number,
-    //   default: 0,
-    // },
-    // starNumber: {
-    //   type: Number,
-    //   default: 0,
-    // },
-    // cat: {
-    //   type: String,
-    //   // required: true,
-    // },
-    // price: {
-    //   type: Number,
-    //   // required: true,
-    // },
-    // cover: {
-    //   type: String,
-    //   // required: true,
-    // },
-    // deliveryTime: {
-    //   type: Number,
-    //   // required: true,
-    // },
-    // revisionNumber: {
-    //   type: Number,
-    //   // required: true,
-    // },
-    // sales: {
-    //   type: Number,
-    //   default: 0,
-    // },
+    metadata: {
+      type: Object,
+      required: false,
+      default: {
+        totalSubtitles: 0,
+        hasTimestamps: false,
+        format: 'unknown',
+        processedAt: new Date().toISOString(),
+        dataVersion: "2.0"
+      }
+    },
   },
   {
     timestamps: true,
   }
 );
 
-export default mongoose.model("VideoData", VideoDataSchema);
+export default mongoose.model("VideoData", videoDataSchema);

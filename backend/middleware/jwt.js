@@ -9,7 +9,6 @@ export const verifyToken = (req, res, next) => {
   }
 
   jwt.verify(token, process.env.JWT_KEY, (err, payload) => {
-    console.log("JWT payload:", payload);
     if (err) return next(createError(403, "თქვენი ტოკენი არ არის ვალიდური!"));
     
     // დავრწმუნდეთ რომ isAdmin ველი მოდის JWT-დან

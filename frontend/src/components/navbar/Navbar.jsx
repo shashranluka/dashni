@@ -1,23 +1,38 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import newRequest from "../../utils/newRequest";
 import "./Navbar.scss";
-// import { get } from "mongoose";
-import getSelectedLanguage from "../../utils/getCurrentLanguage";
 import { useLanguage } from "../../context/LanguageContext";
 
 function Navbar() {
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef(null);
 
-  // ენის კონტექსტის გამოყენება
+  // ✅ გამარტივებული ენის კონტექსტი
   const { 
-    language, 
+    language,           // { id, code, name } ან null
     changeLanguage, 
-    languagesList, 
-    loadingList, 
-    error 
+    resetLanguage, 
+    isLanguageSelected 
   } = useLanguage();
+
+  // ✅ ენების სიის ჩატვირთვა React Query-ით
+  const { 
+    data: languagesList = [], 
+    isLoading: loadingLanguages, 
+    error: languagesError 
+  } = useQuery({
+    queryKey: ['languages'],
+    queryFn: async () => {
+      const response = await newRequest.get('/languages/basic');
+      return response.data;
+    },
+    staleTime: 5 * 60 * 1000, // 5 წუთი
+    cacheTime: 10 * 60 * 1000, // 10 წუთი
+    retry: 2,
+  });
+  console.log("Languages List:", languagesList);
 
   // კლიკების დამჭერი useEffect
   useEffect(() => {
@@ -46,10 +61,23 @@ function Navbar() {
     }
   };
 
+  // ✅ ენის შეცვლის გაუმჯობესებული ფუნქცია
   const handleLanguageChange = (e) => {
-    const selectedLang = e.target.value;
-    if (selectedLang !== "") {
-      changeLanguage(selectedLang);
+    const selectedCode = e.target.value;
+    
+    if (!selectedCode) {
+      resetLanguage(); // ენის გასუფთავება
+      return;
+    }
+
+    // არჩეული ენის მოძებნა სიაში
+    const selectedLang = languagesList.find(lang => lang.code === selectedCode);
+    if (selectedLang) {
+      changeLanguage({
+        _id: selectedLang._id,
+        code: selectedLang.code,
+        name: selectedLang.name
+      });
     }
   };
 
@@ -62,27 +90,51 @@ function Navbar() {
           </Link>
         </div>
 
-        {/* ენის არჩევის გადაკეთებული ელემენტი */}
+        {/* ✅ გაუმჯობესებული ენის არჩევის ელემენტი */}
         <div className="language-selector">
-          {loadingList ? (
-            <span className="loading-languages">იტვირთება...</span>
-          ) : error ? (
-            <span className="error-languages">შეცდომა</span>
+          {loadingLanguages ? (
+            <span className="loading-languages">ენები იტვირთება...</span>
+          ) : languagesError ? (
+            <div className="error-languages">
+              <span>ენების ჩატვირთვა ვერ მოხერხდა</span>
+              <button 
+                onClick={() => window.location.reload()} 
+                className="retry-button"
+              >
+                ხელახლა
+              </button>
+            </div>
           ) : (
-            <select 
-              value={language || ""} 
-              onChange={handleLanguageChange}
-              className={`language-select ${!language ? 'placeholder-shown' : ''}`}
-            >
-              <option value="" disabled>
-                აირჩიე ენა
-              </option>
-              {languagesList.map(lang => (
-                <option key={lang.code} value={lang.code}>
-                  {lang.name}
-                </option>
-              ))}
-            </select>
+            <div className="language-select-container">
+              <select 
+                value={language?.code || ""} 
+                onChange={handleLanguageChange}
+                className={`language-select ${!isLanguageSelected ? 'placeholder-shown' : ''}`}
+              >
+                <option value="" disabled>აირჩიეთ ენა</option>
+                {languagesList.map(lang => (
+                  <option key={lang.id} value={lang.code}>
+                    {lang.name}
+                  </option>
+                ))}
+              </select>
+              
+              {/* ✅ არჩეული ენის ჩვენება */}
+              {/* {isLanguageSelected && (
+                <div className="selected-language-display">
+                  <span className="selected-language-name">
+                    {language.name}
+                  </span>
+                  <button 
+                    onClick={resetLanguage}
+                    className="clear-language-button"
+                    title="ენის გასუფთავება"
+                  >
+                    ✕
+                  </button>
+                </div>
+              )} */}
+            </div>
           )}
         </div>
 
@@ -110,6 +162,9 @@ function Navbar() {
                       </Link>
                       <Link className="addLink" to={"/add-textdata"}>
                         ტექსტის დამატება
+                      </Link>
+                      <Link className="addLink" to={"/addvideodata"}>
+                        ვიდეოს დამატება
                       </Link>
                       <Link className="logoutlink" onClick={handleLogout}>
                         გამოსვლა
