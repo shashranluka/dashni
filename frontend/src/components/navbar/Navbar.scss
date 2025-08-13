@@ -175,8 +175,20 @@
         border-color: #aaa;
       }
       
+      &.placeholder-shown {
+        color: #888; // უფრო ღია ფერი პლეისჰოლდერისთვის
+        font-style: italic;
+      }
+      
       option {
         padding: 5px;
+        color: #333; // ჩვეულებრივი ფერი ოფციებისთვის
+        font-style: normal;
+        
+        &:first-child {
+          color: #888;
+          font-style: italic;
+        }
       }
     }
   }

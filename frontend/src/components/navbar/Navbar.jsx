@@ -11,7 +11,13 @@ function Navbar() {
   const dropdownRef = useRef(null);
 
   // ენის კონტექსტის გამოყენება
-  const { language, changeLanguage } = useLanguage();
+  const { 
+    language, 
+    changeLanguage, 
+    languagesList, 
+    loadingList, 
+    error 
+  } = useLanguage();
 
   // კლიკების დამჭერი useEffect
   useEffect(() => {
@@ -40,9 +46,11 @@ function Navbar() {
     }
   };
 
-  // ენის ცვლილების დამჭერი ფუნქცია
   const handleLanguageChange = (e) => {
-    changeLanguage(e.target.value);
+    const selectedLang = e.target.value;
+    if (selectedLang !== "") {
+      changeLanguage(selectedLang);
+    }
   };
 
   return (
@@ -54,25 +62,28 @@ function Navbar() {
           </Link>
         </div>
 
-        {/* ენის არჩევის ელემენტი */}
+        {/* ენის არჩევის გადაკეთებული ელემენტი */}
         <div className="language-selector">
-          <select
-            id="language-select"
-            name="language"
-            value={language}
-            onChange={handleLanguageChange}
-            className="language-select"
-          >
-            {/* <option value="ka">ქართული</option> */}
-            <option value="ba">თუშური</option>
-            <option value="ma">მეგრული</option>
-            <option value="lu">სვანური</option>
-            <option value="en">ინგლისური</option>
-            <option value="ru">რუსული</option>
-            <option value="de">გერმანული</option>
-            <option value="es">ესპანური</option>
-            <option value="fr">ფრანგული</option>
-          </select>
+          {loadingList ? (
+            <span className="loading-languages">იტვირთება...</span>
+          ) : error ? (
+            <span className="error-languages">შეცდომა</span>
+          ) : (
+            <select 
+              value={language || ""} 
+              onChange={handleLanguageChange}
+              className={`language-select ${!language ? 'placeholder-shown' : ''}`}
+            >
+              <option value="" disabled>
+                აირჩიე ენა
+              </option>
+              {languagesList.map(lang => (
+                <option key={lang.code} value={lang.code}>
+                  {lang.name}
+                </option>
+              ))}
+            </select>
+          )}
         </div>
 
         <div className="links">
@@ -85,6 +96,12 @@ function Navbar() {
                   </div>
                   {open && (
                     <div className="options">
+                      {/* ახალი ოფცია მხოლოდ ადმინისტრატორებისთვის */}
+                      {currentUser.isAdmin && (
+                        <Link className="adminLink" to="/admin">
+                          ადმინისტრატორის პანელი
+                        </Link>
+                      )}
                       <Link className="mypagelink" to={"/my-page"}>
                         ჩემი გვერდი
                       </Link>
