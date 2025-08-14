@@ -17,7 +17,7 @@ ENV NODE_ENV=production
 WORKDIR /usr/src/app
 
 # Copy package files first (for better caching)
-COPY package*.json ./
+# COPY package*.json ./
 
 # Download dependencies as a separate step to take advantage of Docker's caching.
 # Leverage a cache mount to /root/.npm to speed up subsequent builds.
