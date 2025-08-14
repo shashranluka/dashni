@@ -9,6 +9,12 @@ lerna-debug.log*
 yarn.lock
 .env
 
+# ✅ Google Service Account Key (უსაფრთხოებისთვის)
+my-translator-project.json
+*.json
+config/
+credentials/
+
 node_modules
 dist
 dist-ssr
