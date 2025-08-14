@@ -2,60 +2,161 @@ import VideoData from "../models/videoData.model.js";
 import createError from "../utils/createError.js";
 
 export const createVideoData = async (req, res, next) => {
-  // console.log("createVideoData", req.body);
-  if (!req.isSeller)
-    return next(createError(403, "Only sellers can create a VideoData!"));
+  // ✅ Raw სუბტიტრების მონაცემების მიღება
+  const rawData = req.body.subs.split("\n").filter(line => line.trim() !== "");
+  console.log("📝 Raw სუბტიტრების მონაცემები:", rawData, "ხაზების რაოდენობა:", rawData.length);
 
-  const rawData = req.body.desc.split("\n");
-  // let i;
-  const desc = [];
-  for (let i = 0; i < rawData.length; i += 2) {
+  const subs = [];
+  let sequentialIndex = 0;
+
+  // ✅ Timestamp ფორმატის ამოცნობა
+  const isTimestamp = (str) => {
+    const timePatterns = [
+      /^\d{1,2}:\d{2}$/,        // M:SS ან MM:SS
+      /^\d{1,2}:\d{2}:\d{2}$/,  // H:MM:SS
+      /^\d+:\d{2}$/,            // MM:SS (მოქნილი წუთები)
+    ];
+    return timePatterns.some(pattern => pattern.test(str.trim()));
+  };
+
+  // ✅ დროის კონვერტაცია წამებში
+  const convertTimeToSeconds = (timeString) => {
+    const timeParts = timeString.trim().split(":");
     let seconds = 0;
-    const time = rawData[i].split(":");
-    let line = rawData[i + 1];
-    // if (line[line.length - 1] == "\n") console.log("caution");
-    // else console.log("it is not");
 
-    for (let j = 0; j < time.length; j++) {
-      const power = time.length - 1 - j;
-      seconds += Number(time[j] * 60 ** power);
+    for (let j = 0; j < timeParts.length; j++) {
+      const power = timeParts.length - 1 - j;
+      const timeValue = parseInt(timeParts[j], 10);
+      
+      if (isNaN(timeValue)) {
+        console.warn(`⚠️ არავალიდური time part: ${timeParts[j]}`);
+        continue;
+      }
+      
+      seconds += timeValue * (60 ** power);
     }
-    if (i < rawData.length - 2) {
-      const nextTime = rawData[i + 2].replace("\n", "").split(":");
-      // console.log(typeof Number(nextTime[0]), Number(nextTime[0]),nextTime[0]);
-      if (isNaN(Number(nextTime[0]))) {
-        console.log("it works");
-        line += " ";
-        line += rawData[i + 2];
-        i += 1;
-        console.log(line,i);
+
+    return seconds;
+  };
+
+  // ✅ ტექსტის გასუფთავება
+  const cleanText = (text) => {
+    return text
+      .replace(/^\[.*?\]\s*/, '')     // [Music], [Intro] ტეგები
+      .replace(/^\(.*?\)\s*/, '')     // (Background music) ტეგები
+      .replace(/\s+/g, ' ')           // მრავალი space → ერთი space
+      .trim();
+  };
+
+  // ✅ ფორმატის ამოცნობა
+  const hasTimestamps = rawData.some(line => isTimestamp(line));
+  
+  console.log(`🔍 ფორმატი: ${hasTimestamps ? 'Timestamp-იანი' : 'Sequential index'}`);
+
+  if (hasTimestamps) {
+    // ✅ ===== TIMESTAMP-იანი ფორმატის დამუშავება =====
+    console.log("⏰ Timestamp-იანი ფორმატის დამუშავება...");
+    
+    for (let i = 0; i < rawData.length; i++) {
+      const currentLine = rawData[i].trim();
+      
+      if (isTimestamp(currentLine)) {
+        const timeInSeconds = convertTimeToSeconds(currentLine);
+        let textContent = "";
+        
+        let j = i + 1;
+        while (j < rawData.length && !isTimestamp(rawData[j])) {
+          const textLine = rawData[j].trim();
+          if (textLine) {
+            textContent += (textContent ? " " : "") + textLine;
+          }
+          j++;
+        }
+        
+        const cleanedText = cleanText(textContent);
+        
+        if (cleanedText) {
+          const lineData = {
+            time: timeInSeconds, // ✅ რეალური timestamp წამებში
+            line: cleanedText,
+            isTimestamp: true, // ✅ მარკერი timestamps-ისთვის
+          };
+          subs.push(lineData);
+          console.log(`📄 ${currentLine} → ${timeInSeconds}s: "${cleanedText}"`);
+        }
+        
+        i = j - 1;
       }
     }
-
-    const lineData = {
-      time: seconds,
-      line: line,
-    };
-    desc.push(lineData);
-    // console.log(i, time, seconds, line);
+    
+  } else {
+    // ✅ ===== SEQUENTIAL ფორმატის დამუშავება =====
+    console.log("📝 Sequential index ფორმატის დამუშავება...");
+    
+    for (let i = 0; i < rawData.length; i++) {
+      const line = rawData[i].trim();
+      
+      if (!line) continue;
+      
+      const cleanedText = cleanText(line);
+      
+      if (cleanedText) {
+        const lineData = {
+          time: sequentialIndex, // ✅ Sequential index (0, 1, 2...)
+          line: cleanedText,
+          isTimestamp: false, // ✅ მარკერი sequential-ისთვის
+        };
+        subs.push(lineData);
+        console.log(`📄 Index ${sequentialIndex}: "${cleanedText}"`);
+        sequentialIndex++;
+      }
+    }
   }
-  console.log(rawData.length, "dwad");
-  // const striing = "adwads khnhbj hjjhgj hjiouhjiuwadwankjnda dwada"
-  // console.log(req.body.desc,typeof(rawData),rawData,typeof(req.body.desc),striing.split(" "),typeof(striing.split(" ")))
 
-  const newVideoData = new VideoData({
+  console.log(`✅ დამუშავება დასრულებულია. სულ: ${subs.length} ჩანაწერი`);
+
+  // ✅ Metadata-ს შექმნა
+  const metadata = {
+    totalSubtitles: subs.length,
+    hasTimestamps: hasTimestamps,
+    format: hasTimestamps ? 'timed' : 'sequential',
+    maxTime: hasTimestamps 
+      ? Math.max(...subs.map(s => s.time)) 
+      : subs.length - 1,
+    minTime: hasTimestamps 
+      ? Math.min(...subs.map(s => s.time)) 
+      : 0,
+    averageLineLength: subs.length > 0 
+      ? Math.round(subs.reduce((sum, sub) => sum + sub.line.length, 0) / subs.length)
+      : 0,
+    totalCharacters: subs.reduce((sum, sub) => sum + sub.line.length, 0),
+    processedAt: new Date().toISOString(),
+    dataVersion: "2.0",
+  };
+
+  console.log("📊 გენერირებული Metadata:", metadata);
+
+  // ✅ ვიდეოს მონაცემების შექმნა
+  const processedData = {
     userId: req.userId,
     ...req.body,
-    desc,
-  });
-  // console.log("newData \n",newVideoData);
+    subs: subs,
+    metadata: metadata,
+  };
+
+  const newVideoData = new VideoData(processedData);
+
   try {
     const savedVideoData = await newVideoData.save();
     res.status(201).json(savedVideoData);
+    console.log("🎉 ვიდეოს მონაცემები წარმატებით შეინახა!");
   } catch (err) {
+    console.error("❌ შენახვის შეცდომა:", err);
     next(err);
   }
 };
+
+// ✅ დანარჩენი ფუნქციები უცვლელია...
 export const deleteVideoData = async (req, res, next) => {
   try {
     const videoData = await VideoData.findById(req.params.id);
@@ -68,21 +169,23 @@ export const deleteVideoData = async (req, res, next) => {
     next(err);
   }
 };
+
 export const getVideoData = async (req, res, next) => {
-  console.log("kog");
+  console.log("📖 ვიდეოს მონაცემების მოთხოვნა...");
   try {
     const videoData = await VideoData.findById(req.params.id);
-    // console.log("kog",videoData);
     if (!videoData) next(createError(404, "VideoData not found!"));
     res.status(200).send(videoData);
+    console.log("✅ ვიდეოს მონაცემები გაიგზავნა");
   } catch (err) {
     next(err);
   }
 };
+
 export const getVideoDatas = async (req, res, next) => {
   const q = req.query;
-  console.log("req", q, "getvideoDatas");
-  // console.log("req", req, "res", res);
+  console.log("📋 ვიდეოების სიის მოთხოვნა:", q);
+
   const filters = {
     ...(q.userId && { userId: q.userId }),
     ...(q.cat && { cat: q.cat }),
@@ -94,17 +197,11 @@ export const getVideoDatas = async (req, res, next) => {
     }),
     ...(q.search && { title: { $regex: q.search, $options: "i" } }),
   };
+
   try {
-    // const gigs = await Gig.find((el)=>{
-    //   console.log(el,"ELEMENT")
-    //   el.userId==q.userId}).sort({ [q.sort]: -1 });
     const videoDatas = await VideoData.find(filters).sort({ [q.sort]: -1 });
-    // for(let i=0;i<videoDatas.length;i++){
-    //   delete videoDatas[i].shortDesc;
-    //   console.log("works",videoDatas[i].shortDesc)
-    // }
     res.status(200).send(videoDatas);
-    // console.log(videoDatas,"videodatas",videoDatas["title"]);
+    console.log(`✅ ${videoDatas.length} ვიდეო გაიგზავნა`);
   } catch (err) {
     next(err);
   }

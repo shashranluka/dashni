@@ -1,20 +1,20 @@
 import express from "express";
-// import { verifyToken } from "../middleware/jwt.js";
-import { createWord, getWords } from "../controllers/word.controller.js";
 import { verifyToken } from "../middleware/jwt.js";
+import { 
+  createWord, 
+  getWords, 
+  translateWords, 
+  saveTranslations 
+} from "../controllers/word.controller.js";
 
 const router = express.Router();
 
-// router.post("/", verifyToken, createWord);
-
-console.log("test");
-
+// ✅ არსებული routes
+router.post("/", verifyToken, createWord);
 router.get("/", getWords);
-// router.post("/", verifyToken, createWord);
-router.post("/",verifyToken, createWord);
 
-// router.delete("/:id", verifyToken, deleteSentence);
-// router.get("/single/:id", getSentence);
-// router.get("/", getSentences);
+// ✅ ახალი routes
+router.get("/translate", translateWords);
+router.post("/save-translations", verifyToken, saveTranslations);
 
 export default router;

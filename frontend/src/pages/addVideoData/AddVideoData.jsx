@@ -1,190 +1,298 @@
-import React, { useEffect, useReducer, useState } from "react";
-import "./AddVideoData.scss";
+import React, { useReducer, useState } from "react";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
+import newRequest from '../../utils/newRequest';
+import { useLanguage } from "../../context/LanguageContext";
 import {
   videoDataReducer,
   INITIAL_STATE,
 } from "../../reducers/videoDataReducer";
-import upload from "../../utils/upload";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import newRequest from "../../utils/newRequest";
-import { useNavigate } from "react-router-dom";
+import WordCardsGenerator from "../../components/WordCardsGenerator/WordCardsGenerator";
+import "./AddVideoData.scss";
 
 const AddVideoData = () => {
+  // ✅ LanguageContext-ის გამოყენება
+  const { language, isLanguageSelected } = useLanguage();
+
+  const [state, dispatch] = useReducer(videoDataReducer, INITIAL_STATE);
   const [singleFile, setSingleFile] = useState(undefined);
   const [files, setFiles] = useState([]);
   const [uploading, setUploading] = useState(false);
-  const [selectedLanguage, setSelectedLanguage] = useState('orange');
+  const [errors, setErrors] = useState({});
 
-  const [state, dispatch] = useReducer(videoDataReducer, INITIAL_STATE);
-  console.log(state)
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
+  // ✅ WordCards-იდან მიღებული მონაცემები
+  const [generatedWordsData, setGeneratedWordsData] = useState(null);
+
+  // ✅ ენების სიის ჩატვირთვა
+  // const {
+  //   data: languagesList = [],
+  //   isLoading: loadingLanguages,
+  //   error: languagesError
+  // } = useQuery({
+  //   queryKey: ['languages'],
+  //   queryFn: async () => {
+  //     const response = await newRequest.get('/languages');
+  //     return response.data;
+  //   },
+  //   staleTime: 5 * 60 * 1000,
+  // });
+
+
+  // ✅ ვალიდაციის ფუნქცია
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!state.title?.trim()) {
+      newErrors.title = 'სათაური აუცილებელია';
+    }
+
+    if (!state.videoUrl?.trim()) {
+      newErrors.videoUrl = 'ვიდეოს URL აუცილებელია';
+    } else if (!isValidURL(state.videoUrl)) {
+      newErrors.videoUrl = 'არასწორი URL ფორმატი';
+    }
+
+    if (!language?.code) {
+      newErrors.language = 'ენის არჩევა აუცილებელია';
+    }
+
+    if (!state.subs?.trim()) {
+      newErrors.subs = 'სუბტიტრები აუცილებელია';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  // ✅ URL ვალიდაციის ფუნქცია
+  const isValidURL = (url) => {
+    try {
+      new URL(url);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
   const handleChange = (e) => {
-    console.log(e.target.value);
     dispatch({
       type: "CHANGE_INPUT",
       payload: { name: e.target.name, value: e.target.value },
     });
+
+    // ✅ Error-ის წაშლა ტაიპინგისას
+    if (errors[e.target.name]) {
+      setErrors(prev => ({
+        ...prev,
+        [e.target.name]: undefined
+      }));
+    }
   };
+
   const handleFeature = (e) => {
     e.preventDefault();
-    dispatch({
-      type: "ADD_FEATURE",
-      payload: e.target[0].value,
-    });
-    e.target[0].value = "";
+    const featureValue = e.target[0].value.trim();
+
+    if (featureValue) {
+      dispatch({
+        type: "ADD_FEATURE",
+        payload: featureValue,
+      });
+      e.target[0].value = "";
+    }
   };
 
-  const handleSubmit = (e) => {
-    console.log(e, state);
+  // ✅ გაუმჯობესებული submit
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    mutation.mutate(state);
-    // navigate("/mygigs");
+
+    if (!validateForm()) {
+      return;
+    }
+
+    // ✅ ენის ინფორმაციის ჩართვა
+    const videoData = {
+      ...state,
+      language: language.code,
+      languageName: language.name
+    };
+
+    mutation.mutate(videoData);
   };
-  const navigate = useNavigate();
 
-  const queryClient = useQueryClient();
-
+  // ✅ Mutation გაუმჯობესებული error handling-ით
   const mutation = useMutation({
-    mutationFn: (gig) => {
-      // console.log(gig)
-      return newRequest.post("/videodatas", gig);
+    mutationFn: (videoData) => {
+      return newRequest.post("/videodatas", videoData);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(["myGigs"]);
+      queryClient.invalidateQueries(["videodatas"]);
+      // navigate("/videos");
+    },
+    onError: (error) => {
+      console.error("ვიდეოს შენახვის შეცდომა:", error);
+      setErrors({
+        submit: error.response?.data?.message || "ვიდეოს შენახვა ვერ მოხერხდა"
+      });
     },
   });
-  // const handleUpload = async () => {
-  //   setUploading(true);
-  //   try {
-  //     const cover = await upload(singleFile);
 
-  //     const images = await Promise.all(
-  //       [...files].map(async (file) => {
-  //         const url = await upload(file);
-  //         return url;
-  //       })
-  //     );
-  //     setUploading(false);
-  //     dispatch({ type: "ADD_IMAGES", payload: { cover, images } });
-  //   } catch (err) {
-  //     console.log(err);
-  //   }
-  // };
+  // ✅ WordCardsGenerator-იდან callback
+  const handleWordsGenerated = (wordsData) => {
+    setGeneratedWordsData(wordsData);
+    console.log('მიღებული მონაცემები WordCardsGenerator-იდან:', wordsData);
+  };
+
+  // ✅ Loading state-ის შემოწმება
+  // if (loadingLanguages) {
+  //   return <div className="loading">ენები იტვირთება...</div>;
+  // }
+
+  // // ✅ Error state-ის შემოწმება
+  // if (languagesError) {
+  //   return <div className="error">ენების ჩატვირთვა ვერ მოხერხდა</div>;
+  // }
 
   return (
     <div className="add-video">
       <div className="container">
         <h1>ახალი ვიდეოს მონაცემების დამატება</h1>
-        <div className="sections">
+
+        {/* ✅ ენის არჩევის გაფრთხილება */}
+        {!isLanguageSelected && (
+          <div className="language-warning">
+            <p>⚠️ გთხოვთ ჯერ აირჩიოთ ენა Navbar-იდან</p>
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="sections">
           <div className="info">
-            <label htmlFor="">სათაური</label>
-            <input
-              type="text"
-              name="title"
-              placeholder="ვიდეოს სათაური"
-              onChange={handleChange}
-            />
-            <label htmlFor="">ვიდეოს Url</label>
-            <input
-              type="text"
-              name="shortTitle"
-              placeholder="ვიდეოს Url"
-              onChange={handleChange}
-            />
-            <label htmlFor="">ენა</label>
-            <select
-              name="language"
-              // value={selectedLanguage} // ...force the select's value to match the state variable...
-              onChange={handleChange}
-              // onChange={(e) => setSelectedFruit(e.target.value)}
-            >
-              <option value="en">ინგლისური</option>
-              <option value="de">ესპანური</option>
-              <option value="es">გერმანული</option>
-              <option value="tu">თუშური</option>
-            </select>
-            <label htmlFor="">სუბტიტრები</label>
-            <textarea
-              name="desc"
-              id=""
-              placeholder="სუბტიტრები"
-              cols="0"
-              rows="16"
-              onChange={handleChange}
-            ></textarea>
-            <label htmlFor="">აღწერა</label>
-            <textarea
-              name="shortDesc"
-              onChange={handleChange}
-              id=""
-              placeholder="აღწერა"
-              cols="30"
-              rows="10"
-            ></textarea>
-            <div className="tags">
-              <label htmlFor="">თეგები</label>
-              <form action="" className="add" onSubmit={handleFeature}>
-                <input type="text" placeholder="თეგები" />
-                <button type="submit">თეგის დამატება</button>
-              </form>
-              <div className="addedFeatures">
-                {state?.features?.map((f) => (
-                  <div className="item">
-                    <div key={f}>
+            {/* ✅ სათაური */}
+            <div className="field">
+              <label htmlFor="title">სათაური *</label>
+              <input
+                id="title"
+                type="text"
+                name="title"
+                placeholder="ვიდეოს სათაური"
+                onChange={handleChange}
+                className={errors.title ? 'error' : ''}
+              />
+              {errors.title && <span className="error-message">{errors.title}</span>}
+            </div>
+
+            {/* ✅ ვიდეოს URL */}
+            <div className="field">
+              <label htmlFor="videoUrl">ვიდეოს URL *</label>
+              <input
+                id="videoUrl"
+                type="url"
+                name="videoUrl"
+                placeholder="https://www.youtube.com/watch?v=..."
+                onChange={handleChange}
+                className={errors.videoUrl ? 'error' : ''}
+              />
+              {errors.videoUrl && <span className="error-message">{errors.videoUrl}</span>}
+            </div>
+
+            {/* ✅ არჩეული ენის ჩვენება */}
+            <div className="field">
+              <label>არჩეული ენა *</label>
+              {isLanguageSelected ? (
+                <div className="selected-language">
+                  <span className="language-display">
+                    🌐 {language.name} ({language.code})
+                  </span>
+                  <small>ენის შესაცვლელად გამოიყენეთ Navbar</small>
+                </div>
+              ) : (
+                <div className="no-language">
+                  <span className="error-message">ენა არ არის არჩეული</span>
+                </div>
+              )}
+            </div>
+
+            {/* ✅ სუბტიტრები */}
+            <div className="field">
+              <label htmlFor="subs">სუბტიტრები *</label>
+              <textarea
+                id="subs"
+                name="subs"
+                placeholder="ვიდეოს სუბტიტრები..."
+                cols="0"
+                rows="16"
+                onChange={handleChange}
+                className={errors.subs ? 'error' : ''}
+              />
+              {errors.subs && <span className="error-message">{errors.subs}</span>}
+            </div>
+
+            {/* ✅ აღწერა */}
+            <div className="field">
+              <label htmlFor="shortDesc">აღწერა</label>
+              <textarea
+                id="shortDesc"
+                name="shortDesc"
+                onChange={handleChange}
+                placeholder="ვიდეოს მოკლე აღწერა..."
+                cols="30"
+                rows="10"
+              />
+            </div>
+
+            {/* ✅ თეგები */}
+            <div className="field">
+              <div className="tags">
+                <label htmlFor="">თეგები</label>
+                <form className="add" onSubmit={handleFeature}>
+                  <input type="text" placeholder="თეგი (მაგ: გრამატიკა)" />
+                  <button type="submit">თეგის დამატება</button>
+                </form>
+                <div className="addedFeatures">
+                  {state?.features?.map((feature, index) => (
+                    <div key={index} className="item">
                       <button
+                        type="button"
                         onClick={() =>
-                          dispatch({ type: "REMOVE_FEATURE", payload: f })
+                          dispatch({ type: "REMOVE_FEATURE", payload: feature })
                         }
+                        className="tag-item"
                       >
-                        {f}
-                        <span>X</span>
+                        {feature}
+                        <span className="remove">✕</span>
                       </button>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             </div>
-            <button onClick={handleSubmit}>შენახვა</button>
-          </div>
-          {/* <label htmlFor="">Category</label>
-            <select name="cat" id="cat" onChange={handleChange}>
-              <option value="design">საჭმელი</option>
-              <option value="web">მანქანის ნაწილები</option>
-              <option value="animation">სხვა</option>
-              <option value="music">Music</option>
-            </select> */}
-          {/* <div className="images">
-              <div className="imagesInputs">
-                <label htmlFor="">Cover Image</label>
-                <input
-                  type="file"
-                  onChange={(e) => setSingleFile(e.target.files[0])}
-                />
-                <label htmlFor="">Upload Images</label>
-                <input
-                  type="file"
-                  multiple
-                  onChange={(e) => setFiles(e.target.files)}
-                />
+
+            {/* ✅ Submit Error */}
+            {errors.submit && (
+              <div className="submit-error">
+                <span className="error-message">{errors.submit}</span>
               </div>
-              <button onClick={handleUpload}>
-                {uploading ? "uploading" : "Upload"}
-              </button>
-            </div> */}
-          {/* <div className="details">
-            <label htmlFor="">Delivery Time (e.g. 3 days)</label>
-            <input type="number" name="deliveryTime" onChange={handleChange} />
-            <label htmlFor="">Revision Number</label>
-            <input
-              type="number"
-              name="revisionNumber"
-              onChange={handleChange}
+            )}
+
+            {/* ✅ Submit ღილაკი */}
+            <button
+              type="submit"
+              disabled={mutation.isLoading || !isLanguageSelected}
+              className="submit-button"
+            >
+              {mutation.isLoading ? 'ინახება...' : 'შენახვა'}
+            </button>
+
+            {/* ✅ სიტყვების გენერირების კომპონენტი */}
+            <WordCardsGenerator 
+              subtitles={state.subs}
+              onWordsGenerated={handleWordsGenerated}
             />
-            
-            
-            <label htmlFor="">Price</label>
-            <input type="number" onChange={handleChange} name="price" />
-          </div> */}
-        </div>
+          </div>
+        </form>
       </div>
     </div>
   );

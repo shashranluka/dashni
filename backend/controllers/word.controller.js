@@ -9,148 +9,322 @@ import FrWord from "../models/frWord.model.js";
 import SxWord from "../models/sxWord.model.js";
 import User from "../models/user.model.js";
 
+/**
+ * 🏗️ ენის მიხედვით შესაბამისი MongoDB Model-ის შერჩევა
+ * @param {string} language - ენის კოდი (ba, en, ka, ru, de, es, fr, sx)
+ * @returns {Object} - შესაბამისი Mongoose Model
+ */
+const getModelByLanguage = (language) => {
+  console.log(`🔍 Model-ის შერჩევა ენისთვის: ${language}`);
+  
+  switch (language) {
+    case "ba":
+      console.log("📚 BaWord Model შეირჩა");
+      return BaWord;
+    case "ru":
+      console.log("📚 RuWord Model შეირჩა");
+      return RuWord;
+    case "en":
+      console.log("📚 EnWord Model შეირჩა");
+      return EnWord;
+    case "ka":
+      console.log("📚 KaWord Model შეირჩა");
+      return KaWord;
+    case "de":
+      console.log("📚 DeWord Model შეირჩა");
+      return DeWord;
+    case "es":
+      console.log("📚 EsWord Model შეირჩა");
+      return EsWord;
+    case "fr":
+      console.log("📚 FrWord Model შეირჩა");
+      return FrWord;
+    case "sx":
+      console.log("📚 SxWord Model შეირჩა");
+      return SxWord;
+    default:
+      console.log(`⚠️ უცნობი ენა: ${language}, SxWord Model გამოყენება default-ად`);
+      return SxWord;
+  }
+};
+
 export const createWord = async (req, res, next) => {
+  console.log("Creating words with data:", req.body, "userId", req.userId);
+  const { wordsToAdd, userId } = req.body;
   try {
     const savedWords = [];
 
-    for (let i = 0; i < req.body.length; i++) {
-      const language = req.body[i].language;
-      // console.log("wordsState", req.body[i], "newWord", language);
-      let Model;
-
-      switch (language) {
-        case "ba":
-          Model = BaWord;
-          break;
-        case "en":
-          Model = EnWord;
-          break;
-        case "ka":
-          Model = KaWord;
-          break;
-        case "de":
-          Model = DeWord;
-          break;
-        case "es":
-          Model = EsWord;
-          break;
-        case "fr":
-          Model = FrWord;
-          break;
-        case "sx":
-          Model = SxWord;
-          break;
-        default:
-          Model = SxWord;
-      }
+    for (let i = 0; i < wordsToAdd.length; i++) {
+      const language = wordsToAdd[i].language;
+      
+      // ✅ Model-ის მიღება ცალკე ფუნქციით
+      const Model = getModelByLanguage(language);
 
       const newWord = new Model({
-        userId: req.userId,
-        ...req.body[i],
+        userId: userId,
+        ...wordsToAdd[i],
       });
-
-      // console.log("wordsState", req.body[i], "newWord", newWord);
 
       const savedWord = await newWord.save();
       savedWords.push(savedWord);
       console.log("savedWord", savedWord);
     }
-
-    // მხოლოდ ერთხელ ვაგზავნით პასუხს, ყველა შენახული სიტყვის შემდეგ
     res.status(201).json(savedWords);
-
   } catch (err) {
     console.error("Error saving words:", err);
     next(err);
   }
 };
 
-export const getWords = async (req, res, next) => {
-  console.log(req.query, "getWords req");
-  const { userId, amount, language, type, privacy, wordsToTranslate, sort, whatIsNeeded } = req.query;
-  try {
-    console.log("userId", userId, "amount", amount, "language", language, "type", type, "privacy", privacy, "wordsToTranslate", wordsToTranslate, "sort", sort, "whatIsNeeded", whatIsNeeded);
+/**
+ * 🔍 სიტყვების თარგმნის ფუნქცია
+ * ეძებს მოცემულ სიტყვებს ბაზაში და აბრუნებს მათ თარგმანებს
+ */
+export const translateWords = async (req, res, next) => {
+  console.log("🔍 translateWords ფუნქცია გამოიძახა:", req.query);
 
-    let Model;
-    switch (language) {
-      case "ba":
-        Model = BaWord;
-        break;
-      case "ru":
-        Model = RuWord;
-        break;
-      case "en":
-        Model = EnWord;
-        break;
-      case "ka":
-        Model = KaWord;
-        break;
-      case "de":
-        Model = DeWord;
-        break;
-      case "es":
-        Model = EsWord;
-        break;
-      case "fr":
-        Model = FrWord;
-        break;
-      case "sx":
-        Model = SxWord;
-        break;
-      default:
-        Model = Word;
+  try {
+    const { wordsToTranslate, language, sort = "createdAt" } = req.query;
+
+    // ✅ პარამეტრების ვალიდაცია
+    if (!wordsToTranslate) {
+      console.log("❌ wordsToTranslate პარამეტრი არ არის მოცემული");
+      return res.status(400).json({ 
+        error: "wordsToTranslate პარამეტრი სავალდებულოა" 
+      });
     }
 
-    // თუ მოთხოვნილია მომხმარებლის მიერ დამატებული სიტყვები
-    if (userId && whatIsNeeded === "userWords") {
-      console.log("Fetching user added words for userId:", userId);
+    if (!language) {
+      console.log("❌ language პარამეტრი არ არის მოცემული");
+      return res.status(400).json({ 
+        error: "language პარამეტრი სავალდებულოა" 
+      });
+    }
 
-      // ვამოწმებთ მომხმარებლის არსებობას
+    // ✅ Model-ის მიღება ცალკე ფუნქციით
+    const Model = getModelByLanguage(language);
+
+    // ✅ wordsToTranslate-ის დამუშავება (array ან string)
+    let wordsArray;
+    if (Array.isArray(wordsToTranslate)) {
+      wordsArray = wordsToTranslate;
+    } else if (typeof wordsToTranslate === 'string') {
+      try {
+        // ✅ JSON parse თუ string array-ია
+        wordsArray = JSON.parse(wordsToTranslate);
+      } catch (parseError) {
+        // ✅ Comma separated string
+        wordsArray = wordsToTranslate.split(',').map(word => word.trim());
+      }
+    } else {
+      wordsArray = [wordsToTranslate];
+    }
+
+    console.log(`📝 თარგმნის საჭირო სიტყვები (${wordsArray.length}):`, wordsArray);
+
+    // ✅ Test mode - მხოლოდ შემოწმება, თარგმნა არა
+    // if (test === "check") {
+    //   console.log("🔍 Test mode: მხოლოდ შემოწმება");
+
+    //   // ✅ Case-insensitive ძებნა
+    //   const filters = { 
+    //     word: { 
+    //       $in: wordsArray.map(word => new RegExp(`^${word}$`, 'i')) 
+    //     } 
+    //   };
+
+    //   const existingWords = await Model.find(filters)
+    //     .select('word translation')
+    //     .sort({ [sort]: -1 });
+
+    //   console.log(`✅ ნაპოვნია ${existingWords.length} სიტყვა ბაზაში`);
+      
+    //   return res.status(200).json(existingWords);
+    // }
+
+    // ✅ სრული თარგმნის რეჟიმი
+    console.log("🔄 სრული თარგმნის რეჟიმი");
+
+    // ✅ ზუსტი დამთხვევების ძებნა (case-insensitive)
+    const filters = { 
+      word: { 
+        $in: wordsArray.map(word => new RegExp(`^${word}$`, 'i')) 
+      } 
+    };
+
+    const translatedWords = await Model.find(filters)
+      .select('word translation isPrivate userId createdAt')
+      // .sort({ [sort]: -1 });
+
+    console.log(`📊 თარგმნის შედეგი: ${translatedWords.length}/${wordsArray.length} სიტყვა ნაპოვნია`);
+
+    // ✅ Debug ინფორმაცია
+    if (translatedWords.length > 0) {
+      console.log("✅ ნაპოვნი სიტყვები:", 
+        translatedWords.map(w => `${w.word} → ${w.translation}`).join(', ')
+      );
+    }
+
+    // ✅ ვერ ნაპოვნი სიტყვების იდენტიფიცირება
+    const foundWords = translatedWords.map(w => w.word.toLowerCase());
+    const notFoundWords = wordsArray.filter(word => 
+      !foundWords.includes(word.toLowerCase())
+    );
+
+    if (notFoundWords.length > 0) {
+      console.log("❌ ვერ ნაპოვნი სიტყვები:", notFoundWords.join(', '));
+    }
+
+    // ✅ შედეგების დაბრუნება
+    return res.status(200).json(translatedWords);
+
+  } catch (err) {
+    console.error("❌ translateWords შეცდომა:", err);
+    next(err);
+  }
+};
+
+/**
+ * 💾 ახალი თარგმანების შენახვის ფუნქცია
+ * Frontend-იდან მიღებული ხელით თარგმანების შენახვა
+ */
+export const saveTranslations = async (req, res, next) => {
+  console.log("💾 saveTranslations ფუნქცია გამოიძახა:", req.body);
+
+  try {
+    const { translations } = req.body;
+
+    // ✅ ვალიდაცია
+    if (!translations || !Array.isArray(translations)) {
+      return res.status(400).json({ 
+        error: "translations array სავალდებულოა" 
+      });
+    }
+
+    if (!req.userId) {
+      return res.status(401).json({ 
+        error: "ავტორიზაცია სავალდებულოა" 
+      });
+    }
+
+    const savedTranslations = [];
+    const errors = [];
+
+    // ✅ ყველა თარგმნის შენახვა
+    for (let i = 0; i < translations.length; i++) {
+      const { word, translation, language } = translations[i];
+
+      try {
+        // ✅ პარამეტრების ვალიდაცია
+        if (!word || !translation || !language) {
+          errors.push(`თარგმანი ${i + 1}: word, translation და language სავალდებულოა`);
+          continue;
+        }
+
+        // ✅ Model-ის მიღება ცალკე ფუნქციით
+        const Model = getModelByLanguage(language);
+
+        // ✅ უკვე არსებობს თუ არა შემოწმება
+        const existingWord = await Model.findOne({ 
+          word: new RegExp(`^${word}$`, 'i') 
+        });
+
+        if (existingWord) {
+          console.log(`⚠️ სიტყვა "${word}" უკვე არსებობს, გამოტოვება`);
+          continue;
+        }
+
+        // ✅ ახალი სიტყვის შექმნა
+        const newWord = new Model({
+          userId: req.userId,
+          word: word.trim(),
+          translation: translation.trim(),
+          language: language,
+          isPrivate: false, // Default public
+        });
+
+        const savedWord = await newWord.save();
+        savedTranslations.push(savedWord);
+        
+        console.log(`✅ შეინახა: ${word} → ${translation}`);
+
+      } catch (saveError) {
+        console.error(`❌ შენახვის შეცდომა სიტყვისთვის "${word}":`, saveError);
+        errors.push(`სიტყვა "${word}": ${saveError.message}`);
+      }
+    }
+
+    // ✅ შედეგების დაბრუნება
+    const result = {
+      success: true,
+      savedCount: savedTranslations.length,
+      totalCount: translations.length,
+      savedTranslations: savedTranslations,
+    };
+
+    if (errors.length > 0) {
+      result.errors = errors;
+      result.hasErrors = true;
+    }
+
+    console.log(`🎉 შენახვა დასრულდა: ${savedTranslations.length}/${translations.length} წარმატებით`);
+
+    return res.status(201).json(result);
+
+  } catch (err) {
+    console.error("❌ saveTranslations შეცდომა:", err);
+    next(err);
+  }
+};
+
+/**
+ * 📋 სიტყვების მიღების ფუნქცია
+ * ფილტრებით და სხვადასხვა პარამეტრებით სიტყვების დაბრუნება
+ */
+export const getWords = async (req, res, next) => {
+  console.log(req.query, "getWords req");
+  const { userId, amount, language, type, privacy, sort, whatIsNeeded } = req.query;
+  
+  try {
+    console.log("userId", userId, "amount", amount, "language", language, "type", type, "privacy", privacy, "sort", sort, "whatIsNeeded", whatIsNeeded);
+
+    // ✅ Model-ის მიღება ცალკე ფუნქციით (default Word-ით)
+    const Model = language ? getModelByLanguage(language) : Word;
+
+    // ✅ თუ მოთხოვნილია მომხმარებლის მიერ დამატებული სიტყვები
+    if (userId && whatIsNeeded === "userWords") {
       const user = await User.findById(userId);
       if (!user) return res.status(404).json({ error: "User not found" });
 
-      // მოვძებნოთ მხოლოდ მომხმარებლის მიერ დამატებული სიტყვები
       const userAddedWords = await Model.find({
         userId: userId,
-        language: language // უზრუნველვყოთ, რომ მხოლოდ მითითებული ენის სიტყვები დაბრუნდეს
-      }).sort({ createdAt: -1 }); // ახლიდან ძველისკენ დალაგება
+        language: language
+      }).sort({ createdAt: -1 });
 
       console.log(`Found ${userAddedWords.length} words added by user`);
       return res.status(200).send(userAddedWords);
     }
 
-    // დანარჩენი ლოგიკა რჩება უცვლელი
-
-    // თუ მოთხოვნილია შემთხვევითი სიტყვების არჩევა
+    // ✅ თუ მოთხოვნილია შემთხვევითი სიტყვების არჩევა
     if (type === "random") {
       const limit = parseInt(amount) || 10;
 
       let matchFilter = {};
-      console.log("matchFilter", matchFilter);
-      // შემთხვევითი სიტყვების არჩევისას ვითვალისწინებთ privacy-ს
       if (privacy === "public") {
-        // მხოლოდ საჯარო სიტყვები
         matchFilter.isPrivate = false;
       } else if (privacy === "private" && userId) {
-        // პირადი სიტყვები (ძველი ლოგიკა, შესაძლოა აღარ დაგჭირდეთ)
         matchFilter.isPrivate = true;
         matchFilter.userId = userId;
       } else if (privacy === "mine" && userId) {
-        // მხოლოდ მომხმარებლის დამატებული სიტყვები (როგორც საჯარო, ისე პირადი)
         matchFilter.userId = userId;
       } else if (privacy === "all" && userId) {
-        console.log(userId, "all");
-        // როგორც მომხმარებლის დამატებული, ისე საჯარო სიტყვები
         matchFilter.$or = [
-          { userId: userId },  // მომხმარებლის სიტყვები
-          { isPrivate: false }     // საჯარო სიტყვები
+          { userId: userId },
+          { isPrivate: false }
         ];
       } else {
-        // თუ მომხმარებელი არ არის ავტორიზებული ან სხვა შემთხვევაში, მხოლოდ საჯარო სიტყვები
         matchFilter.isPrivate = false;
       }
-
-      console.log(userId, "userId", "matchFilter", matchFilter);
 
       const randomWords = await Model.aggregate([
         { $match: matchFilter },
@@ -160,30 +334,23 @@ export const getWords = async (req, res, next) => {
       return res.status(200).send(randomWords);
     }
 
-    // თუ მოთხოვნილია კონკრეტული მომხმარებლის სიტყვები
+    // ✅ თუ მოთხოვნილია კონკრეტული მომხმარებლის სიტყვები
     if ("userId" in req.query && !whatIsNeeded) {
-      console.log("userId in req.query", userId, Model);  // ლოგავს მომხმარებლის ID-ს
-      const user = await User.findById(userId);  // მონაცემთა ბაზიდან იღებს მომხმარებელს მოწოდებული ID-ით
-      if (!user) return res.status(404).json({ error: "User not found" });  // თუ მომხმარებელი არ მოიძებნა, აბრუნებს 404 შეცდომას
+      const user = await User.findById(userId);
+      if (!user) return res.status(404).json({ error: "User not found" });
 
-      const collectedWordsData = await Model.find({  // პოულობს ყველა სიტყვას BaWord მოდელიდან
-        _id: { $in: user.collectedWords }  // სადაც _id არის ერთ-ერთი მომხმარებლის შეგროვილი სიტყვებიდან
+      const collectedWordsData = await Model.find({
+        _id: { $in: user.collectedWords }
       });
-      console.log("collectedWordsData", collectedWordsData);  // ლოგავს მოძიებულ სიტყვებს
-      return res.status(200).send(collectedWordsData);  // აბრუნებს მოძიებულ სიტყვებს 200 სტატუს კოდით
+      return res.status(200).send(collectedWordsData);
     }
 
+    // ✅ Default case - ყველა სიტყვის დაბრუნება სორტირებით
+    const allWords = await Model.find({}).sort({ [sort || 'createdAt']: -1 });
+    return res.status(200).send(allWords);
 
-    // თუ მოთხოვნილია სიტყვების თარგმნა
-    // const { wordsToTranslate, language, sort } = req.query;  // იღებს მოთხოვნის პარამეტრებს
-    const filters = wordsToTranslate ? { word: wordsToTranslate } : {};  // ქმნის ფილტრს, თუ wordsToTranslate არსებობს
-
-    // const Model = language === "ba" ? BaWord : Word;  // ირჩევს მოდელს ენის პარამეტრის მიხედვით (ba=ბაშკირული, სხვა=ქართული)
-    const words = await Model.find(filters).sort({ [sort]: -1 });  // ეძებს სიტყვებს შესაბამისი მოდელიდან ფილტრით და ახარისხებს
-
-    return res.status(200).send(words);  // აბრუნებს მოძიებულ სიტყვებს 200 სტატუს კოდით
-  } catch (err) {  // იჭერს ნებისმიერ შეცდომას რომელიც try ბლოკში მოხდა
-    console.error("Error in getWords:", err);  // ლოგავს შეცდომის შესახებ ინფორმაციას კონსოლში
-    next(err);  // შეცდომას გადასცემს შემდეგ შეცდომების დამმუშავებელს
+  } catch (err) {
+    console.error("Error in getWords:", err);
+    next(err);
   }
-};  // ფუნქციის დასასრული
+};

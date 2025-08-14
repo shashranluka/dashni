@@ -23,7 +23,7 @@ const SentenceSchema = new Schema(
       type: String,
       // required: true,
     },
-    isPrivate: {
+    isPublic: {
       type: Boolean,
       default: false,
     },

@@ -1,71 +1,64 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import "./Video.scss";
-// import YoutubeTranscript from "youtube-transcript";
 import { Link, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import newRequest from "../../utils/newRequest";
 import Game from "../../components/Game";
 import TheWord from "../../components/theWord/TheWord";
+import WordsTranslator from "../../components/wordsTranslator/WordsTranslator"; // ✅ ახალი import
+import { useLanguage } from "../../context/LanguageContext";
+import { use } from "react";
 
 export default function Video() {
+  // ✅ ოპტიმიზებული State
   const [startTime, setStartTime] = useState(0);
-  const [endTime, setEndTime] = useState(0);
+  const [endTime, setEndTime] = useState(300);
   const [isStarted, setIsStarted] = useState(false);
-  const [click, setClick] = useState(0);
-  const [newGame, setNewGame] = useState(0);
   const [isLoaded, setIsLoaded] = useState(false);
   const [gameData, setGameData] = useState();
+  const [selectedWords, setSelectedWords] = useState(new Set());
+  const [click, setClick] = useState(0);
+  const [isLoadingGame, setIsLoadingGame] = useState(false);
+  const [gameError, setGameError] = useState(null);
 
+  // ✅ Language Context
+  // const { language} = useLanguage();
+
+  // ✅ Collapse/Expand States
+  const [isTextCardsCollapsed, setIsTextCardsCollapsed] = useState(false);
+  const [isGridCardsCollapsed, setIsGridCardsCollapsed] = useState(false);
+
+  // ✅ კონსტანტები
+  const MAX_SELECTED_WORDS = 99;
+  
   const inputRef = useRef();
-
   const { id } = useParams();
 
+  // ✅ ვიდეოს მონაცემების ჩატვირთვა
   const { isLoading, error, data } = useQuery({
-    queryKey: ["gig"],
+    queryKey: ["video", id],
     refetchOnWindowFocus: false,
     queryFn: () =>
-      newRequest.get(`/videodatas/single/${id}`).then((res) => { //
-        return { ...res.data };
-      }),
+      newRequest.get(`/videodatas/single/${id}`).then((res) => res.data),
   });
+  console.log("Video data:", data);
 
   const userId = data?.userId;
 
+  // ✅ მომხმარებლის მონაცემების ჩატვირთვა
   const {
     isLoading: isLoadingUser,
     error: errorUser,
     data: dataUser,
   } = useQuery({
-    queryKey: ["user"],
+    queryKey: ["user", userId],
     queryFn: () =>
-      newRequest.get(`/users/${userId}`).then((res) => {
-        // console.log(res);
-        return res.data;
-      }),
+      newRequest.get(`/users/${userId}`).then((res) => res.data),
     enabled: !!userId,
   });
-  console.log(data, isLoading);
-  function clickHandler(index) {
-    // console.log("test", wordsToChoose[index], click, index);
-    if (wordsToChoose[index].selected) {
-      // console.log("wordsToChoose[index], ", click, index);
-      wordsToChoose[index].selected = false;
-    } else {
-      // console.log("false", wordsToChoose[index], click, index);
-      wordsToChoose[index].selected = true;
-    }
-    // console.log("test2", wordsToChoose[index], click, index);
 
-    setClick(click + 1);
-    // console.log(wordsToChoose[index], click, index);
-  }
-  function handleSubmit() {
-    const timeInterval = inputRef.current.value;
-    console.log(inputRef.current.value);
-    setStartTime(timeToSeconds(timeInterval.split("-")[0]));
-    setEndTime(timeToSeconds(timeInterval.split("-")[1]));
-  }
-  function timeToSeconds(time) {
+  // ✅ დროის კონვერტაცია
+  const timeToSeconds = useCallback((time) => {
     const arr = time.split(":");
     let seconds = 0;
     for (let i = 0; i < arr.length; i++) {
@@ -73,210 +66,558 @@ export default function Video() {
       seconds += Number(arr[i]) * 60 ** power;
     }
     return seconds;
-  }
-  if (!isLoading && !isLoaded) {
-    setEndTime(300);
-    setIsLoaded(true);
-  }
+  }, []);
 
-  const wordsToChoose = useMemo(() => {
-    // console.log(startTime, endTime);
-    if (!isLoading && isLoaded) {
-      const lines = data.desc;
-      // console.log(lines, startTime, endTime);
+  // ✅ დროის ინტერვალის განახლება
+  const handleSubmit = useCallback(() => {
+    const timeInterval = inputRef.current?.value;
+    if (!timeInterval) return;
+
+    try {
+      const [startStr, endStr] = timeInterval.split("-");
+      const newStartTime = timeToSeconds(startStr);
+      const newEndTime = timeToSeconds(endStr);
+      
+      if (newStartTime >= newEndTime) {
+        alert("დასაწყისი დრო უნდა იყოს დასასრულზე ნაკლები");
+        return;
+      }
+
+      setStartTime(newStartTime);
+      setEndTime(newEndTime);
+      setSelectedWords(new Set()); // არჩეული სიტყვების გასუფთავება
+      setGameError(null);
+      
+      console.log(`⏱️ დრო განახლდა: ${startStr} - ${endStr}`);
+    } catch (error) {
+      alert("არასწორი დროის ფორმატი");
+    }
+  }, [timeToSeconds]);
+
+  // console.log("Video component rendered", data.subs);
+  // ✅ სუბტიტრების ტექსტის მომზადება
+  const subtitleLines = useMemo(() => {
+    if (!data?.subs || isLoading || !isLoaded) return [];
+
+    try {
+      const lines = data.subs;
       const choicedLines = lines.filter(
         (line) => startTime <= line.time && line.time < endTime
       );
-      // console.log(choicedLines, "choicedLines");
+
+      return choicedLines.map((line, index) => ({
+        id: `sub-${line.time}-${index}`,
+        time: line.time,
+        text: line.line,
+        words: line.line
+          .toLowerCase()
+          .replace(/[^\w\s']/g, " ")
+          .replace(/\s+/g, " ")
+          .trim()
+          .split(" ")
+          .filter(word => word.length > 1)
+      }));
+    } catch (error) {
+      console.error("სუბტიტრების მომზადების შეცდომა:", error);
+      return [];
+    }
+  }, [data?.subs, startTime, endTime, isLoading, isLoaded]);
+
+  // ✅ უნიკალური სიტყვების გენერირება (Grid ბარათებისთვის)
+  const wordsToChoose = useMemo(() => {
+    if (!data?.subs || isLoading || !isLoaded) return [];
+
+    try {
+      const lines = data.subs;
+      const choicedLines = lines.filter(
+        (line) => startTime <= line.time && line.time < endTime
+      );
+
       const wordsTemp = choicedLines
         .map((line) =>
           line.line
             .toLowerCase()
-            .replace(",", "")
-            .replace(".", "")
-            .replace('"', "")
-            .replace('"', "")
-            .replace("(", "")
-            .replace(")", "")
-            .replace(":", "")
-            .replace("?", "")
+            .replace(/[^\w\s']/g, " ") // პუნქტუაციის მოშორება
+            .replace(/\s+/g, " ")
+            .trim()
             .split(" ")
         )
         .flat()
-        .filter((value, index, self) => self.indexOf(value) === index);
-      return wordsTemp.map((word) => ({
-        theWord: word,
-      }));
-    } else {
+        .filter(word => word.length > 1) // მინიმუმ 2 სიმბოლო
+        .filter((value, index, self) => self.indexOf(value) === index); // უნიკალური
+
+      return wordsTemp.sort().map((word) => ({ theWord: word }));
+    } catch (error) {
+      console.error("სიტყვების გენერირების შეცდომა:", error);
       return [];
     }
-  }, [startTime, endTime]);
-  console.log(newGame, isStarted);
-  // console.log(wordsToChoose.length, endTime, isLoading, isLoaded);
-  useEffect(() => {
-    console.log("useEffect run");
-    if (isStarted) {
-      const wordsToTranslate = wordsToChoose
-        .filter((word) => word.selected)
-        .map((word) => word.theWord);
-      console.log("started", isStarted, wordsToTranslate);
-      const lang = "en"
+  }, [data?.subs, startTime, endTime, isLoading, isLoaded]);
 
-      // newRequest.get(`/words/get?wordsToTranslate=${wordsToTranslate}`)
-      newRequest
-        .get(`/words`, {
-          params: {
-            wordsToTranslate,
-            lang,
-            test:"test"
-          },
-        })
-        .then((res) => {
-          console.log("დაბრუნდა", res);
-          setGameData(res.data);
-          // return { ...res.data };
-        });
+  // ✅ სიტყვის არჩევა ლიმიტით (Grid ბარათებისთვის)
+  const clickHandler = useCallback((index) => {
+    const word = wordsToChoose[index];
+    if (!word) return;
 
-      // newRequest.post("/words", wordsToTranslate);
-      // .then((res) => {
-      //   return { ...res.data };
-      // });
+    const wordText = word.theWord;
+    const isCurrentlySelected = selectedWords.has(wordText);
+
+    // ✅ თუ ამ ეტაპზე select-ი უნდა მოხდეს
+    if (!isCurrentlySelected) {
+      // ✅ ლიმიტის შემოწმება
+      if (selectedWords.size >= MAX_SELECTED_WORDS) {
+        alert(`მაქსიმუმ ${MAX_SELECTED_WORDS} სიტყვის არჩევა შეიძლება ერთ ჯერზე`);
+        return;
+      }
+
+      // ✅ სიტყვის დამატება
+      setSelectedWords(prev => new Set([...prev, wordText]));
+      word.selected = true;
+      
+      console.log(`✅ Grid სიტყვა დაემატა: "${wordText}" (${selectedWords.size + 1}/${MAX_SELECTED_WORDS})`);
+    } else {
+      // ✅ სიტყვის მოშორება
+      setSelectedWords(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(wordText);
+        return newSet;
+      });
+      word.selected = false;
+      
+      console.log(`❌ Grid სიტყვა მოიშორა: "${wordText}" (${selectedWords.size - 1}/${MAX_SELECTED_WORDS})`);
     }
-  }, [newGame]);
-  console.log("gameData", gameData, isStarted);
+
+    setClick(prev => prev + 1);
+  }, [wordsToChoose, selectedWords]);
+
+  // ✅ სუბტიტრების ტექსტიდან სიტყვის არჩევა
+  const handleSubtitleWordClick = useCallback((wordText) => {
+    const isCurrentlySelected = selectedWords.has(wordText);
+
+    if (!isCurrentlySelected) {
+      // ✅ ლიმიტის შემოწმება
+      if (selectedWords.size >= MAX_SELECTED_WORDS) {
+        alert(`მაქსიმუმ ${MAX_SELECTED_WORDS} სიტყვის არჩევა შეიძლება ერთ ჯერზე`);
+        return;
+      }
+
+      // ✅ სიტყვის დამატება
+      setSelectedWords(prev => new Set([...prev, wordText]));
+      
+      // ✅ Grid ბარათშიც განახლება
+      const wordInGrid = wordsToChoose.find(w => w.theWord === wordText);
+      if (wordInGrid) {
+        wordInGrid.selected = true;
+      }
+      
+      console.log(`✅ სუბტიტრიდან დაემატა: "${wordText}"`);
+    } else {
+      // ✅ სიტყვის მოშორება
+      setSelectedWords(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(wordText);
+        return newSet;
+      });
+      
+      // ✅ Grid ბარათშიც განახლება
+      const wordInGrid = wordsToChoose.find(w => w.theWord === wordText);
+      if (wordInGrid) {
+        wordInGrid.selected = false;
+      }
+      
+      console.log(`❌ სუბტიტრიდან მოიშორა: "${wordText}"`);
+    }
+
+    setClick(prev => prev + 1);
+  }, [selectedWords, wordsToChoose]);
+
+  // ✅ ყველა სიტყვის გასუფთავება
+  const clearAllSelections = useCallback(() => {
+    setSelectedWords(new Set());
+    wordsToChoose.forEach(word => {
+      word.selected = false;
+    });
+    setClick(prev => prev + 1);
+    console.log("🗑️ ყველა არჩევანი გასუფთავდა");
+  }, [wordsToChoose]);
+
+  // ✅ სწრაფი არჩევა (პირველი N სიტყვა)
+  const quickSelect = useCallback((count) => {
+    const availableWords = wordsToChoose.slice(0, Math.min(count, MAX_SELECTED_WORDS));
+    const newSelectedWords = new Set(availableWords.map(word => word.theWord));
+    
+    // ✅ ყველა სიტყვის reset
+    wordsToChoose.forEach(word => {
+      word.selected = newSelectedWords.has(word.theWord);
+    });
+    
+    setSelectedWords(newSelectedWords);
+    setClick(prev => prev + 1);
+    
+    console.log(`⚡ სწრაფი არჩევა: ${newSelectedWords.size} სიტყვა`);
+  }, [wordsToChoose]);
+
+  // ✅ ტექსტური ბარათების Toggle
+  const toggleTextCards = useCallback(() => {
+    setIsTextCardsCollapsed(prev => !prev);
+    console.log(`📝 სუბტიტრები: ${!isTextCardsCollapsed ? 'ჩაკეცვა' : 'გაშლა'}`);
+  }, [isTextCardsCollapsed]);
+
+  // ✅ Grid ბარათების Toggle
+  const toggleGridCards = useCallback(() => {
+    setIsGridCardsCollapsed(prev => !prev);
+    console.log(`🎯 Grid ბარათები: ${!isGridCardsCollapsed ? 'ჩაკეცვა' : 'გაშლა'}`);
+  }, [isGridCardsCollapsed]);
+
+  // ✅ თამაშის დაწყება
+  const startGame = useCallback(async () => {
+    if (selectedWords.size === 0) {
+      alert("გთხოვთ აირჩიოთ სიტყვები");
+      return;
+    }
+
+    setIsLoadingGame(true);
+    setGameError(null);
+
+    try {
+      const wordsToTranslate = Array.from(selectedWords);
+      const language = data?.language || "en";
+      
+      console.log(`🎮 თამაშის დაწყება: ${wordsToTranslate.length} სიტყვა`);
+
+      // ✅ GET Method ლიმიტის გამო - შეზღუდული რაოდენობით
+      const response = await newRequest.get(`/words`, {
+        params: {
+          wordsToTranslate,
+          language,
+          test: "test",
+          need: "translateWords",
+        },
+      });
+
+      console.log("✅ თამაშის მონაცემები მიღებულია:", response.data);
+      setGameData(response.data);
+      setIsStarted(true);
+
+    } catch (error) {
+      console.error("❌ თამაშის დაწყების შეცდომა:", error);
+      setGameError(error.response?.data?.message || "თამაშის მონაცემების მიღება ვერ მოხერხდა");
+    } finally {
+      setIsLoadingGame(false);
+    }
+  }, [selectedWords, data?.language]);
+
+  // ✅ თამაშის გაჩერება
+  const stopGame = useCallback(() => {
+    setIsStarted(false);
+    setGameData(undefined);
+    setGameError(null);
+    console.log("⏹️ თამაში გაჩერდა");
+  }, []);
+
+  // ✅ Initial load
+  useEffect(() => {
+    if (!isLoading && !isLoaded) {
+      setIsLoaded(true);
+    }
+  }, [isLoading, isLoaded]);
+
+  // ✅ Loading State
+  if (isLoading && !isLoaded) {
+    return (
+      <div className="video loading">
+        <div className="loading-spinner">🔄 ვიდეო იტვირთება...</div>
+      </div>
+    );
+  }
+
+  // ✅ Error State
+  if (error) {
+    return (
+      <div className="video error">
+        <div className="error-message">
+          ❌ ვიდეოს ჩატვირთვა ვერ მოხერხდა: {error.message}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="video">
-      {isLoading && !isLoaded ? (
-        "loading"
-      ) : error ? (
-        "Something went wrong!"
-      ) : (
-        <div className="">
-          <div className="">
-            <h1>{data.title}</h1>
-          </div>
-          <div className="sets">
-            <div className="langar">
-              <div className="choose-panel">
-                <div className="time-choose">
-                  <input
-                    defaultValue="00:00:00-00:05:00"
-                    className="input-interval"
-                    ref={inputRef}
-                  />
-                  <input
-                    type="submit"
-                    className="input-interval"
-                    onClick={() => {
-                      handleSubmit();
-                    }}
-                  />
+      <div className="video-container">
+        {/* ✅ ვიდეოს Header */}
+        <div className="video-header">
+          <h1>{data.title}</h1>
+          {dataUser && (
+            <div className="video-author">
+              <span>👤 ავტორი: {dataUser.username}</span>
+            </div>
+          )}
+        </div>
+
+        <div className="sets">
+          <div className="langar">
+            {/* ✅ კონტროლის Panel */}
+            <div className="choose-panel">
+              {/* ✅ დროის არჩევა */}
+              <div className="time-choose">
+                <input
+                  defaultValue="00:00:00-00:05:00"
+                  className="input-interval"
+                  ref={inputRef}
+                  placeholder="00:00:00-00:05:00"
+                />
+                <input
+                  type="submit"
+                  className="input-interval submit-btn"
+                  value="📅 დროის განახლება"
+                  onClick={handleSubmit}
+                />
+              </div>
+
+              {/* ✅ სტატისტიკა და ლიმიტის ინფორმაცია */}
+              <div className="words-stats">
+                <div className="stat-group">
+                  <span className="stat-number">{wordsToChoose.length}</span>
+                  <span className="stat-label">უნიკალური სიტყვა</span>
                 </div>
-                <div className="">{wordsToChoose.length} სიტყვა</div>
+                <div className="stat-group">
+                  <span className="stat-number">{subtitleLines.length}</span>
+                  <span className="stat-label">სუბტიტრი</span>
+                </div>
+                <div className="stat-group">
+                  <span className={`stat-number ${selectedWords.size >= MAX_SELECTED_WORDS ? 'limit-reached' : ''}`}>
+                    {selectedWords.size}
+                  </span>
+                  <span className="stat-label">არჩეული</span>
+                </div>
+                <div className="stat-group">
+                  <span className="stat-number">{MAX_SELECTED_WORDS}</span>
+                  <span className="stat-label">მაქსიმუმ</span>
+                </div>
               </div>
-              <div className="words">
-                {wordsToChoose.map((word, index) => (
-                  <div
-                    className={word.selected ? "word selected" : "word"}
-                    onClick={() => {
-                      clickHandler(index);
-                    }}
-                  >
-                    <div className="">{word.theWord}</div>
-                    {/* <div className=""><TheWord theWord={word.theWord} /></div> */}
-                  </div>
-                ))}
-              </div>
-              <div className="start-button">
+
+              {/* ✅ ლიმიტის გაფრთხილება */}
+              {selectedWords.size >= MAX_SELECTED_WORDS && (
+                <div className="limit-warning">
+                  ⚠️ მიღწეულია მაქსიმალური ლიმიტი ({MAX_SELECTED_WORDS} სიტყვა)
+                </div>
+              )}
+
+              {/* ✅ სწრაფი კონტროლი */}
+              <div className="quick-controls">
                 <button
-                  onClick={() => {
-                    if (!isStarted) setNewGame(newGame + 1);
-                    setIsStarted(!isStarted);
-                  }}
+                  type="button"
+                  onClick={() => quickSelect(10)}
+                  className="quick-btn"
+                  disabled={wordsToChoose.length === 0}
                 >
-                  {isStarted ? "თამაშის გატანა" : "თამაშის გამოტანა"}
+                  ⚡ პირველი 10
+                </button>
+                <button
+                  type="button"
+                  onClick={() => quickSelect(25)}
+                  className="quick-btn"
+                  disabled={wordsToChoose.length === 0}
+                >
+                  ⚡ პირველი 25
+                </button>
+                <button
+                  type="button"
+                  onClick={() => quickSelect(50)}
+                  className="quick-btn"
+                  disabled={wordsToChoose.length === 0}
+                >
+                  ⚡ პირველი 50
+                </button>
+                <button
+                  type="button"
+                  onClick={clearAllSelections}
+                  className="clear-btn"
+                  disabled={selectedWords.size === 0}
+                >
+                  🗑️ გასუფთავება
                 </button>
               </div>
             </div>
-            {/* {gameData[0].SYNONYMS.toString(" ")} */}
-            {isStarted ? <Game wordsForGame={gameData} /> : null}
-          </div>
-          <div className="video-palyer">
-             <iframe
-              width="800"
-              height="450"
-              src={data.shortTitle}
-              // src="https://www.youtube.com/embed/zOBzNmM9ylw"
-              title='#12 Walter Block   -  Author of "Defending The Undefendable", Loyola University Professor'
-              frameborder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              allowfullScreen="true"
-            ></iframe>
-          </div>
-          {/* <input
-            value={searchWord}
-            onChange={(e) => setSearchWord(e.target.value)}
-          /> */}
-          {/* <div className="">
-            {searchedWords.map((searchedWord) => (
-              <div className="">
-                {searchedWord.theWord}-{searchedWord.wTranslation}
+
+            {/* ✅ სუბტიტრების ტექსტი - Collapsible */}
+            <div className={`text-cards-section ${isTextCardsCollapsed ? 'collapsed' : ''}`}>
+              <div className="section-header" onClick={toggleTextCards}>
+                <h3 className="section-title">📝 სუბტიტრების ტექსტი</h3>
+                <button 
+                  type="button" 
+                  className="collapse-toggle"
+                  title={isTextCardsCollapsed ? "გაშლა" : "ჩაკეცვა"}
+                >
+                  {isTextCardsCollapsed ? '▶️' : '🔽'}
+                </button>
               </div>
-            ))}
-          </div> */}
-          
+              
+              <div className={`text-cards-content ${isTextCardsCollapsed ? 'hidden' : 'visible'}`}>
+                <div className="subtitle-lines">
+                  {subtitleLines.length > 0 ? (
+                    subtitleLines.map((subtitle) => (
+                      <div key={subtitle.id} className="subtitle-line">
+                        <div className="subtitle-time">
+                          {/* {Math.floor(subtitle.time / 60)}:{(subtitle.time % 60).toString().padStart(2, '0')} */}
+                        </div>
+                        <div className="subtitle-text">
+                          {subtitle.text.split(/(\s+)/).map((part, index) => {
+                            // თუ ეს არის space, უბრალოდ დავაბრუნოთ
+                            if (/^\s+$/.test(part)) {
+                              return <span key={index}>{part}</span>;
+                            }
+                            
+                            // სიტყვის გასუფთავება
+                            const cleanWord = part
+                              .toLowerCase()
+                              .replace(/[^\w']/g, "");
+                            
+                            // თუ სიტყვა ძალიან მოკლეა ან ცარიელია
+                            if (cleanWord.length <= 1) {
+                              return <span key={index}>{part}</span>;
+                            }
+                            
+                            const isSelected = selectedWords.has(cleanWord);
+                            const isDisabled = selectedWords.size >= MAX_SELECTED_WORDS && !isSelected;
+                            
+                            return (
+                              <span
+                                key={index}
+                                className={`subtitle-word ${isSelected ? 'selected' : ''} ${isDisabled ? 'disabled' : ''}`}
+                                onClick={() => handleSubtitleWordClick(cleanWord)}
+                                title={
+                                  isDisabled 
+                                    ? `მაქსიმალური ლიმიტი (${MAX_SELECTED_WORDS}) მიღწეულია`
+                                    : isSelected 
+                                    ? "მოშორება" 
+                                    : "არჩევა"
+                                }
+                              >
+                                {part}
+                              </span>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="no-subtitles">
+                      😔 არჩეულ დროის ინტერვალში სუბტიტრები ვერ მოიძებნა
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* ✅ Grid სიტყვების არჩევა - Collapsible */}
+            <div className={`grid-words-section ${isGridCardsCollapsed ? 'collapsed' : ''}`}>
+              <div className="section-header" onClick={toggleGridCards}>
+                <h3 className="section-title">🎯 უნიკალური სიტყვები (Grid)</h3>
+                <button 
+                  type="button" 
+                  className="collapse-toggle"
+                  title={isGridCardsCollapsed ? "გაშლა" : "ჩაკეცვა"}
+                >
+                  {isGridCardsCollapsed ? '▶️' : '🔽'}
+                </button>
+              </div>
+
+              <div className={`grid-cards-content ${isGridCardsCollapsed ? 'hidden' : 'visible'}`}>
+                <div className="words">
+                  {wordsToChoose.map((word, index) => (
+                    <div
+                      key={`grid-card-${word.theWord}-${index}`}
+                      className={`word ${selectedWords.has(word.theWord) ? "selected" : ""} ${
+                        selectedWords.size >= MAX_SELECTED_WORDS && !selectedWords.has(word.theWord) 
+                          ? "disabled" 
+                          : ""
+                      }`}
+                      onClick={() => clickHandler(index)}
+                      title={
+                        selectedWords.size >= MAX_SELECTED_WORDS && !selectedWords.has(word.theWord)
+                          ? `მაქსიმალური ლიმიტი (${MAX_SELECTED_WORDS}) მიღწეულია`
+                          : selectedWords.has(word.theWord)
+                          ? "მოშორება"
+                          : "არჩევა"
+                      }
+                    >
+                      <div className="word-text">{word.theWord}</div>
+                      {selectedWords.has(word.theWord) && (
+                        <div className="selected-indicator">✓</div>
+                      )}
+                    </div>
+                  ))}
+
+                  {/* ✅ Empty State Grid-ისთვის */}
+                  {wordsToChoose.length === 0 && (
+                    <div className="no-words">
+                      <p>😔 არჩეულ დროის ინტერვალში სიტყვები ვერ მოიძებნა</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* ✅ ახალი - სიტყვების ბაზაში შემოწმება */}
+            <WordsTranslator 
+              selectedWords={selectedWords}
+              language={data?.language || 'en'}
+              userId={userId}
+            />
+
+            {/* ✅ თამაშის კონტროლი */}
+            <div className="start-button">
+              {!isStarted ? (
+                <button
+                  onClick={startGame}
+                  disabled={selectedWords.size === 0 || isLoadingGame}
+                  className="game-control-btn start"
+                >
+                  {isLoadingGame ? (
+                    <>🔄 თამაში იწყება...</>
+                  ) : (
+                    <>🎮 თამაშის დაწყება ({selectedWords.size} სიტყვა)</>
+                  )}
+                </button>
+              ) : (
+                <button
+                  onClick={stopGame}
+                  className="game-control-btn stop"
+                >
+                  ⏹️ თამაშის გაჩერება
+                </button>
+              )}
+
+              {gameError && (
+                <div className="game-error">
+                  <span className="error-message">❌ {gameError}</span>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* ✅ თამაში */}
+          {isStarted && gameData && (
+            <div className="game-section">
+              <Game wordsForGame={gameData} />
+            </div>
+          )}
         </div>
-      )}
+
+        {/* ✅ ვიდეო Player */}
+        <div className="video-player">
+          <iframe
+            width="800"
+            height="450"
+            src={data.videoUrl}
+            title={data.title}
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowFullScreen
+          />
+        </div>
+      </div>
     </div>
   );
 }
-
-
-//       <div className="video-palyer">
-//         {/* <video controls="true"> */}
-//         {/* <YouTube src="ZG9F22nBKFY13Pfk" /> */}
-//         {/* <video controls>
-//           <source src="https://upload.wikimedia.org/wikipedia/commons/transcoded/c/c0/Big_Buck_Bunny_4K.webm/Big_Buck_Bunny_4K.webm.720p.vp9.webm" type="video/webm" />
-//         </video> */}
-//         <iframe
-//           // width="1600"
-//           // height="900"
-//           src={videoUrl}
-//           // src="https://www.youtube.com/embed/zOBzNmM9ylw"
-//           // title='#12 Walter Block   -  Author of "Defending The Undefendable", Loyola University Professor'
-//           frameborder="0"
-//           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-//           allowfullscreen="true"
-//         ></iframe>
-//         {/* <iframe
-//           width="560"
-//           height="315"
-//           src="https://recorder.google.com/f29b6aef-bf8b-40e8-80f6-45cd03d39453"
-//           title="test"
-//           frameborder="0"
-//           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-//           allowfullscreen="true"
-//         ></iframe> */}
-//         {/* <iframe
-//           // width="560"
-//           // height="315"
-//           src="https://www.youtube.com/embed/videoseries?si=hRrftixHfF7WjGEx&amp;list=PLQZmtHjTgPB9w4ZGPhDZ--CaCEMGv4rAb"
-//           title="YouTube video player"
-//           frameborder="0"
-//           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-//           allowfullscreen="true"
-//         ></iframe> */}
-//         {/* <source src={videoUrl} type="video/mp4" /> */}
-//         {/* </video> */}
-//       </div>
-//       <input
-//         value={searchWord}
-//         onChange={(e) => setSearchWord(e.target.value)}
-//       />
-//       <div className="">
-//         {searchedWords.map((searchedWord) => (
-//           <div className="">
-//             {searchedWord.theWord}-{searchedWord.wTranslation}
-//           </div>
-//         ))}
-//       </div>

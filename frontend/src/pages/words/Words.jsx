@@ -24,6 +24,8 @@ function Words() {
   // ენის კონტექსტიდან წამოღება
   const { language } = useLanguage();
 
+  console.log("Words კომპონენტის ენა:", language);
+
   // თამაშის მდგომარეობის ცვლადები:
   // გამოხმობილი სიტყვების და მეტადატა შენახვა
   const [gameData, setGameData] = useState({});
@@ -99,7 +101,7 @@ function Words() {
         params: {
           userId: currentUser ? currentUser._id : null, // მომხმარებლის ID
           amount,
-          language, // კონტექსტიდან წამოღებული ენა
+          language: language.code, // კონტექსტიდან წამოღებული ენა
           type: "random",
           privacy,
         },
@@ -282,11 +284,7 @@ function Words() {
             <i className="fas fa-language"></i> არჩეული ენა:
           </label>
           <div className="selected-language-display">
-            {language === "ka" ? "🇬🇪 ქართული" :
-             language === "en" ? "🇬🇧 ინგლისური" :
-             language === "de" ? "🇩🇪 გერმანული" :
-             language === "fr" ? "🇫🇷 ფრანგული" :
-             language === "ba" ? "თუშური" : "სხვა"}
+            {language?.name}
           </div>
           <p className="language-note">ენის შესაცვლელად გამოიყენეთ ენის ჩამოსაშლელი მენიუ ზედა პანელში</p>
         </div>

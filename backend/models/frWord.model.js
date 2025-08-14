@@ -43,7 +43,7 @@ const frWordSchema = new Schema(
       type: String,
       default: '',
     },
-    isPrivate: {
+    isPublic: {
       type: Boolean,
       default: false,
     },

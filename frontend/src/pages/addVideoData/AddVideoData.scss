@@ -1,90 +1,581 @@
+// ✅ CSS Variables
+:root {
+  --primary-color: #1dbf73;
+  --primary-hover: #17a65d;
+  --error-color: #e74c3c;
+  --success-color: #28a745;
+  --info-color: #007bff;
+  --purple-gradient: linear-gradient(135deg, #9c27b0 0%, #673ab7 100%);
+  --border-radius: 4px;
+  --spacing-xs: 6px;
+  --spacing-sm: 8px;
+  --spacing-md: 12px;
+  --spacing-lg: 16px;
+  --spacing-xl: 20px;
+  --font-sm: 12px;
+  --font-md: 14px;
+  --font-lg: 16px;
+}
+
 .add-video {
   display: flex;
   justify-content: center;
+  padding: 0 15px;
 
   .container {
-    width: 1400px;
-    padding: 50px 0px;
+    width: 100%;
+    max-width: 1400px;
+    padding: var(--spacing-xl) 0;
 
     h1 {
-      width: max-content;
-      margin-bottom: 30px;
+      margin-bottom: var(--spacing-xl);
       color: gray;
       font-weight: 300;
+      font-size: 24px;
+    }
+
+    // ✅ Utility Classes მიდგომა
+    .warning-box {
+      background: #fff3cd;
+      border: 1px solid #ffeaa7;
+      color: #856404;
+      padding: var(--spacing-md);
+      border-radius: var(--border-radius);
+      margin-bottom: var(--spacing-lg);
+      text-align: center;
+      font-weight: 500;
+      font-size: var(--font-md);
     }
 
     .sections {
       display: flex;
-      justify-content: space-between;
-      gap: 100px;
+      flex-direction: column;
+      gap: 30px;
 
-      label {
-        color: gray;
-        font-size: 18px;
-      }
-
-      .info,
-      .details {
-        flex: 1;
+      .info {
         display: flex;
         flex-direction: column;
-        gap: 10px;
-        justify-content: space-between;
+        gap: var(--spacing-lg);
 
-        input,
-        select,
-        textarea {
-          padding: 20px;
+        // ✅ Ultra Simplified Fields
+        .field {
+          display: flex;
+          flex-direction: column;
+          gap: var(--spacing-xs);
+
+          label {
+            color: gray;
+            font-size: var(--font-lg);
+            font-weight: 500;
+          }
+
+          input,
+          select,
+          textarea {
+            padding: var(--spacing-md) var(--spacing-lg);
+            border: 2px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: var(--font-md);
+            transition: border-color 0.3s ease;
+
+            &:focus {
+              outline: none;
+              border-color: var(--primary-color);
+            }
+
+            &.error {
+              border-color: var(--error-color);
+            }
+
+            &::placeholder {
+              color: #999;
+            }
+          }
+
+          textarea {
+            resize: vertical;
+            font-family: inherit;
+            min-height: 120px;
+          }
+
+          .error-message {
+            color: var(--error-color);
+            font-size: var(--font-sm);
+            margin-top: 4px;
+          }
         }
 
-        .images {
-          display: flex;
-          align-items: center;
-          gap: 20px;
+        // ✅ Simplified Language Display
+        .selected-language .language-display {
+          background: #e8f5e8;
+          color: var(--success-color);
+          padding: 10px var(--spacing-md);
+          border-radius: 6px;
+          display: inline-block;
+          font-weight: 500;
+          font-size: var(--font-md);
+        }
 
-          .imagesInputs {
+        // ✅ Tags Section
+        .tags {
+          .add {
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 10px;
+            margin-bottom: var(--spacing-md);
+
+            button {
+              background: var(--primary-color);
+              color: white;
+              border: none;
+              padding: var(--spacing-md) var(--spacing-lg);
+              border-radius: var(--border-radius);
+              cursor: pointer;
+              font-weight: 500;
+              font-size: var(--font-md);
+
+              &:hover {
+                background: var(--primary-hover);
+              }
+            }
           }
-        }
 
-        button {
-          border: none;
-          padding: 20px;
-          color: white;
-          font-weight: 500;
-          font-size: 18px;
-          background-color: #1dbf73;
-          cursor: pointer;
-        }
-
-        .add {
-          display: flex;
-          justify-content: space-between;
-
-          input {
-            width: 80%;
-          }
-        }
-
-        .addedFeatures {
-          display: flex;
-          gap: 20px;
-
-          button {
-            height: 30px;
-            font-size: 12px;
-            font-weight: 400;
-            background: transparent;
-            color: red;
-            border: 1px solid red;
+          .addedFeatures {
             display: flex;
-            align-items: center;
-            gap: 20px;
+            flex-wrap: wrap;
+            gap: var(--spacing-sm);
+
+            .tag-item {
+              background: #e3f2fd;
+              color: #1976d2;
+              border: 1px solid #bbdefb;
+              padding: 6px 10px;
+              border-radius: 16px;
+              font-size: var(--font-sm);
+              cursor: pointer;
+              display: flex;
+              align-items: center;
+              gap: 6px;
+
+              .remove {
+                color: var(--error-color);
+                font-weight: bold;
+              }
+
+              &:hover {
+                background: #ffebee;
+                border-color: var(--error-color);
+                color: var(--error-color);
+              }
+            }
+          }
+        }
+
+        // ✅ Universal Button
+        button,
+        .submit-button {
+          background: var(--primary-color);
+          color: white;
+          border: none;
+          padding: 14px 24px;
+          border-radius: var(--border-radius);
+          cursor: pointer;
+          font-size: var(--font-lg);
+          font-weight: 500;
+          transition: background-color 0.3s ease;
+          width: 100%;
+
+          &:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+          }
+
+          &:not(:disabled):hover {
+            background: var(--primary-hover);
+          }
+        }
+
+        // ✅ Error Messages
+        .error-message,
+        .submit-error .error-message,
+        .no-language .error-message {
+          background: #fdf2f2;
+          color: var(--error-color);
+          padding: 10px;
+          border-radius: var(--border-radius);
+          border-left: 4px solid var(--error-color);
+          font-weight: 500;
+          font-size: var(--font-md);
+        }
+
+        // ✅ Cards Section - Simplified
+        .generated-cards-section {
+          background: #f8f9fa;
+          border: 2px solid #e9ecef;
+          border-radius: var(--spacing-sm);
+          padding: var(--spacing-lg);
+          margin-top: var(--spacing-lg);
+
+          .cards-header {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+            padding-bottom: var(--spacing-md);
+            border-bottom: 2px solid #dee2e6;
+
+            h3 {
+              margin: 0;
+              color: #495057;
+              font-size: 18px;
+              font-weight: 600;
+            }
+
+            .cards-summary {
+              display: flex;
+              flex-direction: column;
+              gap: var(--spacing-sm);
+              font-size: var(--font-sm);
+              font-weight: 500;
+
+              .existing-count {
+                color: var(--success-color);
+              }
+
+              .new-count {
+                color: var(--info-color);
+              }
+            }
+          }
+
+          .section-title {
+            margin: 0 0 var(--spacing-md) 0;
+            color: #495057;
+            font-size: var(--font-md);
+            font-weight: 600;
+          }
+
+          // ✅ Auto Translate
+          .auto-translate-section {
+            margin-bottom: var(--spacing-lg);
+            padding: var(--spacing-md);
+            background: var(--purple-gradient);
+            border-radius: 6px;
+
+            .auto-translate-button {
+              background: var(--purple-gradient);
+              padding: 10px var(--spacing-lg);
+              font-size: var(--font-md);
+              justify-content: center;
+              gap: 6px;
+              display: flex;
+              align-items: center;
+
+              &:hover:not(:disabled) {
+                transform: translateY(-1px);
+              }
+            }
+
+            .auto-translate-error {
+              margin-top: var(--spacing-sm);
+              padding: 6px 10px;
+              background: #ffebee;
+              border: 1px solid #f44336;
+              border-radius: var(--border-radius);
+
+              .error-message {
+                color: #d32f2f;
+                font-size: var(--font-sm);
+              }
+            }
+          }
+
+          // ✅ Super Simplified Word Grid
+          .words-grid {
+            // display: grid;
+            // grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            // gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-md);
+
+            .word-card {
+              // position: relative;
+              background: white;
+              border: 2px solid;
+              border-radius: 6px;
+              padding: 10px var(--spacing-sm);
+              text-align: center;
+              cursor: pointer;
+              transition: all 0.3s ease;
+              min-height: 60px;
+              // display: flex;
+              // flex-direction: column;
+              // justify-content: center;
+
+              .word-text {
+                font-size: 20px;
+                font-weight: 600;
+                margin-bottom: 6px;
+                word-break: break-word;
+              }
+
+              &.existing-card {
+                border-color: var(--success-color);
+                background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+
+                .word-text {
+                  color: #155724;
+                }
+
+                &:hover {
+                  transform: translateY(-2px);
+
+                  .word-translation-hover {
+                    opacity: 1;
+                  }
+                }
+
+                .word-translation-hover {
+                  position: absolute;
+                  top: -35px;
+                  left: 50%;
+                  transform: translateX(-50%);
+                  background: #155724;
+                  color: white;
+                  padding: 4px var(--spacing-sm);
+                  border-radius: var(--border-radius);
+                  font-size: 11px;
+                  white-space: nowrap;
+                  opacity: 0;
+                  transition: opacity 0.3s ease;
+                  z-index: 10;
+                }
+              }
+
+              &.new-card {
+                border-color: var(--info-color);
+                background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+
+                .word-text {
+                  color: #1565c0;
+                }
+
+                &:hover {
+                  transform: translateY(-2px);
+                }
+
+                &.editing {
+                  border-color: #ff6b35;
+                  background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%);
+                }
+              }
+
+              // ✅ Edit Mode
+              .word-edit-mode .translation-input-section {
+                display: flex;
+                flex-direction: column;
+                gap: var(--spacing-sm);
+
+                .translation-input {
+                  border: 2px solid #ff6b35;
+                  font-size: var(--font-sm);
+                  padding: 6px var(--spacing-sm);
+                }
+
+                .edit-actions {
+                  display: flex;
+                  gap: 4px;
+
+                  button {
+                    padding: 4px var(--spacing-sm);
+                    font-size: 10px;
+                    border-radius: 3px;
+                    width: auto;
+                    flex: 1;
+                  }
+                }
+              }
+
+              // ✅ Normal Mode
+              .word-normal-mode {
+                height: 100%;
+
+                .added-badge {
+                  background: var(--success-color);
+                  color: white;
+                  padding: 2px 4px;
+                  border-radius: 3px;
+                  font-size: 9px;
+
+                  &.auto {
+                    background: var(--purple-gradient);
+                  }
+                }
+
+                .add-instruction {
+                  color: #6c757d;
+                  font-size: 9px;
+                  font-style: italic;
+                  margin-top: 4px;
+                }
+              }
+            }
           }
         }
       }
     }
+
+    // ✅ Words To Add Section
+    .words-to-add-section {
+      background: #f8f9fa;
+      border: 2px solid #e9ecef;
+      border-radius: 6px;
+      padding: var(--spacing-md);
+      margin-top: var(--spacing-lg);
+
+      .words-to-add-list {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-sm);
+        margin-bottom: var(--spacing-md);
+
+        .word-to-add-item {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          background: white;
+          border: 1px solid #dee2e6;
+          border-radius: var(--border-radius);
+          padding: var(--spacing-sm) var(--spacing-md);
+
+          &.auto-translated {
+            border-left: 4px solid #9c27b0;
+          }
+
+          .word-info {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            flex: 1;
+
+            .word-text {
+              font-weight: 600;
+              color: #495057;
+            }
+
+            .word-translation {
+              color: var(--success-color);
+              font-style: italic;
+            }
+
+            .auto-badge {
+              background: var(--purple-gradient);
+              color: white;
+              padding: 2px 4px;
+              border-radius: 3px;
+              font-size: 10px;
+            }
+          }
+
+          .remove-word-button {
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            padding: 4px 6px;
+            cursor: pointer;
+            font-size: var(--font-sm);
+
+            &:hover {
+              background: #c82333;
+            }
+          }
+        }
+      }
+
+      .words-to-add-actions {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-sm);
+
+        button {
+          padding: 10px 14px;
+          font-size: var(--font-md);
+
+          &.clear-list-button {
+            background: #6c757d;
+
+            &:hover {
+              background: #545b62;
+            }
+          }
+
+          &.save-words-button {
+            background: #0ea5e9;
+
+            &:hover {
+              background: #0284c7;
+            }
+          }
+        }
+      }
+    }
+
+    // ✅ Responsive (მაქსიმალურად შემცირებული)
+    @media (min-width: 768px) {
+      h1 {
+        font-size: 28px;
+      }
+
+      .sections {
+        gap: 40px;
+      }
+
+      .info {
+        .tags .add {
+          flex-direction: row;
+          gap: var(--spacing-md);
+        }
+
+        .submit-button {
+          width: auto;
+        }
+
+        .generated-cards-section .cards-header {
+          flex-direction: row;
+          justify-content: space-between;
+        }
+      }
+
+      .words-to-add-section .words-to-add-actions {
+        flex-direction: row;
+
+        .save-words-button {
+          flex: 1;
+        }
+      }
+    }
+
+    @media (min-width: 1024px) {
+      h1 {
+        font-size: 32px;
+      }
+
+      .sections {
+        flex-direction: row;
+        gap: 80px;
+
+        .info {
+          flex: 1;
+        }
+      }
+    }
   }
+}
+
+.display-flex {
+  display: flex;
+  justify-content: space-between;
+
+  align-items: center;
+  gap: 6px;
 }
