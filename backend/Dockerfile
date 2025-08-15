@@ -8,34 +8,22 @@
 
 ARG NODE_VERSION=20.14.0
 
-FROM node:${NODE_VERSION}-alpine
+FROM node:18-slim
 
-# Use production node environment by default.
-ENV NODE_ENV=production
-
+# Required dependencies
+RUN apt-get update && apt-get install -y \
+    python3 \
+    python3-pip \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /usr/src/app
 
-# Copy package files first (for better caching)
-# COPY package*.json ./
+COPY package*.json ./
+RUN npm ci --only=production
 
-# Download dependencies as a separate step to take advantage of Docker's caching.
-# Leverage a cache mount to /root/.npm to speed up subsequent builds.
-# Leverage a bind mounts to package.json and package-lock.json to avoid having to copy them into
-# into this layer.
-RUN --mount=type=bind,source=package.json,target=package.json \
-    --mount=type=bind,source=package-lock.json,target=package-lock.json \
-    --mount=type=cache,target=/root/.npm \
-    npm ci --omit=dev
-
-# Run the application as a non-root user.
-USER node
-
-# Copy the rest of the source files into the image.
 COPY . .
 
-# Expose the port that the application listens on.
+USER node
 EXPOSE 8800
-
-# Run the application.
-CMD ["npm","start"]
+CMD ["npm", "start"]
