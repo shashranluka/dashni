@@ -51,7 +51,7 @@ app.use("/api/orders", orderRoute);
 app.use("/api/conversations", conversationRoute);
 app.use("/api/messages", messageRoute);
 app.use("/api/reviews", reviewRoute);
-app.use("/api/translation", translationRoute);
+// app.use("/api/translation", translationRoute);
 
 app.use((err, req, res, next) => {
   const errorStatus = err.status || 500;
