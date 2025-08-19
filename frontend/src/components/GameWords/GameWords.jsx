@@ -23,7 +23,7 @@ function GameWords(props) {
     thirdPartState: "third_visible",
   });
   const [gameType, setGameType] = useState("TRANSLATION");
-
+  console.log("GameWords props:", props);
   const wordsFromLexicon = props.gameData.words;
   const setGameWon = props.setGameWon;
   console.log(props, "props.gameData", wordsFromLexicon, partOfGame);

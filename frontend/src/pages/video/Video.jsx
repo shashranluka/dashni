@@ -8,6 +8,7 @@ import TheWord from "../../components/theWord/TheWord";
 import WordsTranslator from "../../components/wordsTranslator/WordsTranslator"; // ✅ ახალი import
 import { useLanguage } from "../../context/LanguageContext";
 import { use } from "react";
+import GameWords from "../../components/GameWords/GameWords";
 
 export default function Video() {
   // ✅ ოპტიმიზებული State
@@ -23,10 +24,10 @@ export default function Video() {
 
   // ✅ Language Context
   // const { language} = useLanguage();
-
+  console.log("gameData:", gameData);
   // ✅ Collapse/Expand States
-  const [isTextCardsCollapsed, setIsTextCardsCollapsed] = useState(false);
-  const [isGridCardsCollapsed, setIsGridCardsCollapsed] = useState(false);
+  const [isTextCardsCollapsed, setIsTextCardsCollapsed] = useState(true);
+  const [isGridCardsCollapsed, setIsGridCardsCollapsed] = useState(true);
 
   // ✅ კონსტანტები
   const MAX_SELECTED_WORDS = 99;
@@ -285,7 +286,7 @@ export default function Video() {
       console.log(`🎮 თამაშის დაწყება: ${wordsToTranslate.length} სიტყვა`);
 
       // ✅ GET Method ლიმიტის გამო - შეზღუდული რაოდენობით
-      const response = await newRequest.get(`/words`, {
+      const response = await newRequest.get(`/words/translate`, {
         params: {
           wordsToTranslate,
           language,
@@ -295,7 +296,7 @@ export default function Video() {
       });
 
       console.log("✅ თამაშის მონაცემები მიღებულია:", response.data);
-      setGameData(response.data);
+      setGameData({words:response.data});
       setIsStarted(true);
 
     } catch (error) {
@@ -349,7 +350,7 @@ export default function Video() {
           <h1>{data.title}</h1>
           {dataUser && (
             <div className="video-author">
-              <span>👤 ავტორი: {dataUser.username}</span>
+              <span>👤 მომხმარებელი: {dataUser.username}</span>
             </div>
           )}
         </div>
@@ -600,7 +601,7 @@ export default function Video() {
           {/* ✅ თამაში */}
           {isStarted && gameData && (
             <div className="game-section">
-              <Game wordsForGame={gameData} />
+              <GameWords gameData={gameData} />
             </div>
           )}
         </div>

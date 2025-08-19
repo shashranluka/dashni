@@ -1,0 +1,481 @@
+.new-words {
+  background: white;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+
+    .words-title {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+      color: #495057;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      &::before {
+        content: "";
+        width: 3px;
+        height: 20px;
+        background: #ffc107;
+        border-radius: 2px;
+      }
+    }
+
+    .save-all-btn {
+      background: #28a745;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+
+      &:hover:not(:disabled) {
+        background: #218838;
+        transform: translateY(-1px);
+      }
+
+      &:disabled {
+        background: #6c757d;
+        cursor: not-allowed;
+        transform: none;
+      }
+    }
+  }
+
+  .words-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+    max-height: 400px;
+    overflow-y: auto;
+    margin-bottom: 16px;
+
+    /* Custom Scrollbar */
+    &::-webkit-scrollbar {
+      width: 8px;
+    }
+    
+    &::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 4px;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+      background: #ffc107;
+      border-radius: 4px;
+      
+      &:hover {
+        background: #e0a800;
+      }
+    }
+
+    .word-card {
+      background: #fff3cd;
+      border: 1px solid #ffeaa7;
+      border-radius: 8px;
+      padding: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      min-height: 80px;
+      position: relative;
+
+      &:hover:not(.editing) {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        transform: translateY(-2px);
+        border-color: #ffc107;
+      }
+
+      &.editing {
+        border-color: #007bff;
+        box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+        cursor: default;
+      }
+
+      &.added {
+        background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+        border-color: #28a745;
+        cursor: default;
+
+        &:hover {
+          transform: none;
+          box-shadow: 0 2px 4px rgba(40, 167, 69, 0.3);
+        }
+      }
+
+      .word-normal-mode {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        text-align: center;
+
+        .word-text {
+          font-size: 18px;
+          font-weight: 600;
+          color: #856404;
+          margin-bottom: 8px;
+          word-break: break-word;
+        }
+
+        .add-instruction {
+          font-size: 12px;
+          color: #856404;
+          opacity: 0.8;
+          font-style: italic;
+        }
+
+        .added-badge {
+          font-size: 12px;
+          color: #155724;
+          background: rgba(255, 255, 255, 0.8);
+          padding: 4px 8px;
+          border-radius: 12px;
+          border: 1px solid #28a745;
+          font-weight: 600;
+        }
+      }
+
+      .word-edit-mode {
+        .word-text.editing {
+          font-size: 18px;
+          font-weight: 600;
+          color: #856404;
+          margin-bottom: 12px;
+          text-align: center;
+          word-break: break-word;
+        }
+
+        .translation-input-section {
+          .translation-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 2px solid #007bff;
+            border-radius: 4px;
+            font-size: 14px;
+            outline: none;
+            margin-bottom: 8px;
+            box-sizing: border-box;
+
+            &:focus {
+              border-color: #0056b3;
+              box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+            }
+
+            &::placeholder {
+              color: #6c757d;
+              font-style: italic;
+            }
+          }
+
+          .edit-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+
+            .add-word-button,
+            .cancel-button {
+              border: none;
+              padding: 8px 12px;
+              border-radius: 4px;
+              cursor: pointer;
+              font-size: 16px;
+              font-weight: bold;
+              transition: all 0.2s ease;
+
+              &:hover:not(:disabled) {
+                transform: scale(1.05);
+              }
+
+              &:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+                transform: none;
+              }
+            }
+
+            .add-word-button {
+              background: #28a745;
+              color: white;
+
+              &:hover:not(:disabled) {
+                background: #218838;
+              }
+            }
+
+            .cancel-button {
+              background: #6c757d;
+              color: white;
+
+              &:hover {
+                background: #5a6268;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .section-info {
+    text-align: center;
+    margin-bottom: 16px;
+
+    small {
+      color: #6c757d;
+      font-size: 12px;
+    }
+  }
+
+  // ✅ Words to Add Section
+  .words-to-add-section {
+    background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
+    border: 1px solid #b8daff;
+    border-radius: 8px;
+    padding: 16px;
+    margin-top: 20px;
+
+    .section-header {
+      margin-bottom: 12px;
+
+      .section-title {
+        margin: 0;
+        font-size: 14px;
+        font-weight: 600;
+        color: #0c5460;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        &::before {
+          content: "";
+          width: 3px;
+          height: 16px;
+          background: #17a2b8;
+          border-radius: 2px;
+        }
+      }
+    }
+
+    .words-to-add-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 200px;
+      overflow-y: auto;
+      margin-bottom: 16px;
+
+      /* Custom Scrollbar */
+      &::-webkit-scrollbar {
+        width: 6px;
+      }
+      
+      &::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 3px;
+      }
+      
+      &::-webkit-scrollbar-thumb {
+        background: #17a2b8;
+        border-radius: 3px;
+        
+        &:hover {
+          background: #138496;
+        }
+      }
+
+      .word-to-add-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 12px;
+        background: rgba(255, 255, 255, 0.8);
+        border: 1px solid rgba(23, 162, 184, 0.3);
+        border-radius: 6px;
+        transition: all 0.2s ease;
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.95);
+          border-color: #17a2b8;
+          transform: translateX(2px);
+        }
+
+        .word-info {
+          display: flex;
+          gap: 12px;
+          align-items: center;
+          flex: 1;
+
+          .word-text {
+            font-weight: 600;
+            color: #0c5460;
+            font-size: 14px;
+          }
+
+          .word-translation {
+            color: #0c5460;
+            font-style: italic;
+            font-size: 13px;
+            opacity: 0.8;
+          }
+        }
+
+        .remove-word-button {
+          background: #dc3545;
+          color: white;
+          border: none;
+          padding: 6px 8px;
+          border-radius: 4px;
+          cursor: pointer;
+          font-size: 12px;
+          font-weight: bold;
+          transition: all 0.2s ease;
+
+          &:hover {
+            background: #c82333;
+            transform: scale(1.1);
+          }
+        }
+      }
+    }
+
+    .words-to-add-actions {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+
+      .clear-list-button,
+      .save-words-button {
+        border: none;
+        padding: 8px 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 600;
+        transition: all 0.2s ease;
+
+        &:hover:not(:disabled) {
+          transform: translateY(-1px);
+        }
+
+        &:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+          transform: none;
+        }
+      }
+
+      .clear-list-button {
+        background: #6c757d;
+        color: white;
+
+        &:hover {
+          background: #5a6268;
+        }
+      }
+
+      .save-words-button {
+        background: #28a745;
+        color: white;
+
+        &:hover:not(:disabled) {
+          background: #218838;
+        }
+      }
+    }
+  }
+}
+
+// ✅ Responsive Design
+@media (max-width: 768px) {
+  .new-words {
+    .section-header {
+      flex-direction: column;
+      gap: 12px;
+      align-items: stretch;
+
+      .save-all-btn {
+        width: 100%;
+      }
+    }
+
+    .words-grid {
+      grid-template-columns: 1fr;
+      max-height: 300px;
+    }
+
+    .words-to-add-section {
+      .words-to-add-actions {
+        flex-direction: column;
+
+        .clear-list-button,
+        .save-words-button {
+          width: 100%;
+        }
+      }
+    }
+  }
+}
+
+// ✅ Animations
+@keyframes fadeInNew {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.new-words {
+  animation: fadeInNew 0.3s ease-out;
+}
+
+.word-edit-mode {
+  animation: fadeInNew 0.2s ease-out;
+}
+
+.words-to-add-section {
+  animation: slideInLeft 0.3s ease-out;
+}
+
+.word-to-add-item {
+  animation: slideInLeft 0.2s ease-out;
+}
+
+// ✅ Loading States
+.new-words.processing {
+  pointer-events: none;
+  
+  .word-card {
+    opacity: 0.7;
+  }
+  
+  .save-all-btn {
+    opacity: 0.6;
+  }
+}

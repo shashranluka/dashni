@@ -1,8 +1,9 @@
 import React, { useState, useCallback } from 'react';
 import newRequest from '../../utils/newRequest';
 import { autoTranslate } from '../../utils/autoTranslate';
+import FoundWords from '../foundWords/FoundWords'; // ✅ ახალი კომპონენტის იმპორტი
 import './WordsTranslator.scss';
-import { use } from 'react';
+import NewWords from '../newWords/NewWords';
 
 const WordsTranslator = ({ selectedWords, language = 'en', userId }) => {
   // ✅ State Management
@@ -377,24 +378,12 @@ const WordsTranslator = ({ selectedWords, language = 'en', userId }) => {
               </div>
             </div>
 
-            {/* ✅ ნაპოვნი სიტყვები */}
-            {checkResults.translatedWords.length > 0 && (
-              <div className="found-words">
-                <h4 className="words-title">✅ ნაპოვნია ბაზაში ({checkResults.translatedCount})</h4>
-                <div className="words-list">
-                  {checkResults.translatedWords.map((item, index) => (
-                    <div key={`found-${index}`} className="word-item found">
-                      <span className="word-text">{item.word}</span>
-                      {item.translation && (
-                        <span className="word-translation">{item.translation}</span>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+            {/* ✅ FoundWords კომპონენტის გამოყენება */}
+            <FoundWords foundWords={checkResults.translatedWords} />
 
-            {/* ✅ ახალი სიტყვები - WordCardsGenerator-ის ლოგიკით */}
+            {/* ✅ New Words - Editable */}
+            <NewWords newWords={checkResults.newWords} />
+            {/* ✅ ახალი სიტყვები - უცვლელი */}
             {checkResults.newWords.length > 0 && (
               <div className="new-words">
                 <h4 className="words-title">🆕 ახალი სიტყვები ({checkResults.newCount})</h4>

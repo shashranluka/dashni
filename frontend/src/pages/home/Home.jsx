@@ -9,13 +9,16 @@ function Home() {
     <div className="home">
       {/* ინფორმაციის ღილაკის კომპონენტი */}
       <InfoButton infoData={generateInfoData} />
-      
+
       {/* არსებული კონტენტი */}
       <Link className="link" to="/words">
         <div className="feature">სიტყვები</div>
       </Link>
       <Link className="link" to="/sentences">
         <div className="feature">წინადადებები</div>
+      </Link>
+      <Link className="link" to="/myvideos">
+        <div className="feature">მოსასმენი</div>
       </Link>
     </div>
   );
