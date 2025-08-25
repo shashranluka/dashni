@@ -1,5 +1,6 @@
 import React from 'react';
 import './FoundWords.scss';
+import WordCard from '../wordCard/WordCard';
 
 const FoundWords = ({ foundWords = [] }) => {
   if (foundWords.length === 0) {

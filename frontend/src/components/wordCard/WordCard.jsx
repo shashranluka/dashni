@@ -89,14 +89,14 @@ const WordCard = ({
         <div className="word-info">
           <span className="word-text">{word}</span>
           <div className="word-meta">
-            {isWordAdded && (
+            {/* {isWordAdded && (
               <span className="status-badge added" title="დამატებულია ბაზაში">
                 ✅
               </span>
-            )}
-            <span className="word-length" title={`სიტყვის სიგრძე: ${word.length} სიმბოლო`}>
+            )} */}
+            {/* <span className="word-length" title={`სიტყვის სიგრძე: ${word.length} სიმბოლო`}>
               {word.length}
-            </span>
+            </span> */}
           </div>
         </div>
 
@@ -104,6 +104,14 @@ const WordCard = ({
         <div className="word-actions">
           {!isEditing ? (
             <>
+                {isWordAdded && <button
+                  className="remove-button"
+                  onClick={handleRemoveWord}
+                  disabled={isProcessing}
+                  title="სიტყვის მოშორება"
+                >
+                  🗑️
+                </button>}
               <button
                 className="edit-button"
                 onClick={handleEditClick}
@@ -112,16 +120,8 @@ const WordCard = ({
               >
                 ✏️
               </button>
-              {showRemoveButton && isHovered && (
-                <button
-                  className="remove-button"
-                  onClick={handleRemoveWord}
-                  disabled={isProcessing}
-                  title="სიტყვის მოშორება"
-                >
-                  🗑️
-                </button>
-              )}
+              {/* {showRemoveButton && isHovered && ( */}
+              
             </>
           ) : (
             <div className="edit-actions">
@@ -189,7 +189,7 @@ const WordCard = ({
       </div>
 
       {/* ✅ Footer (Optional Info) */}
-      {(isHovered || isEditing) && (
+      {/* {(isHovered || isEditing) && (
         <div className="word-footer">
           <div className="word-stats">
             <span className="char-count" title="სიმბოლოების რაოდენობა">
@@ -202,7 +202,7 @@ const WordCard = ({
             )}
           </div>
         </div>
-      )}
+      )} */}
 
       {/* ✅ Processing Overlay */}
 
