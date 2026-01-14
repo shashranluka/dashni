@@ -10,6 +10,7 @@ yarn.lock
 .env
 
 # ✅ Google Service Account Key (უსაფრთხოებისთვის)
+audio-storage-project.json
 my-translator-project.json
 *.json
 config/

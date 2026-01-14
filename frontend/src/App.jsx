@@ -31,6 +31,7 @@ import MySchool from "./pages/MySchool/MySchool";
 // =======
 import AddWordsData from "./pages/addWordsData/AddWords";
 import AddVideoData from "./pages/addVideoData/AddVideoData";
+import AddAudioData from "./pages/addAudioData/AddAudioData";
 import MyVideoDatas from "./pages/myVideoDatas.copy/MyVideoDatas";
 import VideoData from "./pages/videoData/VideoData";
 import MyVideos from "./pages/myVideos/MyVideos";
@@ -195,6 +196,10 @@ function App() {
         {
           path: "/addvideodata",
           element: <AddVideoData />,
+        },
+        {
+          path: "/addaudiodata",
+          element: <AddAudioData />,
         },
         {
           path: "/addwordsdata",

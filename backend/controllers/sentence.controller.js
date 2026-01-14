@@ -5,7 +5,6 @@ import { getWordsBy } from "../utils/getWords.js"; // Assuming this is the corre
 // import { getWords } from "./word.controller.js";
 
 export const createSentence = async (req, res, next) => {
-  // console.log("sentence.controller", req.userId, "dwafdwa", req.body);
   // if (!req.isSeller)
   //   return next(createError(403, "Only sellers can create a gig!"));
 

@@ -18,6 +18,7 @@ export default function AddTextData() {
   const [inputValue, setInputValue] = useState("");
   const [selectedThemes, setSelectedThemes] = useState([]);
   const [validationErrors, setValidationErrors] = useState({});
+  console.log("Current language from context:", language);
   
   // გადაკეთებული reducer ტექსტისთვის
   const [textState, dispatchText] = useReducer(
@@ -287,7 +288,8 @@ export default function AddTextData() {
                     language === "en" ? "🇬🇧 ინგლისური" :
                     language === "de" ? "🇩🇪 გერმანული" :
                     language === "fr" ? "🇫🇷 ფრანგული" :
-                    language === "ba" ? "თუშური" : language
+                    language === "ba" ? "თუშური" : 
+                    (typeof language === 'object' ? language?.name || language?.code : language)
                   }
                 </p>
                 <p className="language-note">

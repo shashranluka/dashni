@@ -382,7 +382,7 @@ const WordsTranslator = ({ selectedWords, language = 'en', userId }) => {
             <FoundWords foundWords={checkResults.translatedWords} />
 
             {/* ✅ New Words - Editable */}
-            <NewWords newWords={checkResults.newWords} />
+            {/* <NewWords newWords={checkResults.newWords} /> */}
             {/* ✅ ახალი სიტყვები - უცვლელი */}
             {checkResults.newWords.length > 0 && (
               <div className="new-words">

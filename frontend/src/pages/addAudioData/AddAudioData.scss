@@ -1,0 +1,133 @@
+.add-audio {
+  min-height: 100vh;
+  background: #f9fafb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .container {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+    padding: 2rem 1rem;
+    max-width: 420px;
+    width: 100%;
+    margin: 2rem 0;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    color: #1e293b;
+    text-align: center;
+  }
+
+  .sections {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    label {
+      font-size: 1rem;
+      font-weight: 500;
+      color: #334155;
+      margin-bottom: 0.25rem;
+    }
+
+    input[type="text"],
+    input[type="file"],
+    textarea {
+      font-size: 1rem;
+      padding: 0.75rem;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      background: #f1f5f9;
+      transition: border-color 0.2s;
+      outline: none;
+
+      &:focus {
+        border-color: #2563eb;
+        background: #fff;
+      }
+    }
+
+    input.error,
+    textarea.error {
+      border-color: #ef4444;
+      background: #fff0f0;
+    }
+
+    .error-message {
+      color: #ef4444;
+      font-size: 0.875rem;
+      margin-top: 0.25rem;
+    }
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 100px;
+    max-height: 300px;
+  }
+
+  .submit-error {
+    margin-bottom: 1rem;
+    text-align: center;
+
+    .error-message {
+      color: #ef4444;
+      font-size: 1rem;
+      font-weight: 500;
+    }
+  }
+
+  .submit-button {
+    width: 100%;
+    padding: 0.75rem;
+    background: linear-gradient(90deg, #2563eb 0%, #3b82f6 100%);
+    color: #fff;
+    font-size: 1.125rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s, box-shadow 0.2s;
+    box-shadow: 0 2px 8px rgba(37,99,235,0.08);
+
+    &:hover:not(:disabled) {
+      background: linear-gradient(90deg, #1d4ed8 0%, #2563eb 100%);
+      box-shadow: 0 4px 16px rgba(37,99,235,0.12);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+}
+
+// Mobile first
+@media (max-width: 600px) {
+  .add-audio {
+    .container {
+      padding: 1rem 0.5rem;
+      max-width: 100%;
+      border-radius: 0;
+      box-shadow: none;
+    }
+    h1 {
+      font-size: 1.15rem;
+    }
+    .submit-button {
+      font-size: 1rem;
+      padding: 0.65rem;
+    }
+  }
+}
