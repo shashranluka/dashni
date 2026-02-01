@@ -20,6 +20,15 @@
     font-size: 1.5rem;
     font-weight: bold;
     transition: color 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    
+    .logo-img {
+      width: 40px;
+      height: 40px;
+      object-fit: contain;
+    }
     
     &:hover {
       color: #5DEBD7;
@@ -52,6 +61,81 @@
           background-color: #218838;
           color: white;
           transform: translateY(-2px);
+        }
+      }
+    }
+    
+    .user-menu {
+      position: relative;
+      
+      .user-info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+        padding: 5px 10px;
+        border-radius: 5px;
+        transition: background-color 0.3s;
+        
+        &:hover {
+          background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .user-avatar {
+          width: 36px;
+          height: 36px;
+          border-radius: 50%;
+          object-fit: cover;
+          border: 2px solid #5DEBD7;
+        }
+        
+        span {
+          color: white;
+          font-weight: 500;
+        }
+      }
+      
+      .dropdown {
+        position: absolute;
+        top: 55px;
+        right: 0;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        padding: 10px;
+        min-width: 180px;
+        z-index: 1000;
+        
+        a, button {
+          display: block;
+          padding: 10px 15px;
+          color: #333;
+          text-decoration: none;
+          border-radius: 5px;
+          transition: background-color 0.2s;
+          font-size: 0.95rem;
+          border: none;
+          background: none;
+          width: 100%;
+          text-align: left;
+          cursor: pointer;
+          font-family: inherit;
+          
+          &:hover {
+            background-color: #f5f5f5;
+          }
+        }
+        
+        .logout-btn {
+          color: #dc3545;
+          font-weight: 500;
+          margin-top: 5px;
+          border-top: 1px solid #eee;
+          padding-top: 15px;
+          
+          &:hover {
+            background-color: #ffebee;
+          }
         }
       }
     }
