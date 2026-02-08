@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import pg from "pg";
 import authRoute from "./routes/auth.route.js";
+import audioRoute from "./routes/audio.route.js";
 
 const app = express();
 dotenv.config();
@@ -31,6 +32,7 @@ app.use(cookieParser());
 
 // Routes
 app.use("/api/auth", authRoute);
+app.use("/api/audio", audioRoute);
 
 // Error handler
 app.use((err, req, res, next) => {

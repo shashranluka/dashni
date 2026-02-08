@@ -1,0 +1,205 @@
+// Main dictionary component
+.dictionary {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 1em;
+
+  // Game statistics
+  .game-stats {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-bottom: 20px;
+    font-size: 18px;
+    font-weight: 600;
+
+    .stat {
+      padding: 10px 20px;
+      background: #f5f5f5;
+      border-radius: 8px;
+      color: #333;
+    }
+  }
+
+  // Top space (current word display)
+  .topSpace {
+    width: 100%;
+    margin-bottom: 30px;
+
+    .topDataDiv {
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+      
+      .chosenWordCard {
+        padding: 30px;
+        background: #2196F3;
+        color: white;
+        font-size: 24px;
+        font-weight: 600;
+        border-radius: 12px;
+        min-width: 300px;
+        text-align: center;
+      }
+
+      .nextButton {
+        padding: 10px 20px;
+        background: #FF9800;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 600;
+
+        &:hover {
+          background: #F57C00;
+        }
+      }
+    }
+  }
+
+  // Bottom space (word options)
+  .bottomSpace {
+    display: flex;
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: center;
+    border: 1px solid yellowgreen;
+    padding: 1em;
+
+    .card {
+      padding: 20px 30px;
+      background: white;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      font-size: 1.2em;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s;
+      min-width: 120px;
+      text-align: center;
+
+      &:hover {
+        border-color: #2196F3;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      &.hidden-text {
+        opacity: 0.3;
+        pointer-events: none;
+
+        .cardFront {
+          color: rgb(92, 196, 222);
+          visibility: hidden;
+        }
+      }
+
+      .cardFront {
+        font-size: 18px;
+        font-weight: 500;
+        color: #333;
+      }
+    }
+  }
+
+  // Fixed won word display
+  .fixed-won-word {
+    background-color: #00FF00;
+    padding: 1em;
+    border: black;
+    border-radius: 1em;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    font-size: 2em;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+
+    .won-word-animation {
+      padding: 30px 50px;
+      background: #4CAF50;
+      color: white;
+      font-size: 28px;
+      font-weight: 600;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      animation: popIn 0.3s ease-out;
+    }
+  }
+
+  // Game finished screen
+  .game-finished-messy {
+    text-align: center;
+    padding: 50px 20px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+
+    h2 {
+      color: #4CAF50;
+      margin-bottom: 30px;
+      font-size: 32px;
+    }
+
+    .final-stats {
+      margin-bottom: 30px;
+
+      p {
+        font-size: 20px;
+        margin: 15px 0;
+        color: #555;
+
+        strong {
+          color: #2196F3;
+          font-size: 24px;
+        }
+      }
+    }
+
+    .restart-btn {
+      padding: 15px 40px;
+      font-size: 18px;
+      font-weight: 600;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s;
+
+      &:hover {
+        background: #388E3C;
+      }
+    }
+  }
+
+  // Responsive design
+  @media (min-width: 768px) {
+    padding: 2em;
+  }
+}
+
+// Animations
+@keyframes popIn {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}

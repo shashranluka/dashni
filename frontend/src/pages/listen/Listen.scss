@@ -1,0 +1,80 @@
+.listen-page {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+  }
+
+  .audio-section {
+    text-align: center;
+    margin-bottom: 30px;
+
+    audio {
+      width: 100%;
+      max-width: 500px;
+    }
+  }
+
+  .game-mode-toggle {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 30px;
+
+    button {
+      padding: 12px 30px;
+      font-size: 16px;
+      font-weight: 600;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      background: white;
+      cursor: pointer;
+      transition: all 0.3s;
+      color: #666;
+
+      &:hover {
+        border-color: #2196F3;
+        color: #2196F3;
+      }
+
+      &.active {
+        background: #2196F3;
+        border-color: #2196F3;
+        color: white;
+      }
+    }
+  }
+
+  .game-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      font-weight: 500;
+      border: 2px solid #2196F3;
+      border-radius: 8px;
+      background: white;
+      color: #2196F3;
+      cursor: pointer;
+      transition: all 0.3s;
+
+      &:hover {
+        background: #2196F3;
+        color: white;
+      }
+
+      &:active {
+        transform: scale(0.98);
+      }
+    }
+  }
+}

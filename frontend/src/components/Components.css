@@ -1,0 +1,202 @@
+h1,
+h2 {
+  text-align: center;
+}
+img {
+  width: 100%;
+  /* min-width: 370px; */
+  /* border: #000000 solid; */
+  box-sizing: border-box;
+}
+p {
+  margin: auto;
+}
+.flex_center {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+.chapter {
+  /* margin: 1em 0.1em; */
+  padding: 0.7em 0.3em;
+  background-color: rgba(14, 40, 133, 0.839);
+  border-radius: 10px;
+  width: auto;
+}
+.topic-div {
+  color: #8f8f8f;
+  display: flex;
+  justify-content: space-between;
+}
+.topic_header {
+  font-size: 16px;
+}
+/* .result {
+  display: flex;
+  margin: auto;
+  margin-right: 20px;
+  color: rgb(117, 128, 117);
+} */
+.qula,
+.cda {
+  color: white;
+  font-size: 8px;
+}
+button {
+  background-color: rgb(126, 133, 153);
+  border: none;
+  color: rgb(26, 26, 128);
+  border-radius: 3px;
+  padding: 0.7em;
+  margin: 0.3em;
+  cursor: pointer;
+}
+.clicked_button {
+  background-color: rgba(88, 30, 30, 0.475);
+}
+/* .dict_button */
+.opened_game {
+  background-color: #91764a;
+}
+
+.flex_wrap {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+/* **************************************თამაშის შესახებ******************************************* */
+
+/* .about {
+  border: 2px solid green;
+  margin: 0.5em;
+  padding: 0.5em;
+}
+.about_close {
+  font-family: "ALK Sanet", sans-serif;
+}
+.about_close,
+.about_header {
+  background-color: #005893;
+  width: fit-content;
+  margin: 0.3em auto 0.3em auto;
+  border-radius: 0.3em;
+  padding: 0.3em;
+  cursor: pointer;
+} */
+
+/* ////////////////////////////////მახასიათებლები//////////////////////////////////// */
+
+/* ///////////////////////////////ლექსიკონი/////////////////////////////////////// */
+.dictionary {
+  display: flex;
+}
+.t_words {
+  background-color: rgb(66, 67, 66);
+  width: 67%;
+  /* height: 1em; */
+}
+.b_words {
+  background-color: rgb(54, 55, 54);
+  width: 33%;
+  display: flex;
+  /* flex-direction: column; */
+  align-items: center;
+  /* height: 1em; */
+}
+.card {
+  background-color: #69706c;
+  border-radius: 0.3em;
+  width: fit-content;
+  padding: 0.3em;
+  margin: 5px;
+  cursor: pointer;
+  transition: all 0.3 ease-in-out;
+  height: fit-content;
+  font-family: "Arial GEO Bold", sans-serif;
+  box-shadow: 0 0.1em;
+  /* box-shadow: rgba(0, 0, 0, 0.07) 0px 1px 2px, rgba(0, 0, 0, 0.07) 0px 2px 4px,
+    rgba(0, 0, 0, 0.07) 0px 4px 8px, rgba(0, 0, 0, 0.07) 0px 8px 16px,
+    rgba(0, 0, 0, 0.07) 0px 16px 32px, rgba(0, 0, 0, 0.07) 0px 32px 64px; */
+}
+.right_card {
+  background-color: rgb(4, 127, 4);
+  color: rgb(16, 16, 16);
+  /* width: fit-content; */
+}
+.third_waiting {
+  color: rgb(4, 127, 4);
+}
+.third_visible {
+  color: black;
+}
+.clicked_right {
+  background-color: #000000;
+  /* height: fit-content; */
+  /* transition: all 0.3 ease-in-out; */
+  /* color: white; */
+}
+.left_card {
+  background-color: rgb(150, 121, 47);
+  /* height: fit-content; */
+}
+.left_visible {
+  color: rgb(0, 0, 0);
+}
+.clicked_left {
+  background-color: black;
+  /* color: rgb(255, 255, 255); */
+}
+.end_game {
+  /* display: flex; */
+}
+.won_words {
+  background-color: #5c605a;
+  padding: 0.3em;
+  box-sizing: border-box;
+}
+.won_word {
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: space-between;
+  min-width: fit-content;
+  padding: 0.3em;
+  margin: 0.3em 0;
+  background-color: rgb(4, 127, 4);
+}
+.expl {
+  background-color: rgb(38, 71, 71);
+}
+
+/* ////////////////////////////////WordsAndMarks//////////////////////////////////////////////////////// */
+
+
+/* ///////დაშლილი წინადადებები////////////////////////////////////// */
+
+/* ********************************შედეგები************************************ */
+
+.results_sentence {
+  background-color: rgba(52, 70, 136, 0.839);
+  padding: 0.5em;
+}
+.results_translation {
+  background-color: rgb(145, 145, 145);
+  margin: 0.3em;
+  padding: 0.3em;
+  border-radius: 0.3em;
+}
+.results_native {
+  background-color: rgb(0, 78, 72);
+  color: rgb(179, 178, 178);
+  margin: 0.3em;
+  padding: 0.3em;
+  border-radius: 0.3em;
+}
+
+@media only screen and (min-width: 768px) {
+  .chapter {
+    width: 90%;
+    margin-left: 5%;
+    margin-right: 5%;
+  }
+}

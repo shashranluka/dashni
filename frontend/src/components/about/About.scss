@@ -1,0 +1,127 @@
+// About კომპონენტის სტილები
+
+// ძირითადი კონტეინერი
+.about {
+  position: relative;
+  margin: 20px 0;
+  border: 2px solid green;
+  // margin: 0.5em;
+  padding: 0.5em;
+}
+
+// აღწერის ღილაკი
+.aboutToggle {
+  background: none;
+  border: none;
+  color: #4caf50;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 5px 0;
+  position: relative;
+  
+  &:hover {
+    text-decoration: underline;
+  }
+  
+  &:focus {
+    outline: 2px solid #a5d6a7;
+    outline-offset: 2px;
+  }
+}
+
+// მოდალის საფარი
+.aboutModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+// მოდალის შიგთავსი
+.aboutContent {
+  background-color: white;
+  border-radius: 8px;
+  padding: 20px;
+  max-width: 600px;
+  width: 100%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+// სათაური
+.aboutHeader {
+  font-size: 20px;
+  color: #333;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+// დახურვის ღილაკი
+.closeButton {
+  background: none;
+  border: none;
+  font-size: 18px;
+  color: #888;
+  cursor: pointer;
+  padding: 5px;
+  
+  &:hover {
+    color: #333;
+  }
+}
+
+// ტექსტის პარაგრაფი
+.aboutParagraph {
+  font-size: 16px;
+  line-height: 1.6;
+  color: #555;
+  white-space: pre-line;
+}
+
+// კომპაქტური რეჟიმი
+.about.compact {
+  margin: 10px 0;
+  
+  .aboutToggle {
+    font-size: 12px;
+    padding: 3px 0;
+  }
+}
+
+// მობილური მოწყობილობებისთვის
+@media (max-width: 768px) {
+  .aboutContent {
+    max-width: 100%;
+    border-radius: 0;
+  }
+  
+  .aboutHeader {
+    font-size: 18px;
+  }
+  
+  .aboutParagraph {
+    font-size: 14px;
+  }
+  
+  // მობილურზე ქვემოდან ამოდის
+  .aboutModal {
+    align-items: flex-end;
+    padding: 0;
+  }
+  
+  .aboutContent {
+    border-radius: 8px 8px 0 0;
+  }
+}
