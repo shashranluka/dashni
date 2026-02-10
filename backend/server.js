@@ -37,8 +37,15 @@ app.use(cookieParser());
 app.use("/api/auth", authRoute);
 app.use("/api/audio", audioRoute);
 
-// Healthcheck Endpoint
-app.get('/health', (req, res) => res.sendStatus(200));
+// Healthcheck route (simple DB + server check)
+app.get("/health", async (req, res) => {
+  try {
+    await pool.query('SELECT 1'); // DB check
+    res.status(200).json({ status: "ok", db: "ok" });
+  } catch {
+    res.status(503).json({ status: "fail", db: "fail" });
+  }
+});
 
 // Error handler
 app.use((err, req, res, next) => {
