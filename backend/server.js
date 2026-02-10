@@ -37,6 +37,9 @@ app.use(cookieParser());
 app.use("/api/auth", authRoute);
 app.use("/api/audio", audioRoute);
 
+// Healthcheck Endpoint
+app.get('/health', (req, res) => res.sendStatus(200));
+
 // Error handler
 app.use((err, req, res, next) => {
   const errorStatus = err.status || 500;
