@@ -1,1 +1,4 @@
 manual_scripts/
+dashni_db.sql
+dashni_db_backup.sql
+.DS_Store
