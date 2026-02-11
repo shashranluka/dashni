@@ -27,7 +27,7 @@ pool.connect()
 
 // Middleware
 app.use(cors({
-  origin: process.env.ALLOWED_ORIGINS || 'http://localhost:5173',
+  origin: process.env.ALLOWED_ORIGINS || 'http://localhost:5173'||'https://dashni.dosh.ge',
   credentials: true
 }));
 app.use(express.json());
