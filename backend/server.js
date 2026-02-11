@@ -27,7 +27,7 @@ pool.connect()
 
 // Middleware
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  origin: process.env.ALLOWED_ORIGINS || 'http://localhost:5173',
   credentials: true
 }));
 app.use(express.json());
@@ -36,6 +36,16 @@ app.use(cookieParser());
 // Routes
 app.use("/api/auth", authRoute);
 app.use("/api/audio", audioRoute);
+
+// Healthcheck route (simple DB + server check)
+app.get("/health", async (req, res) => {
+  try {
+    await pool.query('SELECT 1'); // DB check
+    res.status(200).json({ status: "ok", db: "ok" });
+  } catch {
+    res.status(503).json({ status: "fail", db: "fail" });
+  }
+});
 
 // Error handler
 app.use((err, req, res, next) => {
