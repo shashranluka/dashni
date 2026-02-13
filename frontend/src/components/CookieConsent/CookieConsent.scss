@@ -1,0 +1,146 @@
+/**
+ * Cookie Consent Banner Styles
+ * 
+ * GDPR-compliant cookie consent banner-ის სტილები
+ * Banner ჩნდება გვერდის ზემოთ overlay-ით
+ */
+
+// Overlay რომელიც მთელ გვერდს ფარავს
+.cookie-consent-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5); // Semi-transparent black
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 20px;
+  z-index: 9999; // ყველაფერზე ზემოთ
+  animation: fadeIn 0.3s ease-in;
+}
+
+// ძირითადი banner container
+.cookie-consent-banner {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  max-width: 600px;
+  width: 90%;
+  padding: 24px;
+  animation: slideDown 0.3s ease-out;
+  
+  @media (max-width: 768px) {
+    max-width: 95%;
+    padding: 20px;
+  }
+}
+
+// Content სექცია
+.cookie-consent-content {
+  margin-bottom: 20px;
+}
+
+.cookie-consent-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  
+  .cookie-icon {
+    font-size: 28px;
+  }
+  
+  strong {
+    font-size: 20px;
+    color: #333;
+    font-weight: 600;
+  }
+}
+
+.cookie-consent-description {
+  font-size: 15px;
+  line-height: 1.6;
+  color: #555;
+  margin-bottom: 12px;
+}
+
+.cookie-consent-note {
+  font-size: 13px;
+  line-height: 1.5;
+  color: #777;
+  font-style: italic;
+}
+
+// ღილაკების container
+.cookie-consent-buttons {
+  display: flex;
+  gap: 12px;
+  
+  @media (max-width: 480px) {
+    flex-direction: column;
+  }
+}
+
+// ღილაკების საერთო სტილები
+.cookie-consent-button {
+  flex: 1;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+// "თანახმა ვარ" ღილაკი - მწვანე
+.cookie-accept {
+  background: #10b981; // Green
+  color: white;
+  
+  &:hover {
+    background: #059669;
+  }
+}
+
+// "უარი" ღილაკი - ნაცრისფერი
+.cookie-decline {
+  background: #6b7280; // Gray
+  color: white;
+  
+  &:hover {
+    background: #4b5563;
+  }
+}
+
+// Animations
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

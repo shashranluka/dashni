@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import newRequest from '../../utils/newRequest';
+import { trackSignUp } from '../../utils/analytics';
 import './Register.scss';
 
 function Register() {
@@ -19,6 +20,9 @@ function Register() {
     try {
       const res = await newRequest.post('auth/register', formData);
       console.log('წარმატებული რეგისტრაცია:', res.data);
+      
+      trackSignUp('email');
+      
       alert('რეგისტრაცია წარმატებით დასრულდა!');
       
       // ფორმის გასუფთავება

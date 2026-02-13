@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { trackAudioPlay, trackAudioSkip } from '../../utils/analytics'
 import './AudioPlayer.scss'
 
 function AudioPlayer({ src }) {
@@ -32,6 +33,7 @@ function AudioPlayer({ src }) {
       audioRef.current.pause()
     } else {
       audioRef.current.play()
+      trackAudioPlay(src);
     }
     setIsPlaying(!isPlaying)
   }
@@ -41,6 +43,7 @@ function AudioPlayer({ src }) {
       audioRef.current.currentTime + 5,
       duration
     )
+    trackAudioSkip('forward', 5);
   }
 
   const skipBackward = () => {
@@ -48,6 +51,7 @@ function AudioPlayer({ src }) {
       audioRef.current.currentTime - 5,
       0
     )
+    trackAudioSkip('backward', 5);
   }
 
   const handleProgressChange = (e) => {

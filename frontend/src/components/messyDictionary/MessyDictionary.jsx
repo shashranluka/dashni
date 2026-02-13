@@ -1,4 +1,5 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { trackGameStart, trackGameComplete } from "../../utils/analytics";
 import "./MessyDictionary.scss";
 
 // შერევის ფუნქცია თავად კომპონენტში
@@ -11,7 +12,11 @@ function getShuffled(array) {
   return newArray;
 }
 
-export default function MessyDictionary({ words, direction = "translation-to-word" }) {
+export default function MessyDictionary({ 
+  words, 
+  direction = "translation-to-word",
+  gameMode = "random" // ← default value props-ში
+}) {
   const [points, setPoints] = useState(0);
   const [tries, setTries] = useState(0);
   const [chosenWordIndex, setChosenWordIndex] = useState(0);
@@ -19,6 +24,18 @@ export default function MessyDictionary({ words, direction = "translation-to-wor
   const [isFixedVisible, setIsFixedVisible] = useState(false);
   const [wrongIndices, setWrongIndices] = useState([]);
   const [gameFinished, setGameFinished] = useState(false);
+
+  // Game start tracking - gameMode props-დან
+  useEffect(() => {
+    trackGameStart(gameMode, direction);
+  }, []); // ← dependency array ცარიელია რადგან props mount-ზე არ იცვლება
+
+  // Game complete tracking - gameMode props-დან
+  useEffect(() => {
+    if (gameFinished) {
+      trackGameComplete(points, tries, gameMode);
+    }
+  }, [gameFinished, points, tries]); // ← gameMode dependency-ში არ ჭირდება
 
   if (!words || words.length === 0) {
     return <div className="messyDictionary">No words available</div>;

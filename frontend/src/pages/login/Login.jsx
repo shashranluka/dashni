@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import newRequest from '../../utils/newRequest';
+import { trackLogin } from '../../utils/analytics';
 import './Login.scss';
 
 function Login() {
@@ -19,6 +20,8 @@ function Login() {
       const res = await newRequest.post('auth/login', { email, password });
       
       localStorage.setItem('currentUser', JSON.stringify(res.data));
+      
+      trackLogin('email');
       
       console.log('წარმატებული შესვლა:', res.data);
       navigate('/');

@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import Navbar from './components/navbar/Navbar'
 import Home from './pages/home/Home'
@@ -6,11 +7,21 @@ import Sentences from './pages/sentences/Sentences'
 import Listen from './pages/listen/Listen'
 import Login from './pages/login/Login'
 import Register from './pages/register/Register'
+import CookieConsent from './components/CookieConsent/CookieConsent'
+import usePageTracking from './utils/usePageTracking'
+import { initGA } from './utils/analytics'
 import './App.scss'
 
-function App() {
+function AppContent() {
+  useEffect(() => {
+    initGA(false);
+  }, []);
+  
+  usePageTracking();
+
   return (
-    <Router>
+    <>
+      <CookieConsent />
       <div style={{ minHeight: '100vh' }}>
         <Navbar />
         <Routes>
@@ -23,6 +34,14 @@ function App() {
           <Route path="/register" element={<Register />} />
         </Routes>
       </div>
+    </>
+  );
+}
+
+function App() {
+  return (
+    <Router>
+      <AppContent />
     </Router>
   )
 }

@@ -158,3 +158,227 @@
     }
   }
 }
+
+/* Analytics Modal Overlay - მთელ გვერდს ფარავს */
+.analytics-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+  animation: fadeIn 0.2s ease-in;
+}
+
+/* Analytics Modal - ცენტრში modal window */
+.analytics-modal {
+  background: white;
+  border-radius: 16px;
+  padding: 32px;
+  max-width: 500px;
+  width: 90%;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  animation: slideUp 0.3s ease-out;
+  
+  h3 {
+    margin: 0 0 24px 0;
+    font-size: 24px;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+}
+
+/* Analytics Status Section */
+.analytics-status {
+  background: #f8f9fa;
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  
+  p {
+    margin: 0;
+    font-size: 15px;
+    color: #555;
+  }
+  
+  .status-active {
+    color: #10b981;
+    font-weight: 600;
+  }
+  
+  .status-inactive {
+    color: #6b7280;
+    font-weight: 600;
+  }
+}
+
+/* Analytics Info Section */
+.analytics-info {
+  margin-bottom: 24px;
+  
+  p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #666;
+    margin-bottom: 16px;
+  }
+}
+
+/* Analytics Details - რას ვაგროვებთ */
+.analytics-details {
+  background: #f0f9ff;
+  padding: 16px;
+  border-radius: 8px;
+  border-left: 4px solid #3b82f6;
+  
+  p {
+    margin: 0 0 12px 0;
+    font-size: 14px;
+    color: #1e40af;
+  }
+  
+  ul {
+    margin: 0;
+    padding-left: 20px;
+    
+    li {
+      font-size: 13px;
+      color: #555;
+      line-height: 1.8;
+    }
+  }
+}
+
+/* Analytics Actions - ღილაკები */
+.analytics-actions {
+  display: flex;
+  gap: 12px;
+  flex-direction: column;
+  
+  button {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    
+    &:active {
+      transform: translateY(0);
+    }
+  }
+  
+  // ჩართვის ღილაკი - მწვანე
+  .btn-enable {
+    background: #10b981;
+    color: white;
+    
+    &:hover {
+      background: #059669;
+    }
+  }
+  
+  // გამორთვის ღილაკი - წითელი
+  .btn-revoke {
+    background: #ef4444;
+    color: white;
+    
+    &:hover {
+      background: #dc2626;
+    }
+  }
+  
+  // დახურვის ღილაკი - ნაცრისფერი
+  .btn-close {
+    background: #6b7280;
+    color: white;
+    
+    &:hover {
+      background: #4b5563;
+    }
+  }
+  
+  .consent-note {
+    font-size: 14px;
+    color: #6b7280;
+    font-style: italic;
+    text-align: center;
+    padding: 12px;
+    background: #f9fafb;
+    border-radius: 8px;
+    margin: 0;
+  }
+}
+
+/* Analytics Button in Navbar */
+.analytics-btn {
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background: rgba(0, 0, 0, 0.05);
+    transform: scale(1.1);
+  }
+  
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .analytics-modal {
+    padding: 24px;
+    max-width: 95%;
+    
+    h3 {
+      font-size: 20px;
+    }
+  }
+  
+  .analytics-details ul {
+    padding-left: 16px;
+    
+    li {
+      font-size: 12px;
+    }
+  }
+}
