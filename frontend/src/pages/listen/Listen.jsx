@@ -5,6 +5,7 @@ import MessyDictionary from '../../components/messyDictionary/MessyDictionary'
 import GameWords from '../../components/GameWords/GameWords'
 import WordSelector from '../../components/WordSelector/WordSelector'
 import AudioPlayer from '../../components/AudioPlayer/AudioPlayer'
+import { use } from 'react'
 
 function Listen() {
   const [gameData, setGameData] = useState(null)
@@ -14,6 +15,7 @@ function Listen() {
   const [gameStarted, setGameStarted] = useState(false)
   const [direction, setDirection] = useState("translation-to-word")
   const hasFetched = useRef(false)
+  const audiofilePath = useRef("/audio_files/adas_mier_moyolili_zghapari.m4a")
 
   useEffect(() => {
     const fetchAudioData = async () => {
@@ -51,11 +53,14 @@ function Listen() {
   return (
     <div className="listen-page">
       <h1>ადას მიერ მოყოლილი ზღაპარი</h1>
-      {gameData && gameData.audioData && gameData.audioData[0] && (
+      {/* {gameData && gameData.audioData && gameData.audioData[0] && ( */}
         <div className="audio-section">
-          <AudioPlayer src={gameData.audioData[0].file_path} />
+          <AudioPlayer 
+            src={audiofilePath.current} 
+            segments={gameData?.segments || []}
+          />
         </div>
-      )}
+      {/* // )} */}
       {gameData && gameData.words && (
         <>
           {!gameStarted ? (

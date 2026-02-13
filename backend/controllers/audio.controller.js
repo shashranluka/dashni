@@ -2,46 +2,44 @@ import { pool } from "../server.js";
 
 export const getAudioData = async (req, res, next) => {
   try {
-    console.log("Fetching audio data from database...");
+    console.log("Fetching audio segments...");
     
-    // audio_data-ს ამოღება
-    const audioResult = await pool.query(
-      'SELECT * FROM audio_data ORDER BY id ASC'
+    // ამოიღე ყველა audio segment
+    const segmentsResult = await pool.query(
+      'SELECT id, time, text FROM audio_segments ORDER BY id ASC'
     );
-    const audioData = audioResult.rows[0];
-    console.log(audioData.content, "audio data fetched");
     
-    // console.log(`Retrieved ${audioResult.rows} records from audio_data.`);
+    const segments = segmentsResult.rows;
+    console.log(`Retrieved ${segments.length} segments`);
     
-    // ყველა ტექსტიდან სიტყვების ამოღება
-    const allWords = audioData.content
-        .toLowerCase()
-        // .replace(/[^\w\s]/g, '')
-        // .replace(/[^\w\s]/g, '')
-        .replace(/[.,!?;:"()-]/g, '')
-        .split(/\s+/)
-        .filter(word => word.length > 0);
-    console.log(`Extracted a total`,allWords);
-    // უნიკალური სიტყვები
+    // ყველა text-დან სიტყვების ამოღება
+    const allTexts = segments.map(s => s.text).join(' ');
+    
+    const allWords = allTexts
+      .toLowerCase()
+      .replace(/[.,!?;:"()-]/g, '')
+      .split(/\s+/)
+      .filter(word => word.length > 0);
+    
     const uniqueWords = [...new Set(allWords)];
-    console.log(uniqueWords,`Found ${uniqueWords.length} unique words.`);
+    console.log(`Found ${uniqueWords.length} unique words`);
     
-    // words ცხრილიდან შესაბამისი ჩანაწერების ამოღება
+    // words ცხრილიდან თარგმანები
     const wordsResult = await pool.query(
       'SELECT the_word, translation FROM words WHERE the_word = ANY($1)',
       [uniqueWords]
     );
     
-    console.log(`Retrieved ${wordsResult.rows.length} matching words from words table.`);
+    console.log(`Retrieved ${wordsResult.rows.length} translations`);
     
-    // პასუხის ფორმირება
     res.status(200).json({
-      audioData: audioResult.rows,
+      segments: segments, // [{id, time, text}, ...]
       words: wordsResult.rows,
       uniqueWords: uniqueWords
     });
     
   } catch (err) {
+    console.error('Error in getAudioData:', err);
     next(err);
   }
 };
