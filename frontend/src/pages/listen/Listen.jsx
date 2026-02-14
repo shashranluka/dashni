@@ -15,7 +15,7 @@ function Listen() {
   const [gameStarted, setGameStarted] = useState(false)
   const [direction, setDirection] = useState("translation-to-word")
   const hasFetched = useRef(false)
-  const audiofilePath = useRef("/audio_files/adas_mier_moyolili_zghapari.m4a")
+  const audiofilePath = useRef("src/assets/audio_files/adas_mier_moyolili_zghapari.m4a")
 
   useEffect(() => {
     const fetchAudioData = async () => {
