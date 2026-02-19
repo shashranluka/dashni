@@ -9,12 +9,15 @@ import Login from './pages/login/Login'
 import Register from './pages/register/Register'
 import CookieConsent from './components/CookieConsent/CookieConsent'
 import usePageTracking from './utils/usePageTracking'
-import { initGA } from './utils/analytics'
+import { initGA, hasConsent } from './utils/analytics'
 import './App.scss'
 
 function AppContent() {
   useEffect(() => {
-    initGA(false);
+    // თუ მომხმარებელს უკვე აქვს consent, ვრთავთ Full Mode-ს
+    // თუ არა, ვიწყებთ Basic Mode-თ (ანონიმური pageviews)
+    const consentGranted = hasConsent();
+    initGA(consentGranted);
   }, []);
   
   usePageTracking();

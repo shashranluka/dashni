@@ -148,7 +148,7 @@ function Navbar() {
 
             <div className="analytics-info">
               <p>
-                Google Analytics აგროვებს ანონიმურ მონაცემებს საიტის გაუმჯობესების მიზნით.
+                Google Analytics-ის საშუალებით ვაგროვებთ ანონიმურ მონაცემებს საიტის გაუმჯობესების მიზნით.
                 თქვენ შეგიძლიათ ნებისმიერ დროს {hasAnalyticsConsent ? 'გააუქმოთ' : 'მისცეთ'} თანხმობა.
               </p>
               
