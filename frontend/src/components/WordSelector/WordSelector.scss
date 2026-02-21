@@ -45,6 +45,7 @@
 
     .compact-count-field {
       input {
+        box-sizing: border-box;
         width: 100%;
         min-width: 0;
         height: 34px;

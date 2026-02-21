@@ -68,19 +68,37 @@ function Listen() {
       .trim();
 
   const segmentWordCounts = useMemo(() => {
-    if (!Array.isArray(gameData?.segments)) return new Map();
-
-    const countWords = (text = '') =>
-      text
-        .toLowerCase()
-        .replace(/[.,!?;:"()-]/g, '')
-        .split(/\s+/)
-        .filter((word) => word.length > 0).length;
+    if (!Array.isArray(gameData?.segments) || !Array.isArray(gameData?.words)) {
+      return new Map();
+    }
 
     return new Map(
-      gameData.segments.map((segment) => [segment.id, countWords(segment.text)])
+      gameData.segments.map((segment) => {
+        // 1) ამოვიღოთ სიტყვები ამ სეგმენტის ტექსტიდან
+        const segmentWordSet = new Set(
+          normalizeWord(segment.text)
+            .split(' ')
+            .filter(Boolean)
+        );
+
+        // 2) დავითვალოთ რამდენი უნიკალური სიტყვაა gameData.words-ში
+        const matchedWords = gameData.words.filter((wordObj) => {
+          const candidateWords = [
+            wordObj?.the_word,
+            wordObj?.word,
+            wordObj?.lemma,
+            wordObj?.base_word,
+          ]
+            .map(normalizeWord)
+            .filter(Boolean);
+
+          return candidateWords.some((w) => segmentWordSet.has(w));
+        });
+
+        return [segment.id, matchedWords.length];
+      })
     );
-  }, [gameData?.segments]);
+  }, [gameData?.segments, gameData?.words]);
 
   const wordsForGame = useMemo(() => {
     if (!selectedSegment?.text || !Array.isArray(gameData?.words)) {
@@ -128,7 +146,7 @@ function Listen() {
       {/* // )} */}
       {gameData && gameData.segments && (
         <div className="segments-section">
-          <h2>სეგმენტები:</h2>
+          <h2>აირჩიეთ ეპიზოდი:</h2>
           <div className="segments">
             {gameData.segments.map((segment) => {
               const wordCount = segmentWordCounts.get(segment.id) ?? 0;
@@ -161,16 +179,16 @@ function Listen() {
                   textAlign: 'center',
                   fontSize: '16px'
                 }}>
-                  აირჩიე სეგმენტი ზემოთ მოცემული ღილაკებიდან სათამაშოდ სიტყვების ასარჩევად
+                  აირჩიე ეპიზოდი ზემოთ მოცემული ღილაკებიდან სათამაშოდ სიტყვების ასარჩევად
                 </div>
               ) : (
                 <div className="segment-info">
                   <h2 className="segment-info-title">
-                    სეგმენტი {selectedSegment.id} - სიტყვების რაოდენობა: {wordsForGame.length}
+                    ეპიზოდი {selectedSegment.id} - სიტყვების რაოდენობა: {wordsForGame.length}
                   </h2>
-                  <p className="segment-info-subtitle">
-                    აირჩიეთ სიტყვები ამ სეგმენტიდან თამაშისთვის ან შეცვალეთ სეგმენტი ზემოთ მოცემული ღილაკებიდან
-                  </p>
+                  {/* <p className="segment-info-subtitle">
+                    აირჩიეთ სიტყვები ამ ეპიზოდიდან თამაშისთვის
+                  </p> */}
                 </div>
               )}
 

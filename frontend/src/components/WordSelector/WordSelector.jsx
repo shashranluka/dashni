@@ -43,6 +43,7 @@ export default function WordSelector({ allWords, onStartGame }) {
 
   return (
     <div className="word-selector">
+      აირჩიეთ თამაშის პარამეტრები:
       <div className="compact-selects">
         <label className="compact-field">
           <span>თამაშის მიმართულება:</span>
