@@ -1,11 +1,16 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./WordSelector.scss";
 
 export default function WordSelector({ allWords, onStartGame }) {
-  const [selectionMode, setSelectionMode] = useState("sequential"); // sequential, random, manual
-  const [wordCount, setWordCount] = useState(10);
+  const [selectionMode, setSelectionMode] = useState("sequential");
+  const [wordCount, setWordCount] = useState(allWords?.length ?? 0);
   const [selectedWords, setSelectedWords] = useState([]);
-  const [direction, setDirection] = useState("translation-to-word"); // translation-to-word, word-to-translation
+  const [direction, setDirection] = useState("translation-to-word");
+
+  useEffect(() => {
+    setWordCount(allWords?.length ?? 0);
+    setSelectedWords([]);
+  }, [allWords]);
 
   const handleWordToggle = (word) => {
     setSelectedWords(prev => {
@@ -38,78 +43,50 @@ export default function WordSelector({ allWords, onStartGame }) {
 
   return (
     <div className="word-selector">
-      
-      <div className="direction-selection">
-        <h3>თამაშის მიმართულება:</h3>
-        <label>
-          <input
-            type="radio"
-            value="translation-to-word"
-            checked={direction === "translation-to-word"}
+      <div className="compact-selects">
+        <label className="compact-field">
+          <span>თამაშის მიმართულება:</span>
+          <select
+            value={direction}
             onChange={(e) => setDirection(e.target.value)}
-          />
-          თარგმანი → უცხო სიტყვა
+          >
+            <option value="translation-to-word">თარგმანი → უცხო სიტყვა</option>
+            <option value="word-to-translation">უცხო სიტყვა → თარგმანი</option>
+          </select>
         </label>
-        
-        <label>
-          <input
-            type="radio"
-            value="word-to-translation"
-            checked={direction === "word-to-translation"}
-            onChange={(e) => setDirection(e.target.value)}
-          />
-          უცხო სიტყვა → თარგმანი
-        </label>
-      </div>
 
-      <h2>სიტყვების შერჩევა</h2>
-      
-      <div className="selection-mode">
-        <label>
-          <input
-            type="radio"
-            value="sequential"
-            checked={selectionMode === "sequential"}
+        <label className="compact-field">
+          <span>სიტყვების შერჩევა:</span>
+          <select
+            value={selectionMode}
             onChange={(e) => setSelectionMode(e.target.value)}
-          />
-          მიმდევრობით
+          >
+            <option value="sequential">მიმდევრობით</option>
+            <option value="random">შემთხვევითად</option>
+            <option value="manual">მონიშვნით</option>
+          </select>
         </label>
-        
-        <label>
-          <input
-            type="radio"
-            value="random"
-            checked={selectionMode === "random"}
-            onChange={(e) => setSelectionMode(e.target.value)}
-          />
-          შემთხვევითად
-        </label>
-        
-        <label>
-          <input
-            type="radio"
-            value="manual"
-            checked={selectionMode === "manual"}
-            onChange={(e) => setSelectionMode(e.target.value)}
-          />
-          მონიშვნით
-        </label>
-      </div>
 
-      {(selectionMode === "sequential" || selectionMode === "random") && (
-        <div className="word-count-input">
-          <label>
-            სიტყვების რაოდენობა:
+        {(selectionMode === "sequential" || selectionMode === "random") && (
+          <label className="compact-field compact-count-field">
+            <span>სიტყვების რაოდენობა:</span>
             <input
               type="number"
-              min="1"
+              min="0"
               max={allWords.length}
               value={wordCount}
-              onChange={(e) => setWordCount(parseInt(e.target.value) || 1)}
+              onChange={(e) =>
+                setWordCount(
+                  Math.max(
+                    0,
+                    Math.min(Number(e.target.value) || 0, allWords.length)
+                  )
+                )
+              }
             />
           </label>
-        </div>
-      )}
+        )}
+      </div>
 
       {selectionMode === "manual" && (
         <div className="word-cards">
@@ -118,10 +95,10 @@ export default function WordSelector({ allWords, onStartGame }) {
             {allWords.map((word, index) => {
               const wordId = word.the_word || word.word;
               const isSelected = selectedWords.some(w => (w.the_word || w.word) === wordId);
-              const displayText = direction === "translation-to-word" 
-                ? word.translation 
+              const displayText = direction === "translation-to-word"
+                ? word.translation
                 : word.the_word;
-              
+
               return (
                 <div
                   key={index}
@@ -136,10 +113,13 @@ export default function WordSelector({ allWords, onStartGame }) {
         </div>
       )}
 
-      <button 
+      <button
         className="start-game-btn"
         onClick={handleStartGame}
-        disabled={selectionMode === "manual" && selectedWords.length === 0}
+        disabled={
+          allWords.length === 0 ||
+          (selectionMode === "manual" && selectedWords.length === 0)
+        }
       >
         თამაშის დაწყება
       </button>

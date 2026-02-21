@@ -2,13 +2,22 @@ import { useState, useEffect, useRef } from 'react'
 import { trackAudioPlay, trackAudioSkip } from '../../utils/analytics'
 import './AudioPlayer.scss'
 
-function AudioPlayer({ src }) {
+function AudioPlayer({ src, startTime }) {
   const audioRef = useRef(null)
   const [isPlaying, setIsPlaying] = useState(false)
   const [currentTime, setCurrentTime] = useState(0)
   const [duration, setDuration] = useState(0)
   const [volume, setVolume] = useState(1)
   const [isMuted, setIsMuted] = useState(false)
+
+  // Convert time format "M:SS" to seconds
+  const convertTimeToSeconds = (timeStr) => {
+    if (!timeStr) return 0
+    const parts = timeStr.split(':')
+    const minutes = parseInt(parts[0], 10)
+    const seconds = parseInt(parts[1], 10)
+    return minutes * 60 + seconds
+  }
 
   useEffect(() => {
     const audio = audioRef.current
@@ -27,6 +36,15 @@ function AudioPlayer({ src }) {
       audio.removeEventListener('ended', () => setIsPlaying(false))
     }
   }, [])
+
+  // Jump to startTime when it changes
+  useEffect(() => {
+    if (startTime && audioRef.current) {
+      const timeInSeconds = convertTimeToSeconds(startTime)
+      audioRef.current.currentTime = timeInSeconds
+      setCurrentTime(timeInSeconds)
+    }
+  }, [startTime])
 
   const togglePlay = () => {
     if (isPlaying) {
