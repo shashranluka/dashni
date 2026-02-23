@@ -14,6 +14,7 @@ function Listen() {
   const [selectedWords, setSelectedWords] = useState(null)
   const [gameStarted, setGameStarted] = useState(false)
   const [direction, setDirection] = useState("translation-to-word")
+  const [gameType, setGameType] = useState("cards")
   const [selectedSegment, setSelectedSegment] = useState(null);
 
   const hasFetched = useRef(false)
@@ -43,9 +44,10 @@ function Listen() {
     fetchAudioData()
   }, [])
 
-  const handleStartGame = (words, gameDirection) => {
+  const handleStartGame = (words, gameDirection, selectedGameType) => {
     setSelectedWords(words);
     setDirection(gameDirection);
+    setGameType(selectedGameType);
     setGameStarted(true);
   };
 
@@ -203,7 +205,11 @@ function Listen() {
               <button onClick={handleBackToSelection} style={{ margin: '10px' }}>
                 უკან დაბრუნება
               </button>
-              <MessyDictionary words={selectedWords} direction={direction} />
+              <MessyDictionary
+                words={selectedWords}
+                direction={direction}
+                gameType={gameType}
+              />
             </div>
 
           )}

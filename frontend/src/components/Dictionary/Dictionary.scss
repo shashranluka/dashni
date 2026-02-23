@@ -14,10 +14,11 @@
       // height: 20px;
       box-sizing: border-box;
       display: flex;
-      justify-content: space-between;
+      justify-content: center;
       
       .chosenWordCard{
-        background-color: yellowgreen;
+        background-color: yellow;
+        color: black;
         border-radius: .5em .5em 0 0;
         padding: .7em;
       }
@@ -28,6 +29,7 @@
     // width: 100%;
     flex-wrap: wrap;
     border: 1px solid yellowgreen;
+    // width: 100%;
     gap:12px;
     padding: 1em;
     .card{

@@ -6,6 +6,7 @@ export default function WordSelector({ allWords, onStartGame }) {
   const [wordCount, setWordCount] = useState(allWords?.length ?? 0);
   const [selectedWords, setSelectedWords] = useState([]);
   const [direction, setDirection] = useState("translation-to-word");
+  const [gameType, setGameType] = useState("cards");
 
   useEffect(() => {
     setWordCount(allWords?.length ?? 0);
@@ -37,7 +38,7 @@ export default function WordSelector({ allWords, onStartGame }) {
     }
 
     if (wordsToPlay.length > 0) {
-      onStartGame(wordsToPlay, direction);
+      onStartGame(wordsToPlay, direction, gameType);
     }
   };
 
@@ -53,6 +54,17 @@ export default function WordSelector({ allWords, onStartGame }) {
           >
             <option value="translation-to-word">თარგმანი → უცხო სიტყვა</option>
             <option value="word-to-translation">უცხო სიტყვა → თარგმანი</option>
+          </select>
+        </label>
+
+        <label className="compact-field">
+          <span>თამაშის ტიპი:</span>
+          <select
+            value={gameType}
+            onChange={(e) => setGameType(e.target.value)}
+          >
+            <option value="anki">ანკისმაგვარი</option>
+            <option value="cards">ბარათებით</option>
           </select>
         </label>
 
