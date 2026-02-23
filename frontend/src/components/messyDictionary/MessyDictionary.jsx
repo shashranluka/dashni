@@ -193,7 +193,7 @@ export default function MessyDictionary({
         if (nextBottom.length === 0) {
           setGameFinished(true);
         }
-      }, 20000);
+      }, 2000);
     } else {
       setTries((t) => t + 1);
       setWrongIds((prev) => (prev.includes(cardId) ? prev : [...prev, cardId]));
