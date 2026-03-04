@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect, useRef, useCallback } from "react";
+import { createPortal } from "react-dom";
 import { trackGameStart, trackGameComplete } from "../../utils/analytics";
 import "./MessyDictionary.scss";
 
@@ -216,121 +217,11 @@ export default function MessyDictionary({
     resetGame();
   }
 
-  if (gameFinished) {
-    const accuracy = tries > 0 ? Math.round((points / tries) * 100) : 0;
-
-    return (
-      <div className="dictionary">
-        <div className="game-finished-messy">
-          <h2>თამაში დასრულდა! 🎉</h2>
-          <div className="final-stats">
-            <p>საბოლოო ქულა: <strong>{points}</strong></p>
-            <p>მცდელობა: <strong>{tries}</strong></p>
-            <p>სიზუსტე: <strong>{accuracy}%</strong></p>
-          </div>
-
-          <div className="words-summary">
-            <div className="learned-words">
-              <h3>✓ ნასწავლი სიტყვები ({learnedWords.length})</h3>
-              <ul>
-                {learnedWords.map((word) => (
-                  <li key={word.id}>
-                    {direction === "translation-to-word"
-                      ? `${word.translation} → ${word.word}`
-                      : `${word.word} → ${word.translation}`}
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {needsLearningWords.length > 0 && (
-              <div className="needs-learning">
-                <h3>📚 სასწავლი სიტყვები ({needsLearningWords.length})</h3>
-                <ul>
-                  {needsLearningWords.map((word) => (
-                    <li key={word.id}>
-                      {direction === "translation-to-word"
-                        ? `${word.translation} → ${word.word}`
-                        : `${word.word} → ${word.translation}`}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </div>
-
-          <button onClick={handleRestart} className="restart-btn">
-            თავიდან დაწყება
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="dictionary">
-      <div className="game-panel">
-        {gameType === "cards" && (
-          <div className="game-stats">
-            <div className="stat">ქულა: {points}</div>
-            <div className="stat">მცდელობა: {tries}</div>
-          </div>
-        )}
-        <button
-          type="button"
-          className="nextButton"
-          onClick={clickNextHandler}
-          aria-label="გამოტოვება"
-        >
-          <span className="next-icon"></span>
-        </button>
-      </div>
-
-      <div className="topSpace">
-        {topDeck.length > 0 && (
-          <div className="topDataDiv">
-            <div className="chosenWordCard" aria-live="polite">
-              {direction === "translation-to-word"
-                ? topDeck[chosenWordIndex]?.translation
-                : topDeck[chosenWordIndex]?.word}
-            </div>
-          </div>
-        )}
-      </div>
-      {gameType === "anki" && (
-        <div className="anki-controls">
-          <button
-            type="button"
-            className="revealButton"
-            onClick={handleRevealClick}
-            disabled={!topDeck.length}
-          >
-            გამოჩენა
-          </button>
-          <div className="anki-remaining">დარჩენილია: {topDeck.length}</div>
-        </div>
-      )}
-      {gameType === "cards" && (
-        <div className="bottomSpace">
-          {bottomDeck.map((card) => (
-            <button
-              type="button"
-              key={card.id}
-              className={`card ${wrongIds.includes(card.id) ? "hidden-text" : ""}`}
-              onClick={() => clickCardHandler(card.id)}
-            >
-              <span className="cardFront">
-                {direction === "translation-to-word" ? card.word : card.translation}
-              </span>
-            </button>
-          ))}
-        </div>
-      )}
-
-      {isFixedVisible && (
-        <div className="fixed-won-word" role="status" aria-live="assertive">
+  const fixedWonWordOverlay =
+    isFixedVisible && typeof document !== "undefined"
+      ? createPortal(
+        <div className="fixed-won-word-overlay" role="status" aria-live="assertive">
           <div className="won-word-animation">
-            {/* ✓ სწორია!{" "} */}
             {direction === "translation-to-word"
               ? `${wonWord.translation} → ${wonWord.word}`
               : `${wonWord.word} → ${wonWord.translation}`}
@@ -352,8 +243,127 @@ export default function MessyDictionary({
               </button>
             </div>
           )}
+        </div>,
+        document.body
+      )
+      : null;
+
+  if (gameFinished) {
+    const accuracy = tries > 0 ? Math.round((points / tries) * 100) : 0;
+
+    return (
+      <>
+        <div className="dictionary">
+          <div className="game-finished-messy">
+            <h2>თამაში დასრულდა! 🎉</h2>
+            <div className="final-stats">
+              <p>საბოლოო ქულა: <strong>{points}</strong></p>
+              <p>მცდელობა: <strong>{tries}</strong></p>
+              <p>სიზუსტე: <strong>{accuracy}%</strong></p>
+            </div>
+
+            <div className="words-summary">
+              <div className="learned-words">
+                <h3>✓ ნასწავლი სიტყვები ({learnedWords.length})</h3>
+                <ul>
+                  {learnedWords.map((word) => (
+                    <li key={word.id}>
+                      {direction === "translation-to-word"
+                        ? `${word.translation} → ${word.word}`
+                        : `${word.word} → ${word.translation}`}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {needsLearningWords.length > 0 && (
+                <div className="needs-learning">
+                  <h3>📚 სასწავლი სიტყვები ({needsLearningWords.length})</h3>
+                  <ul>
+                    {needsLearningWords.map((word) => (
+                      <li key={word.id}>
+                        {direction === "translation-to-word"
+                          ? `${word.translation} → ${word.word}`
+                          : `${word.word} → ${word.translation}`}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+
+            <button onClick={handleRestart} className="restart-btn">
+              თავიდან დაწყება
+            </button>
+          </div>
         </div>
-      )}
-    </div>
+        {fixedWonWordOverlay}
+      </>
+    );
+  }
+
+  return (
+    <>
+      <div className="dictionary">
+        <div className="game-panel">
+          {gameType === "cards" && (
+            <div className="game-stats">
+              <div className="stat">ქულა: {points}</div>
+              <div className="stat">მცდელობა: {tries}</div>
+            </div>
+          )}
+          <button
+            type="button"
+            className="nextButton"
+            onClick={clickNextHandler}
+            aria-label="გამოტოვება"
+          >
+            <span className="next-icon"></span>
+          </button>
+        </div>
+
+        <div className="topSpace">
+          {topDeck.length > 0 && (
+            <div className="topDataDiv">
+              <div className="chosenWordCard" aria-live="polite">
+                {direction === "translation-to-word"
+                  ? topDeck[chosenWordIndex]?.translation
+                  : topDeck[chosenWordIndex]?.word}
+              </div>
+            </div>
+          )}
+        </div>
+        {gameType === "anki" && (
+          <div className="anki-controls">
+            <button
+              type="button"
+              className="revealButton"
+              onClick={handleRevealClick}
+              disabled={!topDeck.length}
+            >
+              გამოჩენა
+            </button>
+            <div className="anki-remaining">დარჩენილია: {topDeck.length}</div>
+          </div>
+        )}
+        {gameType === "cards" && (
+          <div className="bottomSpace">
+            {bottomDeck.map((card) => (
+              <button
+                type="button"
+                key={card.id}
+                className={`card ${wrongIds.includes(card.id) ? "hidden-text" : ""}`}
+                onClick={() => clickCardHandler(card.id)}
+              >
+                <span className="cardFront">
+                  {direction === "translation-to-word" ? card.word : card.translation}
+                </span>
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+      {fixedWonWordOverlay}
+    </>
   );
 }

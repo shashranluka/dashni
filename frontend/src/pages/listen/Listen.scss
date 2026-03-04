@@ -94,6 +94,29 @@
 
   .segment-info {
     margin: 8px 0 10px;
+
+    .compose-text-btn {
+      margin-top: 8px;
+      padding: 10px 16px;
+      font-size: 14px;
+      font-weight: 600;
+      border: 2px solid #2196F3;
+      border-radius: 8px;
+      background: white;
+      color: #2196F3;
+      cursor: pointer;
+      transition: all 0.3s;
+
+      &:hover {
+        background: #2196F3;
+        color: white;
+      }
+
+      &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+    }
   }
 
   .segment-info-title {
@@ -166,6 +189,67 @@
       &:active {
         transform: scale(0.98);
       }
+    }
+  }
+
+  .compose-section {
+    width: 100%;
+
+    .compose-board {
+      width: 100%;
+      min-height: 110px;
+      margin: 10px 0 6px;
+      padding: 12px;
+      border: 2px dashed #2196F3;
+      border-radius: 10px;
+      background: #f8fbff;
+
+      .compose-board-label {
+        margin-bottom: 8px;
+        font-size: 14px;
+        font-weight: 700;
+        color: #1f7ae0;
+      }
+
+      .compose-board-content {
+        font-size: 16px;
+        line-height: 1.5;
+        color: #2a3640;
+        word-break: break-word;
+      }
+    }
+
+    .compose-cards-grid {
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .compose-word-card {
+      padding: 10px 12px;
+      border: 1px solid #d7dee6;
+      border-radius: 8px;
+      background: #fff;
+      text-align: center;
+      font-weight: 600;
+      color: #2a3640;
+      cursor: pointer;
+
+      &:hover {
+        border-color: #1f7ae0;
+      }
+
+      &.used {
+        opacity: 0.45;
+        pointer-events: none;
+      }
+    }
+
+    .compose-empty {
+      font-size: 15px;
+      color: #4a5561;
     }
   }
 }

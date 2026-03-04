@@ -183,79 +183,6 @@
     }
   }
 
-  // Fixed won word display
-  .fixed-won-word {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 9;
-    display: grid;
-    place-items: center;
-    padding: 16px;
-    background: rgba(46, 125, 50, 0.9);
-    width: 100%;
-    height: 100vh;
-    margin: 0;
-
-    .won-word-animation {
-      // width: 90vw;
-      max-width: 100%;
-      padding: 32px;
-      border-radius: 16px;
-      text-align: center;
-      background: #2e7d32;
-      color: #fff;
-      font-size: 48px;
-      font-weight: 700;
-      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
-      animation: popIn 0.3s ease-out;
-      line-height: 1.4;
-      word-break: break-word;
-    }
-
-    .word-buttons {
-      display: flex;
-      gap: 15px;
-      justify-content: center;
-      margin-top: 20px;
-    }
-
-    .btn-learned,
-    .btn-needs-learning {
-      padding: 12px 30px;
-      font-size: 16px;
-      font-weight: bold;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-
-      &:hover {
-        transform: scale(1.05);
-      }
-    }
-
-    .btn-learned {
-      background-color: #4caf50;
-      color: white;
-
-      &:hover {
-        background-color: #45a049;
-      }
-    }
-
-    .btn-needs-learning {
-      background-color: #f44336;
-      color: white;
-
-      &:hover {
-        background-color: #da190b;
-      }
-    }
-  }
-
   // Game finished screen
   .game-finished-messy {
     width: 100%;
@@ -334,6 +261,74 @@
           font-size: 16px;
         }
       }
+    }
+  }
+}
+
+.fixed-won-word-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10001;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgba(46, 125, 50, 0.9);
+  width: 100vw;
+  height: 100dvh;
+  margin: 0;
+
+  .won-word-animation {
+    max-width: 100%;
+    padding: 32px;
+    border-radius: 16px;
+    text-align: center;
+    background: #2e7d32;
+    color: #fff;
+    font-size: 48px;
+    font-weight: 700;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+    animation: popIn 0.3s ease-out;
+    line-height: 1.4;
+    word-break: break-word;
+  }
+
+  .word-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 20px;
+  }
+
+  .btn-learned,
+  .btn-needs-learning {
+    padding: 12px 30px;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: scale(1.05);
+    }
+  }
+
+  .btn-learned {
+    background-color: #4caf50;
+    color: white;
+
+    &:hover {
+      background-color: #45a049;
+    }
+  }
+
+  .btn-needs-learning {
+    background-color: #f44336;
+    color: white;
+
+    &:hover {
+      background-color: #da190b;
     }
   }
 }

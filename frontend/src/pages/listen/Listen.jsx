@@ -13,6 +13,10 @@ function Listen() {
   const [error, setError] = useState(null)
   const [selectedWords, setSelectedWords] = useState(null)
   const [gameStarted, setGameStarted] = useState(false)
+  const [isComposeMode, setIsComposeMode] = useState(false)
+  const [composeCards, setComposeCards] = useState([])
+  const [composeBoardWords, setComposeBoardWords] = useState([])
+  const [usedComposeCardIds, setUsedComposeCardIds] = useState([])
   const [direction, setDirection] = useState("translation-to-word")
   const [gameType, setGameType] = useState("cards")
   const [selectedSegment, setSelectedSegment] = useState(null);
@@ -44,20 +48,41 @@ function Listen() {
     fetchAudioData()
   }, [])
 
+  const getShuffledWords = (array) => {
+    const newArray = [...array];
+    for (let i = newArray.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+    }
+    return newArray;
+  };
+
   const handleStartGame = (words, gameDirection, selectedGameType) => {
     setSelectedWords(words);
     setDirection(gameDirection);
     setGameType(selectedGameType);
+    setIsComposeMode(false);
+    setComposeCards([]);
+    setComposeBoardWords([]);
+    setUsedComposeCardIds([]);
     setGameStarted(true);
   };
 
   const handleBackToSelection = () => {
     setGameStarted(false);
+    setIsComposeMode(false);
+    setComposeCards([]);
+    setComposeBoardWords([]);
+    setUsedComposeCardIds([]);
     setSelectedWords(null);
   };
 
   const handleSegmentSelect = (segment) => {
     setSelectedSegment(segment);
+    setIsComposeMode(false);
+    setComposeCards([]);
+    setComposeBoardWords([]);
+    setUsedComposeCardIds([]);
     setGameStarted(false); // Reset game when changing segment
   };
 
@@ -127,6 +152,50 @@ function Listen() {
     });
   }, [selectedSegment?.text, gameData?.words]);
 
+  const wordsForCompose = useMemo(() => {
+    if (!selectedSegment?.text) {
+      return [];
+    }
+
+    return selectedSegment.text
+      .split(/\s+/)
+      .map((word) =>
+        word
+          .trim()
+          .replace(/^[.,!?;:"()\-_/\\[\]{}…]+|[.,!?;:"()\-_/\\[\]{}…]+$/g, "")
+      )
+      .filter(Boolean);
+  }, [selectedSegment?.text]);
+
+  const handleComposeMode = () => {
+    if (!wordsForCompose.length) return;
+    const composeWordsWithIds = wordsForCompose.map((word, index) => ({
+      id: `${index}-${word}`,
+      text: word,
+    }));
+
+    setComposeCards(getShuffledWords(composeWordsWithIds));
+    setComposeBoardWords([]);
+    setUsedComposeCardIds([]);
+    setSelectedWords(null);
+    setGameStarted(false);
+    setIsComposeMode(true);
+  };
+
+  const handleComposeCardClick = (card) => {
+    if (!card || usedComposeCardIds.includes(card.id)) return;
+
+    setComposeBoardWords((prev) => [...prev, card.text]);
+    setUsedComposeCardIds((prev) => [...prev, card.id]);
+  };
+
+  const handleComposeBack = () => {
+    setIsComposeMode(false);
+    setComposeCards([]);
+    setComposeBoardWords([]);
+    setUsedComposeCardIds([]);
+  };
+
 
   console.log('Selected segment:', selectedSegment);
   console.log('Words for game:', wordsForGame);
@@ -170,7 +239,39 @@ function Listen() {
       )}
       {gameData && gameData.words && (
         <>
-          {!gameStarted ? (
+          {isComposeMode ? (
+            <div className="game-section compose-section">
+              <button onClick={handleComposeBack} style={{ margin: '10px' }}>
+                უკან დაბრუნება
+              </button>
+
+              <div className="compose-board">
+                <div className="compose-board-label">ტექსტის დაფა</div>
+                <div className="compose-board-content">
+                  {composeBoardWords.length > 0
+                    ? composeBoardWords.join(' ')
+                    : 'დააჭირე ბარათებს და სიტყვები აქ გამოჩნდება'}
+                </div>
+              </div>
+
+              {composeCards.length > 0 ? (
+                <div className="compose-cards-grid">
+                  {composeCards.map((card) => (
+                    <button
+                      type="button"
+                      key={card.id}
+                      className={`compose-word-card ${usedComposeCardIds.includes(card.id) ? 'used' : ''}`}
+                      onClick={() => handleComposeCardClick(card)}
+                    >
+                      {card.text}
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <div className="compose-empty">ამ ეპიზოდისთვის სიტყვები ვერ მოიძებნა.</div>
+              )}
+            </div>
+          ) : !gameStarted ? (
             <>
               {!selectedSegment ? (
                 <div style={{
@@ -188,6 +289,14 @@ function Listen() {
                   <h2 className="segment-info-title">
                     ეპიზოდი {selectedSegment.id} - სიტყვების რაოდენობა: {wordsForGame.length}
                   </h2>
+                  <button
+                    type="button"
+                    className="compose-text-btn"
+                    onClick={handleComposeMode}
+                    disabled={!wordsForCompose.length}
+                  >
+                    ტექსტის შედგენა
+                  </button>
                   {/* <p className="segment-info-subtitle">
                     აირჩიეთ სიტყვები ამ ეპიზოდიდან თამაშისთვის
                   </p> */}
