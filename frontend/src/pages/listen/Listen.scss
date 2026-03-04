@@ -35,7 +35,7 @@
 
     .segments {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(58px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(27px, 1fr));
       gap: 7px;
     }
 
@@ -46,7 +46,7 @@
       justify-content: center;
       gap: 3px;
       min-height: 32px;
-      padding: 4px 6px;
+      padding: 4px 15px;
       border: 1px solid #e0e0e0;
       border-radius: 6px;
       background: linear-gradient(135deg, #fff9c4 0%, #fff59d 100%); // ყვითელი
@@ -204,11 +204,35 @@
       border-radius: 10px;
       background: #f8fbff;
 
-      .compose-board-label {
+      .compose-board-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
         margin-bottom: 8px;
+      }
+
+      .compose-board-label {
+        margin-bottom: 0;
         font-size: 14px;
         font-weight: 700;
         color: #1f7ae0;
+      }
+
+      .compose-clear-btn {
+        padding: 6px 12px;
+        font-size: 13px;
+        border-width: 1px;
+
+        &:disabled {
+          opacity: 0.55;
+          cursor: not-allowed;
+        }
+
+        &:disabled:hover {
+          background: white;
+          color: #2196F3;
+        }
       }
 
       .compose-board-content {
@@ -221,9 +245,11 @@
 
     .compose-cards-grid {
       width: 100%;
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-      gap: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      // display: grid;
+      // grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      // gap: 10px;
       margin-top: 10px;
     }
 

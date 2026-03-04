@@ -196,6 +196,11 @@ function Listen() {
     setUsedComposeCardIds([]);
   };
 
+  const handleComposeClearBoard = () => {
+    setComposeBoardWords([]);
+    setUsedComposeCardIds([]);
+  };
+
 
   console.log('Selected segment:', selectedSegment);
   console.log('Words for game:', wordsForGame);
@@ -246,7 +251,17 @@ function Listen() {
               </button>
 
               <div className="compose-board">
-                <div className="compose-board-label">ტექსტის დაფა</div>
+                <div className="compose-board-header">
+                  <div className="compose-board-label">ტექსტის დაფა</div>
+                  <button
+                    type="button"
+                    className="compose-clear-btn"
+                    onClick={handleComposeClearBoard}
+                    disabled={!composeBoardWords.length}
+                  >
+                    გასუფთავება
+                  </button>
+                </div>
                 <div className="compose-board-content">
                   {composeBoardWords.length > 0
                     ? composeBoardWords.join(' ')
