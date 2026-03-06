@@ -170,6 +170,24 @@
     gap: 20px;
     // padding: 20px;
 
+    .action-buttons {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+
+      .sound-toggle-btn {
+        min-width: 46px;
+        padding: 10px;
+        font-size: 20px;
+        line-height: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+
     button {
       padding: 10px 20px;
       font-size: 16px;

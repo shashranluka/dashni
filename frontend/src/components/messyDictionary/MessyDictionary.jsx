@@ -17,6 +17,7 @@ export default function MessyDictionary({
   direction = "translation-to-word",
   gameMode = "random",
   gameType = "cards",
+  isSoundEnabled = true,
 }) {
   const [points, setPoints] = useState(0);
   const [tries, setTries] = useState(0);
@@ -33,6 +34,8 @@ export default function MessyDictionary({
   const [bottomDeck, setBottomDeck] = useState([]);
 
   const hideTimerRef = useRef(null);
+  const successSoundRef = useRef(null);
+  const errorSoundRef = useRef(null);
 
   const cardsData = useMemo(() => {
     if (!Array.isArray(words)) return [];
@@ -88,9 +91,41 @@ export default function MessyDictionary({
   }, [gameFinished, points, tries, gameMode]);
 
   useEffect(() => {
+    successSoundRef.current = new Audio("/sounds/success.mp3");
+    successSoundRef.current.preload = "auto";
+
+    errorSoundRef.current = new Audio("/sounds/error.mp3");
+    errorSoundRef.current.preload = "auto";
+  }, []);
+
+  useEffect(() => {
+    if (isSoundEnabled) return;
+
+    if (successSoundRef.current) {
+      successSoundRef.current.pause();
+      successSoundRef.current.currentTime = 0;
+    }
+
+    if (errorSoundRef.current) {
+      errorSoundRef.current.pause();
+      errorSoundRef.current.currentTime = 0;
+    }
+  }, [isSoundEnabled]);
+
+  useEffect(() => {
     return () => {
       if (hideTimerRef.current) {
         clearTimeout(hideTimerRef.current);
+      }
+
+      if (successSoundRef.current) {
+        successSoundRef.current.pause();
+        successSoundRef.current.currentTime = 0;
+      }
+
+      if (errorSoundRef.current) {
+        errorSoundRef.current.pause();
+        errorSoundRef.current.currentTime = 0;
       }
     };
   }, []);
@@ -159,6 +194,16 @@ export default function MessyDictionary({
     setIsRevealed(false);
   }
 
+  function playFeedbackSound(type) {
+    if (!isSoundEnabled) return;
+
+    const targetSoundRef = type === "success" ? successSoundRef : errorSoundRef;
+    if (!targetSoundRef.current) return;
+
+    targetSoundRef.current.currentTime = 0;
+    targetSoundRef.current.play().catch(() => {});
+  }
+
   function clickCardHandler(cardId) {
     if (!topDeck.length || !bottomDeck.length) return;
 
@@ -167,6 +212,7 @@ export default function MessyDictionary({
     if (!chosen || !clicked) return;
 
     if (chosen.id === clicked.id) {
+      playFeedbackSound("success");
       setPoints((p) => p + 1);
       setTries((t) => t + 1);
       setWrongIds([]);
@@ -196,6 +242,7 @@ export default function MessyDictionary({
         }
       }, 2000);
     } else {
+      playFeedbackSound("error");
       setTries((t) => t + 1);
       setWrongIds((prev) => (prev.includes(cardId) ? prev : [...prev, cardId]));
 

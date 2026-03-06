@@ -19,10 +19,12 @@ function Listen() {
   const [usedComposeCardIds, setUsedComposeCardIds] = useState([])
   const [direction, setDirection] = useState("translation-to-word")
   const [gameType, setGameType] = useState("cards")
+  const [isSoundEnabled, setIsSoundEnabled] = useState(true)
   const [selectedSegment, setSelectedSegment] = useState(null);
 
   const hasFetched = useRef(false)
   const audiofilePath = useRef("src/assets/audio_files/adas_mier_moyolili_zghapari.m4a")
+  const clearSoundRef = useRef(null)
 
   useEffect(() => {
     const fetchAudioData = async () => {
@@ -47,6 +49,24 @@ function Listen() {
 
     fetchAudioData()
   }, [])
+
+  useEffect(() => {
+    clearSoundRef.current = new Audio('/sounds/clear.mp3')
+    clearSoundRef.current.preload = 'auto'
+
+    return () => {
+      if (!clearSoundRef.current) return
+      clearSoundRef.current.pause()
+      clearSoundRef.current.currentTime = 0
+    }
+  }, [])
+
+  useEffect(() => {
+    if (isSoundEnabled || !clearSoundRef.current) return
+
+    clearSoundRef.current.pause()
+    clearSoundRef.current.currentTime = 0
+  }, [isSoundEnabled])
 
   const getShuffledWords = (array) => {
     const newArray = [...array];
@@ -196,9 +216,23 @@ function Listen() {
     setUsedComposeCardIds([]);
   };
 
+  const handleToggleSound = () => {
+    setIsSoundEnabled((prev) => !prev)
+  }
+
+  const playClearSound = () => {
+    if (!isSoundEnabled || !clearSoundRef.current) return;
+
+    clearSoundRef.current.currentTime = 0;
+    clearSoundRef.current.play().catch(() => {});
+  };
+
   const handleComposeClearBoard = () => {
+    if (!composeBoardWords.length) return;
+
     setComposeBoardWords([]);
     setUsedComposeCardIds([]);
+    playClearSound();
   };
 
 
@@ -246,9 +280,20 @@ function Listen() {
         <>
           {isComposeMode ? (
             <div className="game-section compose-section">
-              <button onClick={handleComposeBack} style={{ margin: '10px' }}>
-                უკან დაბრუნება
-              </button>
+              <div className="action-buttons">
+                <button type="button" onClick={handleComposeBack}>
+                  უკან დაბრუნება
+                </button>
+                <button
+                  type="button"
+                  className="sound-toggle-btn"
+                  onClick={handleToggleSound}
+                  aria-label={isSoundEnabled ? 'ხმის გამორთვა' : 'ხმის ჩართვა'}
+                  title={isSoundEnabled ? 'ხმის გამორთვა' : 'ხმის ჩართვა'}
+                >
+                  <span aria-hidden="true">{isSoundEnabled ? '🔊' : '🔇'}</span>
+                </button>
+              </div>
 
               <div className="compose-board">
                 <div className="compose-board-header">
@@ -326,13 +371,25 @@ function Listen() {
             </>
           ) : (
             <div className="game-section">
-              <button onClick={handleBackToSelection} style={{ margin: '10px' }}>
-                უკან დაბრუნება
-              </button>
+              <div className="action-buttons">
+                <button type="button" onClick={handleBackToSelection}>
+                  უკან დაბრუნება
+                </button>
+                <button
+                  type="button"
+                  className="sound-toggle-btn"
+                  onClick={handleToggleSound}
+                  aria-label={isSoundEnabled ? 'ხმის გამორთვა' : 'ხმის ჩართვა'}
+                  title={isSoundEnabled ? 'ხმის გამორთვა' : 'ხმის ჩართვა'}
+                >
+                  <span aria-hidden="true">{isSoundEnabled ? '🔊' : '🔇'}</span>
+                </button>
+              </div>
               <MessyDictionary
                 words={selectedWords}
                 direction={direction}
                 gameType={gameType}
+                isSoundEnabled={isSoundEnabled}
               />
             </div>
 
