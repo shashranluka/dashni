@@ -254,28 +254,6 @@ function Listen() {
         />
       </div>
       {/* // )} */}
-      {gameData && gameData.segments && (
-        <div className="segments-section">
-          <h2>აირჩიეთ ეპიზოდი:</h2>
-          <div className="segments">
-            {gameData.segments.map((segment) => {
-              const wordCount = segmentWordCounts.get(segment.id) ?? 0;
-
-              return (
-                <button
-                  key={segment.id}
-                  className={`segment-button ${selectedSegment?.id === segment.id ? 'selected' : ''}`}
-                  onClick={() => handleSegmentSelect(segment)}
-                >
-                  <div className="segment-label">{segment.id}</div>
-                  <div className="segment-word-count">({wordCount})</div>
-                  {/* <div className="segment-tooltip">{segment.text}</div> */}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      )}
       {gameData && gameData.words && (
         <>
           {isComposeMode ? (
@@ -367,6 +345,27 @@ function Listen() {
                 allWords={wordsForGame}
                 onStartGame={handleStartGame}
                 selectedSegmentId={selectedSegment?.id}
+                settingsTopContent={gameData?.segments ? (
+                  <label className="compact-field">
+                    <span>ეპიზოდი:</span>
+                    <select
+                      value={selectedSegment?.id ?? ""}
+                      onChange={(e) => {
+                        const seg = gameData.segments.find((s) => String(s.id) === e.target.value);
+                        if (seg) handleSegmentSelect(seg);
+                      }}
+                    >
+                      {gameData.segments.map((segment) => {
+                        const wordCount = segmentWordCounts.get(segment.id) ?? 0;
+                        return (
+                          <option key={segment.id} value={segment.id}>
+                            ეპიზოდი {segment.id} ({wordCount}) სიტყვა
+                          </option>
+                        );
+                      })}
+                    </select>
+                  </label>
+                ) : null}
               />
             </>
           ) : (

@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import "./WordSelector.scss";
 
-export default function WordSelector({ allWords, onStartGame }) {
+export default function WordSelector({ allWords, onStartGame, settingsTopContent = null }) {
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [selectionMode, setSelectionMode] = useState("sequential");
   const [wordCount, setWordCount] = useState(allWords?.length ?? 0);
   const [selectedWords, setSelectedWords] = useState([]);
@@ -44,85 +45,100 @@ export default function WordSelector({ allWords, onStartGame }) {
 
   return (
     <div className="word-selector">
-      აირჩიეთ თამაშის პარამეტრები:
-      <div className="compact-selects">
-        <label className="compact-field">
-          <span>თამაშის მიმართულება:</span>
-          <select
-            value={direction}
-            onChange={(e) => setDirection(e.target.value)}
-          >
-            <option value="translation-to-word">თარგმანი → უცხო სიტყვა</option>
-            <option value="word-to-translation">უცხო სიტყვა → თარგმანი</option>
-          </select>
-        </label>
+      <button
+        type="button"
+        className={`settings-toggle-btn ${isSettingsOpen ? "is-open" : ""}`}
+        onClick={() => setIsSettingsOpen((prev) => !prev)}
+        aria-expanded={isSettingsOpen}
+        aria-controls="word-selector-settings"
+      >
+        {isSettingsOpen ? "პარამეტრების დამალვა" : "პარამეტრების არჩევა"}
+      </button>
 
-        <label className="compact-field">
-          <span>თამაშის ტიპი:</span>
-          <select
-            value={gameType}
-            onChange={(e) => setGameType(e.target.value)}
-          >
-            <option value="anki">ანკისმაგვარი</option>
-            <option value="cards">ბარათებით</option>
-          </select>
-        </label>
+      {isSettingsOpen && (
+        <div id="word-selector-settings">
+          <div className="compact-selects">
+            {settingsTopContent}
 
-        <label className="compact-field">
-          <span>სიტყვების შერჩევა:</span>
-          <select
-            value={selectionMode}
-            onChange={(e) => setSelectionMode(e.target.value)}
-          >
-            <option value="sequential">მიმდევრობით</option>
-            <option value="random">შემთხვევითად</option>
-            <option value="manual">მონიშვნით</option>
-          </select>
-        </label>
+            <label className="compact-field">
+              <span>თამაშის მიმართულება:</span>
+              <select
+                value={direction}
+                onChange={(e) => setDirection(e.target.value)}
+              >
+                <option value="translation-to-word">თარგმანი → უცხო სიტყვა</option>
+                <option value="word-to-translation">უცხო სიტყვა → თარგმანი</option>
+              </select>
+            </label>
 
-        {(selectionMode === "sequential" || selectionMode === "random") && (
-          <label className="compact-field compact-count-field">
-            <span>სიტყვების რაოდენობა:</span>
-            <input
-              type="number"
-              min="0"
-              max={allWords.length}
-              value={wordCount}
-              onChange={(e) =>
-                setWordCount(
-                  Math.max(
-                    0,
-                    Math.min(Number(e.target.value) || 0, allWords.length)
-                  )
-                )
-              }
-            />
-          </label>
-        )}
-      </div>
+            <label className="compact-field">
+              <span>თამაშის ტიპი:</span>
+              <select
+                value={gameType}
+                onChange={(e) => setGameType(e.target.value)}
+              >
+                <option value="anki">ანკისმაგვარი</option>
+                <option value="cards">ბარათებით</option>
+              </select>
+            </label>
 
-      {selectionMode === "manual" && (
-        <div className="word-cards">
-          <p>აირჩიეთ სიტყვები ({selectedWords.length} არჩეული):</p>
-          <div className="cards-grid">
-            {allWords.map((word, index) => {
-              const wordId = word.the_word || word.word;
-              const isSelected = selectedWords.some(w => (w.the_word || w.word) === wordId);
-              const displayText = direction === "translation-to-word"
-                ? word.translation
-                : word.the_word;
+            <label className="compact-field">
+              <span>სიტყვების შერჩევა:</span>
+              <select
+                value={selectionMode}
+                onChange={(e) => setSelectionMode(e.target.value)}
+              >
+                <option value="sequential">მიმდევრობით</option>
+                <option value="random">შემთხვევითად</option>
+                <option value="manual">მონიშვნით</option>
+              </select>
+            </label>
 
-              return (
-                <div
-                  key={index}
-                  className={`word-card ${isSelected ? 'selected' : ''}`}
-                  onClick={() => handleWordToggle(word)}
-                >
-                  <div className="word">{displayText}</div>
-                </div>
-              );
-            })}
+            {(selectionMode === "sequential" || selectionMode === "random") && (
+              <label className="compact-field compact-count-field">
+                <span>სიტყვების რაოდენობა:</span>
+                <input
+                  type="number"
+                  min="0"
+                  max={allWords.length}
+                  value={wordCount}
+                  onChange={(e) =>
+                    setWordCount(
+                      Math.max(
+                        0,
+                        Math.min(Number(e.target.value) || 0, allWords.length)
+                      )
+                    )
+                  }
+                />
+              </label>
+            )}
           </div>
+
+          {selectionMode === "manual" && (
+            <div className="word-cards">
+              <p>აირჩიეთ სიტყვები ({selectedWords.length} არჩეული):</p>
+              <div className="cards-grid">
+                {allWords.map((word, index) => {
+                  const wordId = word.the_word || word.word;
+                  const isSelected = selectedWords.some(w => (w.the_word || w.word) === wordId);
+                  const displayText = direction === "translation-to-word"
+                    ? word.translation
+                    : word.the_word;
+
+                  return (
+                    <div
+                      key={index}
+                      className={`word-card ${isSelected ? 'selected' : ''}`}
+                      onClick={() => handleWordToggle(word)}
+                    >
+                      <div className="word">{displayText}</div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
       )}
 

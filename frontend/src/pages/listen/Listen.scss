@@ -96,10 +96,12 @@
     margin: 8px 0 10px;
 
     .compose-text-btn {
-      margin-top: 8px;
+      display: block;
+      margin: 8px auto 0;
       padding: 10px 16px;
       font-size: 14px;
       font-weight: 600;
+      background-color: #388e3c;
       border: 2px solid #2196F3;
       border-radius: 8px;
       background: white;

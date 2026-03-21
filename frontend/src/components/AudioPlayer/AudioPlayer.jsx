@@ -56,20 +56,18 @@ function AudioPlayer({ src, startTime }) {
     setIsPlaying(!isPlaying)
   }
 
-  const skipForward = () => {
-    audioRef.current.currentTime = Math.min(
-      audioRef.current.currentTime + 5,
-      duration
-    )
-    trackAudioSkip('forward', 5);
-  }
+  const skipBySeconds = (seconds) => {
+    if (!audioRef.current) return
 
-  const skipBackward = () => {
-    audioRef.current.currentTime = Math.max(
-      audioRef.current.currentTime - 5,
-      0
+    const audioDuration = duration || audioRef.current.duration || 0
+    const nextTime = Math.min(
+      Math.max(audioRef.current.currentTime + seconds, 0),
+      audioDuration
     )
-    trackAudioSkip('backward', 5);
+
+    audioRef.current.currentTime = nextTime
+    setCurrentTime(nextTime)
+    trackAudioSkip(seconds > 0 ? 'forward' : 'backward', Math.abs(seconds));
   }
 
   const handleProgressChange = (e) => {
@@ -120,7 +118,21 @@ function AudioPlayer({ src, startTime }) {
         <span className="time">{formatTime(duration)}</span>
       </div>
       <div className="controls">
-        <button onClick={skipBackward} className="control-btn" title="5 წამით უკან">
+        {/* <button onClick={() => skipBySeconds(-30)} className="control-btn" title="30 წამით უკან">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6l-8.5 6z"/>
+          </svg>
+          <span className="skip-label">-30 წ</span>
+        </button> */}
+
+        <button onClick={() => skipBySeconds(-10)} className="control-btn" title="10 წამით უკან">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6l-8.5 6z"/>
+          </svg>
+          <span className="skip-label">-10 წ</span>
+        </button>
+
+        <button onClick={() => skipBySeconds(-5)} className="control-btn" title="5 წამით უკან">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
             <path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6l-8.5 6z"/>
           </svg>
@@ -139,12 +151,26 @@ function AudioPlayer({ src, startTime }) {
           )}
         </button>
 
-        <button onClick={skipForward} className="control-btn" title="5 წამით წინ">
+        <button onClick={() => skipBySeconds(5)} className="control-btn" title="5 წამით წინ">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
             <path d="M4 18l8.5-6L4 6v12zm9-12v12l8.5-6L13 6z"/>
           </svg>
           <span className="skip-label">+5 წ</span>
         </button>
+
+        <button onClick={() => skipBySeconds(10)} className="control-btn" title="10 წამით წინ">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M4 18l8.5-6L4 6v12zm9-12v12l8.5-6L13 6z"/>
+          </svg>
+          <span className="skip-label">+10 წ</span>
+        </button>
+
+        {/* <button onClick={() => skipBySeconds(30)} className="control-btn" title="30 წამით წინ">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M4 18l8.5-6L4 6v12zm9-12v12l8.5-6L13 6z"/>
+          </svg>
+          <span className="skip-label">+30 წ</span>
+        </button> */}
 
         <div className="volume-container">
           <svg 
