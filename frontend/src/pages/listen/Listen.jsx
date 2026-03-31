@@ -21,6 +21,14 @@ function Listen() {
   const [gameType, setGameType] = useState("cards")
   const [isSoundEnabled, setIsSoundEnabled] = useState(true)
   const [selectedSegment, setSelectedSegment] = useState(null);
+  const [manualSelectedWords, setManualSelectedWords] = useState([])
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false)
+  const [selectorSettings, setSelectorSettings] = useState({
+    selectionMode: "sequential",
+    wordCount: 0,
+    direction: "translation-to-word",
+    gameType: "cards",
+  })
 
   const hasFetched = useRef(false)
   const audiofilePath = useRef("src/assets/audio_files/adas_mier_moyolili_zghapari.m4a")
@@ -77,24 +85,29 @@ function Listen() {
     return newArray;
   };
 
-  const handleStartGame = (words, gameDirection, selectedGameType) => {
-    setSelectedWords(words);
-    setDirection(gameDirection);
-    setGameType(selectedGameType);
-    setIsComposeMode(false);
-    setComposeCards([]);
-    setComposeBoardWords([]);
-    setUsedComposeCardIds([]);
-    setGameStarted(true);
-  };
+  const handleStartGame = () => {
+    let words = []
 
-  const handleBackToSelection = () => {
-    setGameStarted(false);
+    if (selectorSettings.selectionMode === "sequential") {
+      words = wordsForGame.slice(0, Math.min(selectorSettings.wordCount, wordsForGame.length))
+    } else if (selectorSettings.selectionMode === "random") {
+      const shuffled = [...wordsForGame].sort(() => Math.random() - 0.5)
+      words = shuffled.slice(0, Math.min(selectorSettings.wordCount, wordsForGame.length))
+    } else if (selectorSettings.selectionMode === "manual") {
+      words = manualSelectedWords
+    }
+
+    if (!words.length) return
+
+    setSelectedWords(words);
+    setDirection(selectorSettings.direction);
+    setGameType(selectorSettings.gameType);
     setIsComposeMode(false);
     setComposeCards([]);
     setComposeBoardWords([]);
     setUsedComposeCardIds([]);
-    setSelectedWords(null);
+    setIsSettingsOpen(false);
+    setGameStarted(true);
   };
 
   const handleSegmentSelect = (segment) => {
@@ -103,8 +116,39 @@ function Listen() {
     setComposeCards([]);
     setComposeBoardWords([]);
     setUsedComposeCardIds([]);
+    setManualSelectedWords([]);
     setGameStarted(false); // Reset game when changing segment
   };
+
+  const handleSettingsChange = (nextSettings) => {
+    setSelectorSettings(nextSettings)
+  }
+
+  const handleSettingsToggle = () => {
+    setIsSettingsOpen((prev) => {
+      const nextIsOpen = !prev
+
+      if (nextIsOpen) {
+        setIsComposeMode(false)
+        setGameStarted(false)
+      }
+
+      return nextIsOpen
+    })
+  }
+
+  const handleManualWordToggle = (word) => {
+    const wordId = word?.the_word || word?.word
+    if (!wordId) return
+
+    setManualSelectedWords((prev) => {
+      const isSelected = prev.some((w) => (w.the_word || w.word) === wordId)
+      if (isSelected) {
+        return prev.filter((w) => (w.the_word || w.word) !== wordId)
+      }
+      return [...prev, word]
+    })
+  }
 
   const normalizeWord = (value = '') =>
     value
@@ -198,6 +242,7 @@ function Listen() {
     setComposeBoardWords([]);
     setUsedComposeCardIds([]);
     setSelectedWords(null);
+    setIsSettingsOpen(false);
     setGameStarted(false);
     setIsComposeMode(true);
   };
@@ -209,13 +254,6 @@ function Listen() {
     setUsedComposeCardIds((prev) => [...prev, card.id]);
   };
 
-  const handleComposeBack = () => {
-    setIsComposeMode(false);
-    setComposeCards([]);
-    setComposeBoardWords([]);
-    setUsedComposeCardIds([]);
-  };
-
   const handleToggleSound = () => {
     setIsSoundEnabled((prev) => !prev)
   }
@@ -224,7 +262,7 @@ function Listen() {
     if (!isSoundEnabled || !clearSoundRef.current) return;
 
     clearSoundRef.current.currentTime = 0;
-    clearSoundRef.current.play().catch(() => {});
+    clearSoundRef.current.play().catch(() => { });
   };
 
   const handleComposeClearBoard = () => {
@@ -234,6 +272,10 @@ function Listen() {
     setUsedComposeCardIds([]);
     playClearSound();
   };
+
+  useEffect(() => {
+    setManualSelectedWords([])
+  }, [wordsForGame])
 
 
   console.log('Selected segment:', selectedSegment);
@@ -256,23 +298,121 @@ function Listen() {
       {/* // )} */}
       {gameData && gameData.words && (
         <>
+          <h2 className="segment-info-title">
+            ეპიზოდი {selectedSegment?.id ?? '-'} - სიტყვების რაოდენობა: {wordsForGame.length}
+          </h2>
+          {!selectedSegment ? (
+            <div style={{
+              padding: '15px',
+              margin: '20px 0',
+              backgroundColor: '#f0f8ff',
+              borderRadius: '8px',
+              textAlign: 'center',
+              fontSize: '16px'
+            }}>
+              აირჩიე ეპიზოდი ზემოთ მოცემული ღილაკებიდან სათამაშოდ სიტყვების ასარჩევად
+            </div>
+          ) : null}
+
+          <div className="listen-action-buttons">
+            <button
+              type="button"
+              className="compose-text-btn"
+              onClick={handleComposeMode}
+              disabled={!wordsForCompose.length}
+            >
+              ტექსტი
+            </button>
+
+            <button
+              type="button"
+              className={`settings-toggle-btn${isSettingsOpen ? ' is-open' : ''}`}
+              onClick={handleSettingsToggle}
+              aria-expanded={isSettingsOpen}
+              aria-controls="word-selector-settings"
+            >
+              პარამეტრები
+            </button>
+
+            <button
+              type="button"
+              className="start-game-btn"
+              onClick={handleStartGame}
+              disabled={
+                wordsForGame.length === 0 ||
+                (selectorSettings.selectionMode === 'manual' && manualSelectedWords.length === 0)
+              }
+            >
+              თამაში
+            </button>
+
+            <button
+              type="button"
+              className={`sound-toggle-btn${isSoundEnabled ? '' : ' muted'}`}
+              onClick={handleToggleSound}
+              aria-label={isSoundEnabled ? 'ხმის გამორთვა' : 'ხმის ჩართვა'}
+              title={isSoundEnabled ? 'ხმის გამორთვა' : 'ხმის ჩართვა'}
+            >
+              <span aria-hidden="true">{isSoundEnabled ? '🔊' : '🔇'}</span>
+            </button>
+          </div>
+
+          {!isComposeMode && !gameStarted && (
+            <WordSelector
+              allWords={wordsForGame}
+              onSettingsChange={handleSettingsChange}
+              isOpen={isSettingsOpen}
+              settingsTopContent={gameData?.segments ? (
+                <label className="compact-field">
+                  <span>ეპიზოდი:</span>
+                  <select
+                    value={selectedSegment?.id ?? ""}
+                    onChange={(e) => {
+                      const seg = gameData.segments.find((s) => String(s.id) === e.target.value);
+                      if (seg) handleSegmentSelect(seg);
+                    }}
+                  >
+                    {gameData.segments.map((segment) => {
+                      const wordCount = segmentWordCounts.get(segment.id) ?? 0;
+                      return (
+                        <option key={segment.id} value={segment.id}>
+                          ეპიზოდი {segment.id} ({wordCount}) სიტყვა
+                        </option>
+                      );
+                    })}
+                  </select>
+                </label>
+              ) : null}
+            />
+          )}
+
+          {!isComposeMode && !gameStarted && selectorSettings.selectionMode === 'manual' && (
+            <div className="listen-word-cards">
+              <p>აირჩიეთ სიტყვები ({manualSelectedWords.length} არჩეული):</p>
+              <div className="cards-grid">
+                {wordsForGame.map((word, index) => {
+                  const wordId = word.the_word || word.word;
+                  const isSelected = manualSelectedWords.some((w) => (w.the_word || w.word) === wordId);
+                  const displayText = selectorSettings.direction === "translation-to-word"
+                    ? word.translation
+                    : word.the_word;
+
+                  return (
+                    <div
+                      key={index}
+                      className={`word-card ${isSelected ? 'selected' : ''}`}
+                      onClick={() => handleManualWordToggle(word)}
+                    >
+                      <div className="word">{displayText}</div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
           {isComposeMode ? (
             <div className="game-section compose-section">
-              <div className="action-buttons">
-                <button type="button" onClick={handleComposeBack}>
-                  უკან დაბრუნება
-                </button>
-                <button
-                  type="button"
-                  className="sound-toggle-btn"
-                  onClick={handleToggleSound}
-                  aria-label={isSoundEnabled ? 'ხმის გამორთვა' : 'ხმის ჩართვა'}
-                  title={isSoundEnabled ? 'ხმის გამორთვა' : 'ხმის ჩართვა'}
-                >
-                  <span aria-hidden="true">{isSoundEnabled ? '🔊' : '🔇'}</span>
-                </button>
-              </div>
-
               <div className="compose-board">
                 <div className="compose-board-header">
                   <div className="compose-board-label">ტექსტის დაფა</div>
@@ -288,7 +428,7 @@ function Listen() {
                 <div className="compose-board-content">
                   {composeBoardWords.length > 0
                     ? composeBoardWords.join(' ')
-                    : 'დააჭირე ბარათებს და სიტყვები აქ გამოჩნდება'}
+                    : 'ტექსტის ასაწყობად დააწკაპუნე ქვემოთ მოცემულ ბარათებზე'}
                 </div>
               </div>
 
@@ -309,81 +449,8 @@ function Listen() {
                 <div className="compose-empty">ამ ეპიზოდისთვის სიტყვები ვერ მოიძებნა.</div>
               )}
             </div>
-          ) : !gameStarted ? (
-            <>
-              {!selectedSegment ? (
-                <div style={{
-                  padding: '15px',
-                  margin: '20px 0',
-                  backgroundColor: '#f0f8ff',
-                  borderRadius: '8px',
-                  textAlign: 'center',
-                  fontSize: '16px'
-                }}>
-                  აირჩიე ეპიზოდი ზემოთ მოცემული ღილაკებიდან სათამაშოდ სიტყვების ასარჩევად
-                </div>
-              ) : (
-                <div className="segment-info">
-                  <h2 className="segment-info-title">
-                    ეპიზოდი {selectedSegment.id} - სიტყვების რაოდენობა: {wordsForGame.length}
-                  </h2>
-                  <button
-                    type="button"
-                    className="compose-text-btn"
-                    onClick={handleComposeMode}
-                    disabled={!wordsForCompose.length}
-                  >
-                    ტექსტის შედგენა
-                  </button>
-                  {/* <p className="segment-info-subtitle">
-                    აირჩიეთ სიტყვები ამ ეპიზოდიდან თამაშისთვის
-                  </p> */}
-                </div>
-              )}
-
-              <WordSelector
-                allWords={wordsForGame}
-                onStartGame={handleStartGame}
-                selectedSegmentId={selectedSegment?.id}
-                settingsTopContent={gameData?.segments ? (
-                  <label className="compact-field">
-                    <span>ეპიზოდი:</span>
-                    <select
-                      value={selectedSegment?.id ?? ""}
-                      onChange={(e) => {
-                        const seg = gameData.segments.find((s) => String(s.id) === e.target.value);
-                        if (seg) handleSegmentSelect(seg);
-                      }}
-                    >
-                      {gameData.segments.map((segment) => {
-                        const wordCount = segmentWordCounts.get(segment.id) ?? 0;
-                        return (
-                          <option key={segment.id} value={segment.id}>
-                            ეპიზოდი {segment.id} ({wordCount}) სიტყვა
-                          </option>
-                        );
-                      })}
-                    </select>
-                  </label>
-                ) : null}
-              />
-            </>
-          ) : (
+          ) : gameStarted ? (
             <div className="game-section">
-              <div className="action-buttons">
-                <button type="button" onClick={handleBackToSelection}>
-                  უკან დაბრუნება
-                </button>
-                <button
-                  type="button"
-                  className="sound-toggle-btn"
-                  onClick={handleToggleSound}
-                  aria-label={isSoundEnabled ? 'ხმის გამორთვა' : 'ხმის ჩართვა'}
-                  title={isSoundEnabled ? 'ხმის გამორთვა' : 'ხმის ჩართვა'}
-                >
-                  <span aria-hidden="true">{isSoundEnabled ? '🔊' : '🔇'}</span>
-                </button>
-              </div>
               <MessyDictionary
                 words={selectedWords}
                 direction={direction}
@@ -391,8 +458,7 @@ function Listen() {
                 isSoundEnabled={isSoundEnabled}
               />
             </div>
-
-          )}
+          ) : null}
         </>
       )}
     </div>

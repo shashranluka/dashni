@@ -1,61 +1,39 @@
 import { useEffect, useState } from "react";
 import "./WordSelector.scss";
 
-export default function WordSelector({ allWords, onStartGame, settingsTopContent = null }) {
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+export default function WordSelector({
+  allWords,
+  onSettingsChange,
+  settingsTopContent = null,
+  isOpen = false,
+  onToggle,
+}) {
   const [selectionMode, setSelectionMode] = useState("sequential");
   const [wordCount, setWordCount] = useState(allWords?.length ?? 0);
-  const [selectedWords, setSelectedWords] = useState([]);
   const [direction, setDirection] = useState("translation-to-word");
   const [gameType, setGameType] = useState("cards");
 
   useEffect(() => {
-    setWordCount(allWords?.length ?? 0);
-    setSelectedWords([]);
+    setWordCount((prev) => {
+      const maxWords = allWords?.length ?? 0;
+      return Math.min(prev || 0, maxWords);
+    });
   }, [allWords]);
 
-  const handleWordToggle = (word) => {
-    setSelectedWords(prev => {
-      const wordId = word.the_word || word.word;
-      const isSelected = prev.some(w => (w.the_word || w.word) === wordId);
-      if (isSelected) {
-        return prev.filter(w => (w.the_word || w.word) !== wordId);
-      } else {
-        return [...prev, word];
-      }
+  useEffect(() => {
+    if (typeof onSettingsChange !== "function") return;
+
+    onSettingsChange({
+      selectionMode,
+      wordCount,
+      direction,
+      gameType,
     });
-  };
-
-  const handleStartGame = () => {
-    let wordsToPlay = [];
-
-    if (selectionMode === "sequential") {
-      wordsToPlay = allWords.slice(0, Math.min(wordCount, allWords.length));
-    } else if (selectionMode === "random") {
-      const shuffled = [...allWords].sort(() => Math.random() - 0.5);
-      wordsToPlay = shuffled.slice(0, Math.min(wordCount, allWords.length));
-    } else if (selectionMode === "manual") {
-      wordsToPlay = selectedWords;
-    }
-
-    if (wordsToPlay.length > 0) {
-      onStartGame(wordsToPlay, direction, gameType);
-    }
-  };
+  }, [direction, gameType, onSettingsChange, selectionMode, wordCount]);
 
   return (
     <div className="word-selector">
-      <button
-        type="button"
-        className={`settings-toggle-btn ${isSettingsOpen ? "is-open" : ""}`}
-        onClick={() => setIsSettingsOpen((prev) => !prev)}
-        aria-expanded={isSettingsOpen}
-        aria-controls="word-selector-settings"
-      >
-        {isSettingsOpen ? "პარამეტრების დამალვა" : "პარამეტრების არჩევა"}
-      </button>
-
-      {isSettingsOpen && (
+      {isOpen && (
         <div id="word-selector-settings">
           <div className="compact-selects">
             {settingsTopContent}
@@ -114,44 +92,8 @@ export default function WordSelector({ allWords, onStartGame, settingsTopContent
               </label>
             )}
           </div>
-
-          {selectionMode === "manual" && (
-            <div className="word-cards">
-              <p>აირჩიეთ სიტყვები ({selectedWords.length} არჩეული):</p>
-              <div className="cards-grid">
-                {allWords.map((word, index) => {
-                  const wordId = word.the_word || word.word;
-                  const isSelected = selectedWords.some(w => (w.the_word || w.word) === wordId);
-                  const displayText = direction === "translation-to-word"
-                    ? word.translation
-                    : word.the_word;
-
-                  return (
-                    <div
-                      key={index}
-                      className={`word-card ${isSelected ? 'selected' : ''}`}
-                      onClick={() => handleWordToggle(word)}
-                    >
-                      <div className="word">{displayText}</div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
         </div>
       )}
-
-      <button
-        className="start-game-btn"
-        onClick={handleStartGame}
-        disabled={
-          allWords.length === 0 ||
-          (selectionMode === "manual" && selectedWords.length === 0)
-        }
-      >
-        თამაშის დაწყება
-      </button>
     </div>
   );
 }
