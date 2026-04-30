@@ -29,7 +29,7 @@ function AppContent() {
         <Navbar />
         <Routes>
           {/* <Route path="/" element={<Home />} /> */}
-          <Route path="/" element={<Listen />} />
+          {/* <Route path="/" element={<Listen />} /> */}
           <Route path="/words" element={<Words />} />
           <Route path="/sentences" element={<Sentences />} />
           <Route path="/listen" element={<Listen />} />
