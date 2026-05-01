@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import newRequest from '../../utils/newRequest';
 import { revokeConsent, hasConsent, setConsent } from '../../utils/analytics';
+import { isEditorUser, isAdminUser } from '../../utils/roles';
 import './Navbar.scss';
 
 function Navbar() {
@@ -107,7 +108,12 @@ function Navbar() {
                   <Link to="/my-page" onClick={() => setOpen(false)}>
                     ჩემი გვერდი
                   </Link>
-                  {currentUser.role === "admin" && (
+                  {isEditorUser(currentUser) && (
+                    <Link to="/editor/texts" onClick={() => setOpen(false)}>
+                      ტექსტების რედაქტირება
+                    </Link>
+                  )}
+                  {isAdminUser(currentUser) && (
                     <Link to="/admin" onClick={() => setOpen(false)}>
                       ადმინ პანელი
                     </Link>
