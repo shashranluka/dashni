@@ -70,7 +70,7 @@ function Navbar() {
     setShowAnalyticsModal(true);
   };
 
-  console.log("Navbar render:", { currentUser, hasAnalyticsConsent, showAnalyticsModal });
+  console.log("Navbar render:", { currentUser, hasAnalyticsConsent, sZhowAnalyticsModal });
   return (
     <nav className="navbar">
       <div className="navbar-container">
@@ -108,7 +108,7 @@ function Navbar() {
                   <Link to="/my-page" onClick={() => setOpen(false)}>
                     ჩემი გვერდი
                   </Link>
-                  {currentUser.is_admin && (
+                  {currentUser.role === "admin" && (
                     <Link to="/admin" onClick={() => setOpen(false)}>
                       ადმინ პანელი
                     </Link>
