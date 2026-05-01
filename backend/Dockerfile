@@ -13,6 +13,7 @@ RUN npm install --production
 COPY server.js ./
 COPY controllers ./controllers
 COPY routes ./routes
+COPY middleware ./middleware
 
 # Expose port
 EXPOSE 8800
