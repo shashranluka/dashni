@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import AudioPlayer from "../../components/AudioPlayer/AudioPlayer";
+import RareKeyboard from "../../components/RareKeyboard/RareKeyboard";
 import newRequest from "../../utils/newRequest";
 import "./EditorPage.scss";
 
@@ -13,7 +14,9 @@ function EditorPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
-
+  const [isKeyboardOpen, setIsKeyboardOpen] = useState(true);
+  const textAreaRef = useRef(null);
+  console.log("EditorPage render:", { segments, selectedSegmentId, textDraft, loading, saving, error, notice });
   const selectedSegment = useMemo(
     () => segments.find((segment) => String(segment.id) === String(selectedSegmentId)) || null,
     [segments, selectedSegmentId]
@@ -85,6 +88,26 @@ function EditorPage() {
     }
   };
 
+  const handleInsertRareSymbol = (symbol) => {
+    const textareaElement = textAreaRef.current;
+    if (!textareaElement) {
+      setTextDraft((prev) => `${prev}${symbol}`);
+      return;
+    }
+
+    const selectionStart = textareaElement.selectionStart ?? textDraft.length;
+    const selectionEnd = textareaElement.selectionEnd ?? textDraft.length;
+
+    const nextText = `${textDraft.slice(0, selectionStart)}${symbol}${textDraft.slice(selectionEnd)}`;
+    setTextDraft(nextText);
+
+    window.requestAnimationFrame(() => {
+      const nextCursor = selectionStart + symbol.length;
+      textareaElement.focus();
+      textareaElement.setSelectionRange(nextCursor, nextCursor);
+    });
+  };
+
   if (loading) {
     return (
       <section className="editor-page">
@@ -123,6 +146,7 @@ function EditorPage() {
         <label className="field">
           <span>ტექსტი</span>
           <textarea
+            ref={textAreaRef}
             rows={12}
             value={textDraft}
             onChange={(event) => setTextDraft(event.target.value)}
@@ -138,6 +162,15 @@ function EditorPage() {
 
         {notice ? <p className="message ok">{notice}</p> : null}
         {error ? <p className="message error">{error}</p> : null}
+      </div>
+
+      <div className="editor-keyboard-dock">
+        <RareKeyboard
+          isOpen={isKeyboardOpen}
+          onToggle={() => setIsKeyboardOpen((prev) => !prev)}
+          onInsert={handleInsertRareSymbol}
+          disabled={!selectedSegment}
+        />
       </div>
     </section>
   );
