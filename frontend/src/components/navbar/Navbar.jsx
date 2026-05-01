@@ -109,7 +109,7 @@ function Navbar() {
                     ჩემი გვერდი
                   </Link>
                   {isEditorUser(currentUser) && (
-                    <Link to="/editor/texts" onClick={() => setOpen(false)}>
+                    <Link to="/editor-page" onClick={() => setOpen(false)}>
                       ტექსტების რედაქტირება
                     </Link>
                   )}

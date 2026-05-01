@@ -10,6 +10,8 @@ import Register from './pages/register/Register'
 import CookieConsent from './components/CookieConsent/CookieConsent'
 import RequireAdmin from './components/RequireAdmin/RequireAdmin'
 import AdminPage from './pages/admin/AdminPage'
+import RequireEditor from './components/RequireEditor/RequireEditor'
+import EditorPage from './pages/editor/EditorPage'
 import usePageTracking from './utils/usePageTracking'
 import { initGA, hasConsent } from './utils/analytics'
 import './App.scss'
@@ -38,6 +40,7 @@ function AppContent() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/admin" element={<RequireAdmin><AdminPage /></RequireAdmin>} />
+          <Route path="/editor-page" element={<RequireEditor><EditorPage /></RequireEditor>} />
         </Routes>
       </div>
     </>

@@ -55,3 +55,12 @@ export const requireAdmin = (req, res, next) => {
   }
   return next();
 };
+
+// უშვებს editor ან admin როლის მქონე ავტორიზებულ მომხმარებელს.
+export const requireEditor = (req, res, next) => {
+  const role = req.user?.role;
+  if (role !== "editor" && role !== "admin") {
+    return res.status(403).json({ message: "Editor only" });
+  }
+  return next();
+};
