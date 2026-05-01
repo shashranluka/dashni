@@ -70,7 +70,7 @@ function Navbar() {
     setShowAnalyticsModal(true);
   };
 
-  console.log("Navbar render:", { currentUser, hasAnalyticsConsent, sZhowAnalyticsModal });
+  console.log("Navbar render:", { currentUser, hasAnalyticsConsent, showAnalyticsModal });
   return (
     <nav className="navbar">
       <div className="navbar-container">
