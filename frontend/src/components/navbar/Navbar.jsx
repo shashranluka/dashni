@@ -70,7 +70,6 @@ function Navbar() {
     setShowAnalyticsModal(true);
   };
 
-  console.log("Navbar render:", { currentUser, hasAnalyticsConsent, showAnalyticsModal });
   return (
     <nav className="navbar">
       <div className="navbar-container">
@@ -121,10 +120,10 @@ function Navbar() {
             </div>
           ) : (
             <>
-              {/* <Link to="/login">შესვლა</Link>
+              <Link to="/login">შესვლა</Link>
               <Link to="/register" className="register-btn">
                 შექმნა
-              </Link> */}
+              </Link>
             </>
           )}
         </div>
