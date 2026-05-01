@@ -26,13 +26,14 @@ export const register = async (req, res, next) => {
 
     // Insert new user
     const newUser = await pool.query(
-      'INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING id, username, email, created_at',
+      'INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING uuid, username, email, created_at',
       [username, email, hash]
     );
 
+    const { uuid, username: newUsername, email: newEmail, created_at } = newUser.rows[0];
     res.status(201).json({
       message: "რეგისტრაცია წარმატებით დასრულდა!",
-      user: newUser.rows[0]
+      user: { uuid, username: newUsername, email: newEmail, created_at }
     });
   } catch (err) {
     console.error('Registration error:', err);
@@ -62,23 +63,25 @@ export const login = async (req, res, next) => {
       return res.status(400).json({ message: "პაროლი არასწორია" });
     }
 
-    // Generate JWT token
+    // Generate JWT token (with uuid)
     const token = jwt.sign(
       {
-        id: foundUser.id,
+        uuid: foundUser.uuid,
         username: foundUser.username
       },
       process.env.JWT_KEY
     );
 
     const { password: userPassword, ...info } = foundUser;
-
+    console.log('Login successful for user:', info);
     res
       .cookie("accessToken", token, {
         httpOnly: true,
+        secure: true,
+        sameSite: "lax"
       })
       .status(200)
-      .json(info);
+      .json({ ...info, uuid: foundUser.uuid });
   } catch (err) {
     console.error('Login error:', err);
     next(err);
