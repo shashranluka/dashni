@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { pool } from "../server.js";
+import { toPublicUser } from "../middleware/auth.middleware.js";
 
 export const register = async (req, res, next) => {
   try {
@@ -72,8 +73,7 @@ export const login = async (req, res, next) => {
       process.env.JWT_KEY
     );
 
-    const { password: userPassword, ...info } = foundUser;
-    console.log('Login successful for user:', info);
+    console.log('Login successful for user:', foundUser.username);
     res
       .cookie("accessToken", token, {
         httpOnly: true,
@@ -81,12 +81,14 @@ export const login = async (req, res, next) => {
         sameSite: "lax"
       })
       .status(200)
-      .json({ ...info, uuid: foundUser.uuid });
+      .json(toPublicUser(foundUser));
   } catch (err) {
     console.error('Login error:', err);
     next(err);
   }
 };
+
+export const me = (req, res) => res.status(200).json(req.user);
 
 export const logout = async (req, res) => {
   res
