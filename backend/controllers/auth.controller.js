@@ -64,6 +64,10 @@ export const login = async (req, res, next) => {
       return res.status(400).json({ message: "პაროლი არასწორია" });
     }
 
+    if (!foundUser.is_active) {
+      return res.status(403).json({ message: "მომხმარებელი არააქტიურია" });
+    }
+
     // Generate JWT token (with uuid)
     const token = jwt.sign(
       {

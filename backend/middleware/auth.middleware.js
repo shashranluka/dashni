@@ -39,6 +39,10 @@ export const requireAuth = async (req, res, next) => {
       return res.status(401).json({ message: "User not found" });
     }
 
+    if (!result.rows[0].is_active) {
+      return res.status(403).json({ message: "მომხმარებელი არააქტიურია" });
+    }
+
     // req.user-ში ვინახავთ უკვე უსაფრთხო (password-free) ვერსიას.
     req.user = toPublicUser(result.rows[0]);
     return next();
