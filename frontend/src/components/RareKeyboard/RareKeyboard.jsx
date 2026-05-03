@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import "./RareKeyboard.scss";
 
 
@@ -94,8 +95,37 @@ const diacretials = [
     // },
   ];
 function RareKeyboard({ isOpen, onToggle, onInsert, disabled = false }) {
+  const keyboardRootRef = useRef(null);
+
+  useEffect(() => {
+    const viewport = window.visualViewport;
+    if (!viewport) return;
+
+    const updateDockOffset = () => {
+      const root = keyboardRootRef.current;
+      if (!root) return;
+      const dock = root.closest(".editor-keyboard-dock") || root;
+      const offset = Math.max(0, window.innerHeight - viewport.height - viewport.offsetTop);
+      dock.style.bottom = `${offset + 10}px`;
+    };
+
+    updateDockOffset();
+    viewport.addEventListener("resize", updateDockOffset);
+    viewport.addEventListener("scroll", updateDockOffset);
+
+    return () => {
+      viewport.removeEventListener("resize", updateDockOffset);
+      viewport.removeEventListener("scroll", updateDockOffset);
+      const root = keyboardRootRef.current;
+      const dock = root?.closest(".editor-keyboard-dock") || root;
+      if (dock) {
+        dock.style.bottom = "";
+      }
+    };
+  }, []);
+
   return (
-    <div className={`rare-keyboard ${isOpen ? "is-open" : "is-closed"}`}>
+    <div ref={keyboardRootRef} className={`rare-keyboard ${isOpen ? "is-open" : "is-closed"}`}>
       <div className="rare-keyboard__top">
         <strong>RareKeyboard</strong>
         <button type="button" onClick={onToggle} className="rare-keyboard__toggle">
