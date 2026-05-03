@@ -1,24 +1,98 @@
 import "./RareKeyboard.scss";
 
-const RARE_SYMBOLS = [
-  "ჱ",
-  "ჲ",
-  "ჳ",
-  "ჴ",
-  "ჵ",
-  "ჶ",
-  "ჷ",
-  "ჸ",
-  "ჹ",
-  "ჺ",
-  "჻",
-  "ʼ",
-  "«",
-  "»",
-  "—",
-  "…",
-];
 
+
+const diacretials = [
+    {
+      mark: "ჼ", // ფონეტიკური ნიშანი ქართულ "ო"-ზე
+      definition: "მოდიფიკატორი ნარ"
+    },
+    {
+      mark: "\u2322", // ქვევიდან ღია მრუდი (frown)
+      definition: "ქვევიდან ღია მრუდი"
+    },
+    {
+      mark: "\u0327", // სედილა (ასოს ქვემოთ კაუჭი)
+      definition: "სედილა"
+    },
+    {
+      mark: "\u0306", // ბრევე (მოკლე ხმოვნის ნიშანი)
+      definition: "ბრევე (მოკლე ხმოვნის ნიშანი)"
+    },
+    {
+      mark: "\u02EC", // ტონალური მოდიფიკატორი
+      definition: "თანხმოვნების გასაორმაგებლად"
+    },
+    {
+      mark: "\u0304", // მაკრონი (გრძელი ხმოვნის ნიშანი)
+      definition: "მაკრონი (გრძელი ხმოვნის ნიშანი)"
+    },
+    {
+      mark: "\u0302", // სირკუმფლექსი (წვეტიანი ქუდი)
+      definition: "სირკუმფლექსი"
+    },
+    {
+      mark: "°",
+      definition: "გრადუსის ნიშანი"
+    },
+    {
+      mark: "\u0303", // სედილა (ასოს ქვემოთ კაუჭი)
+      definition: "ტილდა (ხმოვნების ნიშანი)"
+    },
+    {
+      mark: "\u0308", // სედილა (ასოს ქვემოთ კაუჭი)
+      definition: "უმლაუტი (ასოს ზედა ნაწილში ორი წერტილი)"
+    },
+  ];
+  // იშვიათი ქართული ასოების მასივი
+  // const trueLetters = ["ჲ", "ჺ", "ჴ", "ჸ", "ჵ", "ჳ", "ჶ", "ჹ", "ჷ", "ჱ", "®", "°"];
+  // იშვიათი ქართული ასოების მასივი - ობიექტების მასივის სახით
+  const trueLetters = [
+    {
+      mark: "ჲ",
+      definition: "ქართული ასო-ბგერა ჲე (ჰიე)"
+    },
+    {
+      mark: "ჺ",
+      definition: "ქართული ხაზგასმული ო (ელიფსის ნიშანი)"
+    },
+    {
+      mark: "ჴ",
+      definition: "ქართული ხარისხიანი ხანი (ჴანი)"
+    },
+    {
+      mark: "ჸ",
+      definition: "ქართული ასო ჸე (ფარინგალური ხშული)"
+    },
+    {
+      mark: "ჵ",
+      definition: "ქართული ჰოე (ჵ)"
+    },
+    {
+      mark: "ჳ",
+      definition: "ქართული ასო-ბგერა ჳე (უი)"
+    },
+    {
+      mark: "ჶ",
+      definition: "ქართული ფი (ფარინგალური ფ)"
+    },
+    {
+      mark: "ჹ",
+      definition: "ქართული ყ-ს ვარიანტი"
+    },
+    {
+      mark: "ჷ",
+      definition: "ქართული შვა (ნეიტრალური ხმოვანი)"
+    },
+    {
+      mark: "ჱ",
+      definition: "ქართული ჱე (ეი)"
+    },
+    // {
+    //   mark: "®",
+    //   definition: "რეგისტრირებული სავაჭრო ნიშანი"
+    // },
+  ];
 function RareKeyboard({ isOpen, onToggle, onInsert, disabled = false }) {
   return (
     <div className={`rare-keyboard ${isOpen ? "is-open" : "is-closed"}`}>
@@ -30,19 +104,44 @@ function RareKeyboard({ isOpen, onToggle, onInsert, disabled = false }) {
       </div>
 
       {isOpen ? (
-        <div className="rare-keyboard__grid" aria-label="Rare symbols keyboard">
-          {RARE_SYMBOLS.map((symbol) => (
-            <button
-              key={symbol}
-              type="button"
-              className="rare-keyboard__key"
-              onClick={() => onInsert(symbol)}
-              disabled={disabled}
-              aria-label={`Insert ${symbol}`}
-            >
-              {symbol}
-            </button>
-          ))}
+        <div className="rare-keyboard__body">
+          <div className="rare-keyboard__section">
+            <span className="rare-keyboard__section-label">იშვიათი ასოები</span>
+            <div className="rare-keyboard__grid" aria-label="იშვიათი ქართული ასოები">
+              {trueLetters.map((item) => (
+                <button
+                  key={item.mark}
+                  type="button"
+                  className="rare-keyboard__key"
+                  onClick={() => onInsert(item.mark)}
+                  disabled={disabled}
+                  title={item.definition}
+                  aria-label={item.definition}
+                >
+                  {item.mark}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="rare-keyboard__section">
+            <span className="rare-keyboard__section-label">დიაკრიტიკული ნიშნები</span>
+            <div className="rare-keyboard__grid" aria-label="დიაკრიტიკული ნიშნები">
+              {diacretials.map((item) => (
+                <button
+                  key={item.mark}
+                  type="button"
+                  className="rare-keyboard__key"
+                  onClick={() => onInsert(item.mark)}
+                  disabled={disabled}
+                  title={item.definition}
+                  aria-label={item.definition}
+                >
+                  {item.mark}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
       ) : null}
     </div>
