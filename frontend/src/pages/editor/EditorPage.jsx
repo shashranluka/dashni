@@ -34,7 +34,7 @@ function EditorPage() {
         if (nextSegments.length > 0) {
           const firstSegment = nextSegments[0];
           setSelectedSegmentId(String(firstSegment.id));
-          setTextDraft(firstSegment.text || "");
+          setTextDraft((firstSegment.text || "").normalize("NFC"));
         }
       } catch (err) {
         setError(err?.response?.data?.message || "მონაცემების ჩატვირთვა ვერ მოხერხდა");
@@ -48,7 +48,7 @@ function EditorPage() {
 
   useEffect(() => {
     if (!selectedSegment) return;
-    setTextDraft(selectedSegment.text || "");
+    setTextDraft((selectedSegment.text || "").normalize("NFC"));
     setNotice("");
     setError("");
   }, [selectedSegment]);
@@ -56,7 +56,7 @@ function EditorPage() {
   const handleSave = async () => {
     if (!selectedSegment) return;
 
-    const nextText = textDraft.trim();
+    const nextText = textDraft.normalize("NFC").trim();
     if (!nextText) {
       setError("ტექსტი სავალდებულოა");
       return;
@@ -79,7 +79,7 @@ function EditorPage() {
         )
       );
 
-      setTextDraft(updated.text || "");
+      setTextDraft((updated.text || "").normalize("NFC"));
       setNotice("ტექსტი წარმატებით განახლდა");
     } catch (err) {
       setError(err?.response?.data?.message || "ტექსტის შენახვა ვერ მოხერხდა");
@@ -99,7 +99,7 @@ function EditorPage() {
     const selectionEnd = textareaElement.selectionEnd ?? textDraft.length;
 
     const nextText = `${textDraft.slice(0, selectionStart)}${symbol}${textDraft.slice(selectionEnd)}`;
-    setTextDraft(nextText);
+    setTextDraft(nextText.normalize("NFC"));
 
     window.requestAnimationFrame(() => {
       const nextCursor = selectionStart + symbol.length;
