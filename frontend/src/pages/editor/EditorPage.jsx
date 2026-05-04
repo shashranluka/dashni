@@ -91,7 +91,7 @@ function EditorPage() {
   const handleInsertRareSymbol = (symbol) => {
     const textareaElement = textAreaRef.current;
     if (!textareaElement) {
-      setTextDraft((prev) => `${prev}${symbol}`);
+      setTextDraft((prev) => `${prev}${symbol}`.normalize("NFC"));
       return;
     }
 
@@ -149,7 +149,7 @@ function EditorPage() {
             ref={textAreaRef}
             rows={12}
             value={textDraft}
-            onChange={(event) => setTextDraft(event.target.value)}
+            onChange={(event) => setTextDraft(event.target.value.normalize("NFC"))}
             placeholder="ტექსტი"
           />
         </label>
