@@ -4,8 +4,8 @@
 }
 
 @font-face {
-  font-family: "BPG Nino";
-  src: url("/fonts/bpg_nino_medium.otf") format("opentype");
+  font-family: "BPG Algeti";
+  src: url("/fonts/bpg_algeti.otf") format("opentype");
   font-weight: 400;
   font-display: swap;
   unicode-range: U+10A0-10FF, U+2D00-2D2F, U+FB00-FB06;
@@ -13,7 +13,7 @@
 
 body {
   font-family:
-    "BPG Nino", "Noto Sans Georgian", "Noto Sans Symbols 2", "DejaVu Sans", "Segoe UI", Roboto, Tahoma, sans-serif;
+    "BPG Algeti", "Noto Sans Georgian", "Noto Sans Symbols 2", "DejaVu Sans", "Segoe UI", Roboto, Tahoma, sans-serif;
 
   // font-family: 'Noto Sans Georgian', 'Noto Sans', 'Noto Sans Symbols', sans-serif;
 }
