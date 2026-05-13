@@ -158,30 +158,18 @@ function RareKeyboard({ isOpen, onToggle, onInsert, disabled = false }) {
       ref={keyboardRootRef}
       className={`rare-keyboard ${isOpen ? "is-open" : "is-closed"}`}
     >
-      <div className="rare-keyboard__top">
-        <strong>RareKeyboard</strong>
-        <button
-          type="button"
-          onClick={onToggle}
-          className="rare-keyboard__toggle"
-        >
-          {isOpen ? "დამალვა" : "ჩვენება"}
-        </button>
-      </div>
-
       {isOpen ? (
         <div className="rare-keyboard__body">
-          <div className="rare-keyboard__section">
-            <span className="rare-keyboard__section-label">იშვიათი ასოები</span>
-            <div
-              className="rare-keyboard__grid"
-              aria-label="იშვიათი ქართული ასოები"
-            >
-              {trueLetters.map((item) => (
+          <div className="rare-keyboard__section rare-keyboard__section--modifiers">
+            {/* <span className="rare-keyboard__section-label">
+              მამოდიფიცირებლები
+            </span> */}
+            <div className="rare-keyboard__grid" aria-label="მამოდიფიცირებლები">
+              {diacretials.map((item) => (
                 <button
                   key={item.mark}
                   type="button"
-                  className="rare-keyboard__key"
+                  className="rare-keyboard__key rare-keyboard__key--modifiers"
                   onClick={() => onInsert(item.mark)}
                   disabled={disabled}
                   title={item.definition}
@@ -193,19 +181,17 @@ function RareKeyboard({ isOpen, onToggle, onInsert, disabled = false }) {
             </div>
           </div>
 
-          <div className="rare-keyboard__section">
-            <span className="rare-keyboard__section-label">
-              დიაკრიტიკული ნიშნები
-            </span>
+          <div className="rare-keyboard__section rare-keyboard__section--letters">
+            {/* <span className="rare-keyboard__section-label">იშვიათი ასოები</span> */}
             <div
               className="rare-keyboard__grid"
-              aria-label="დიაკრიტიკული ნიშნები"
+              aria-label="იშვიათი ქართული ასოები"
             >
-              {diacretials.map((item) => (
+              {trueLetters.map((item) => (
                 <button
                   key={item.mark}
                   type="button"
-                  className="rare-keyboard__key"
+                  className="rare-keyboard__key rare-keyboard__key--letters"
                   onClick={() => onInsert(item.mark)}
                   disabled={disabled}
                   title={item.definition}
@@ -218,6 +204,18 @@ function RareKeyboard({ isOpen, onToggle, onInsert, disabled = false }) {
           </div>
         </div>
       ) : null}
+
+      <div className="rare-keyboard__top">
+        <button
+          type="button"
+          onClick={onToggle}
+          className="rare-keyboard__toggle"
+          aria-label={isOpen ? "დამალვა" : "ჩვენება"}
+          title={isOpen ? "დამალვა" : "ჩვენება"}
+        >
+          {isOpen ? "▾" : "▴"}
+        </button>
+      </div>
     </div>
   );
 }

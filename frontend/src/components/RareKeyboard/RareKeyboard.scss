@@ -1,18 +1,28 @@
 // mobile-first
 
 .rare-keyboard {
+  --toggle-safe-width: 96px;
+  --toggle-safe-height: 40px;
+  position: relative;
+  width: fit-content;
+  max-width: 100%;
+  margin-left: auto;
   border: 1px solid #c6d9ea;
   border-radius: 12px;
   background: #f6fbff;
   box-shadow: 0 6px 16px rgba(7, 29, 53, 0.14);
   padding: 8px;
+  min-height: calc(var(--toggle-safe-height) + 16px);
 
   &__top {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-end;
     gap: 8px;
-    margin-bottom: 8px;
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    z-index: 2;
 
     strong {
       font-size: 0.85rem;
@@ -35,6 +45,8 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
+    // padding-right: var(--toggle-safe-width);
+    // padding-bottom: var(--toggle-safe-height);
   }
 
   &__section {
@@ -53,8 +65,10 @@
 
   &__grid {
     display: flex;
-    flex-wrap: wrap;
-    // gap: 5px;
+    flex-wrap: nowrap;
+    gap: 5px;
+    overflow-x: auto;
+    overflow-y: hidden;
   }
 
   &__key {
@@ -78,8 +92,16 @@
     }
   }
 
-  &.is-closed .rare-keyboard__top {
-    margin-bottom: 0;
+  &__key--letters {
+    border-color: #4f8bb5;
+    background: #e9f5ff;
+    color: #0f3f62;
+  }
+
+  &__key--modifiers {
+    border-color: #a66cb6;
+    background: #f7ecfb;
+    color: #5a2a68;
   }
 
   // tablet
