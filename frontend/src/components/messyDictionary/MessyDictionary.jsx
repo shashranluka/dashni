@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { trackGameStart, trackGameComplete } from "../../utils/analytics";
+import { toDisplayText } from "../../utils/georgiaNormalize";
 import "./MessyDictionary.scss";
 
 function getShuffled(array) {
@@ -144,7 +145,9 @@ export default function MessyDictionary({
   function removeWordFromDecks(wordId) {
     setTopDeck((prevTop) => {
       const nextTop = prevTop.filter((c) => c.id !== wordId);
-      setChosenWordIndex((prev) => (nextTop.length ? prev % nextTop.length : 0));
+      setChosenWordIndex((prev) =>
+        nextTop.length ? prev % nextTop.length : 0,
+      );
       return nextTop;
     });
 
@@ -218,7 +221,9 @@ export default function MessyDictionary({
       setWrongIds([]);
 
       setLearnedWords((prev) => {
-        const alreadyInNeeds = needsLearningWords.some((w) => w.id === clicked.id);
+        const alreadyInNeeds = needsLearningWords.some(
+          (w) => w.id === clicked.id,
+        );
         if (alreadyInNeeds) return prev;
         if (prev.some((w) => w.id === clicked.id)) return prev;
         return [...prev, clicked];
@@ -229,7 +234,9 @@ export default function MessyDictionary({
 
       setTopDeck(nextTop);
       setBottomDeck(nextBottom);
-      setChosenWordIndex((prev) => (nextTop.length ? prev % nextTop.length : 0));
+      setChosenWordIndex((prev) =>
+        nextTop.length ? prev % nextTop.length : 0,
+      );
 
       showFixedWord(clicked);
       setIsRevealed(false);
@@ -267,32 +274,35 @@ export default function MessyDictionary({
   const fixedWonWordOverlay =
     isFixedVisible && typeof document !== "undefined"
       ? createPortal(
-        <div className="fixed-won-word-overlay" role="status" aria-live="assertive">
-          <div className="won-word-animation">
-            {direction === "translation-to-word"
-              ? `${wonWord.translation} → ${wonWord.word}`
-              : `${wonWord.word} → ${wonWord.translation}`}
-          </div>
-
-          {isRevealed && (
-            <div className="word-buttons">
-              <button
-                className="btn-learned"
-                onClick={handleLearned}
-              >
-                ნასწავლი
-              </button>
-              <button
-                className="btn-needs-learning"
-                onClick={handleNeedsLearning}
-              >
-                სასწავლი
-              </button>
+          <div
+            className="fixed-won-word-overlay"
+            role="status"
+            aria-live="assertive"
+          >
+            <div className="won-word-animation">
+              {toDisplayText(
+                direction === "translation-to-word"
+                  ? `${wonWord.translation} → ${wonWord.word}`
+                  : `${wonWord.word} → ${wonWord.translation}`,
+              )}
             </div>
-          )}
-        </div>,
-        document.body
-      )
+
+            {isRevealed && (
+              <div className="word-buttons">
+                <button className="btn-learned" onClick={handleLearned}>
+                  ნასწავლი
+                </button>
+                <button
+                  className="btn-needs-learning"
+                  onClick={handleNeedsLearning}
+                >
+                  სასწავლი
+                </button>
+              </div>
+            )}
+          </div>,
+          document.body,
+        )
       : null;
 
   if (gameFinished) {
@@ -304,9 +314,15 @@ export default function MessyDictionary({
           <div className="game-finished-messy">
             <h2>თამაში დასრულდა! 🎉</h2>
             <div className="final-stats">
-              <p>საბოლოო ქულა: <strong>{points}</strong></p>
-              <p>მცდელობა: <strong>{tries}</strong></p>
-              <p>სიზუსტე: <strong>{accuracy}%</strong></p>
+              <p>
+                საბოლოო ქულა: <strong>{points}</strong>
+              </p>
+              <p>
+                მცდელობა: <strong>{tries}</strong>
+              </p>
+              <p>
+                სიზუსტე: <strong>{accuracy}%</strong>
+              </p>
             </div>
 
             <div className="words-summary">
@@ -315,9 +331,11 @@ export default function MessyDictionary({
                 <ul>
                   {learnedWords.map((word) => (
                     <li key={word.id}>
-                      {direction === "translation-to-word"
-                        ? `${word.translation} → ${word.word}`
-                        : `${word.word} → ${word.translation}`}
+                      {toDisplayText(
+                        direction === "translation-to-word"
+                          ? `${word.translation} → ${word.word}`
+                          : `${word.word} → ${word.translation}`,
+                      )}
                     </li>
                   ))}
                 </ul>
@@ -329,9 +347,11 @@ export default function MessyDictionary({
                   <ul>
                     {needsLearningWords.map((word) => (
                       <li key={word.id}>
-                        {direction === "translation-to-word"
-                          ? `${word.translation} → ${word.word}`
-                          : `${word.word} → ${word.translation}`}
+                        {toDisplayText(
+                          direction === "translation-to-word"
+                            ? `${word.translation} → ${word.word}`
+                            : `${word.word} → ${word.translation}`,
+                        )}
                       </li>
                     ))}
                   </ul>
@@ -373,9 +393,11 @@ export default function MessyDictionary({
           {topDeck.length > 0 && (
             <div className="topDataDiv">
               <div className="chosenWordCard" aria-live="polite">
-                {direction === "translation-to-word"
-                  ? topDeck[chosenWordIndex]?.translation
-                  : topDeck[chosenWordIndex]?.word}
+                {toDisplayText(
+                  direction === "translation-to-word"
+                    ? topDeck[chosenWordIndex]?.translation
+                    : topDeck[chosenWordIndex]?.word,
+                )}
               </div>
             </div>
           )}
@@ -403,7 +425,11 @@ export default function MessyDictionary({
                 onClick={() => clickCardHandler(card.id)}
               >
                 <span className="cardFront">
-                  {direction === "translation-to-word" ? card.word : card.translation}
+                  {toDisplayText(
+                    direction === "translation-to-word"
+                      ? card.word
+                      : card.translation,
+                  )}
                 </span>
               </button>
             ))}

@@ -1,18 +1,12 @@
 import { useState, useMemo } from "react";
+import { toDisplayText } from "../../utils/georgiaNormalize";
 import "./Dictionary.scss";
 import { getShuffled } from "../../utils/getData";
 // import WonWord from "../wonWord/WonWord";
 
 export default function Dictionary(props) {
-
-  const {
-    setPartOfGame,
-    cardsData,
-    points,
-    setPoints,
-    tries,
-    setTries,
-  } = props;
+  const { setPartOfGame, cardsData, points, setPoints, tries, setTries } =
+    props;
   const [chosenWordIndex, setChosenWordIndex] = useState(0);
   const [wonWord, setWonWord] = useState([{ word: "", translation: "" }]);
   const [isFixedVisible, setIsFixedVisible] = useState(false);
@@ -49,7 +43,7 @@ export default function Dictionary(props) {
 
       // დავამატოთ ინდექსი არასწორების სიაში, თუ უკვე არ არის
       if (!wrongIndices.includes(index)) {
-        setWrongIndices(prev => [...prev, index]);
+        setWrongIndices((prev) => [...prev, index]);
       }
     }
   }
@@ -57,33 +51,29 @@ export default function Dictionary(props) {
   return (
     <div className="dictionary">
       <div className="topSpace">
-        {
-          bottomData.length > 0 ? (
-            <div className="topDataDiv">
-              <div className="chosenWordCard">
-                {topData[chosenWordIndex].translation}
-              </div>
-              <div className="nextButton" onClick={clickNextHandler}></div>
+        {bottomData.length > 0 ? (
+          <div className="topDataDiv">
+            <div className="chosenWordCard">
+              {toDisplayText(topData[chosenWordIndex].translation)}
             </div>
-          ) : (
-            <div className="next_game">
-              <button onClick={() => setPartOfGame(2)}>შემდეგი ეტაპი</button>
-            </div>
-          )
-        }
+            <div className="nextButton" onClick={clickNextHandler}></div>
+          </div>
+        ) : (
+          <div className="next_game">
+            <button onClick={() => setPartOfGame(2)}>შემდეგი ეტაპი</button>
+          </div>
+        )}
       </div>
       <div className="bottomSpace">
         {bottomData.map((card, index) => (
           <div
             key={index}
-            className={`card ${wrongIndices.includes(index) ? 'hidden-text' : ''}`}
+            className={`card ${wrongIndices.includes(index) ? "hidden-text" : ""}`}
             onClick={() => {
               clickCardHandler(index);
             }}
           >
-            <div className="cardFront">
-              {card.word}
-            </div>
+            <div className="cardFront">{toDisplayText(card.word)}</div>
           </div>
         ))}
       </div>
@@ -104,5 +94,5 @@ export default function Dictionary(props) {
         /> */}
       </div>
     </div>
-  )
+  );
 }

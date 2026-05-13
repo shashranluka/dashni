@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import AudioPlayer from "../../components/AudioPlayer/AudioPlayer";
 import RareKeyboard from "../../components/RareKeyboard/RareKeyboard";
 import newRequest from "../../utils/newRequest";
+import { toDisplayText } from "../../utils/georgiaNormalize";
 import "./EditorPage.scss";
 
 const AUDIO_FILE = "src/assets/audio_files/adas_mier_moyolili_zghapari.m4a";
@@ -9,17 +10,20 @@ const AUDIO_FILE = "src/assets/audio_files/adas_mier_moyolili_zghapari.m4a";
 function EditorPage() {
   const [segments, setSegments] = useState([]);
   const [selectedSegmentId, setSelectedSegmentId] = useState("");
-  const [textDraft, setTextDraft] = useState("");
+  const [textDraft, setTextDraft] = useState(""); // ← RAW Unicode
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const [isKeyboardOpen, setIsKeyboardOpen] = useState(true);
   const textAreaRef = useRef(null);
-  console.log("EditorPage render:", { segments, selectedSegmentId, textDraft, loading, saving, error, notice });
+  console.log("segments", segments);
   const selectedSegment = useMemo(
-    () => segments.find((segment) => String(segment.id) === String(selectedSegmentId)) || null,
-    [segments, selectedSegmentId]
+    () =>
+      segments.find(
+        (segment) => String(segment.id) === String(selectedSegmentId),
+      ) || null,
+    [segments, selectedSegmentId],
   );
 
   useEffect(() => {
@@ -34,21 +38,22 @@ function EditorPage() {
         if (nextSegments.length > 0) {
           const firstSegment = nextSegments[0];
           setSelectedSegmentId(String(firstSegment.id));
-          setTextDraft((firstSegment.text || "").normalize("NFC"));
+          setTextDraft(firstSegment.text || "");
         }
       } catch (err) {
-        setError(err?.response?.data?.message || "მონაცემების ჩატვირთვა ვერ მოხერხდა");
+        setError(
+          err?.response?.data?.message || "მონაცემების ჩატვირთვა ვერ მოხერხდა",
+        );
       } finally {
         setLoading(false);
       }
     };
-
     fetchData();
   }, []);
 
   useEffect(() => {
     if (!selectedSegment) return;
-    setTextDraft((selectedSegment.text || "").normalize("NFC"));
+    setTextDraft(selectedSegment.text || "");
     setNotice("");
     setError("");
   }, [selectedSegment]);
@@ -56,7 +61,7 @@ function EditorPage() {
   const handleSave = async () => {
     if (!selectedSegment) return;
 
-    const nextText = textDraft.normalize("NFC").trim();
+    const nextText = textDraft.trim();
     if (!nextText) {
       setError("ტექსტი სავალდებულოა");
       return;
@@ -67,19 +72,24 @@ function EditorPage() {
     setNotice("");
 
     try {
-      const response = await newRequest.put(`/audio/segments/${selectedSegment.id}`, {
-        text: nextText,
-      });
+      const response = await newRequest.put(
+        `/audio/segments/${selectedSegment.id}`,
+        {
+          text: nextText,
+        },
+      );
 
       const updated = response.data;
 
       setSegments((prev) =>
         prev.map((segment) =>
-          segment.id === updated.id ? { ...segment, text: updated.text, time: updated.time } : segment
-        )
+          segment.id === updated.id
+            ? { ...segment, text: updated.text, time: updated.time }
+            : segment,
+        ),
       );
 
-      setTextDraft((updated.text || "").normalize("NFC"));
+      setTextDraft(updated.text || "");
       setNotice("ტექსტი წარმატებით განახლდა");
     } catch (err) {
       setError(err?.response?.data?.message || "ტექსტის შენახვა ვერ მოხერხდა");
@@ -91,7 +101,7 @@ function EditorPage() {
   const handleInsertRareSymbol = (symbol) => {
     const textareaElement = textAreaRef.current;
     if (!textareaElement) {
-      setTextDraft((prev) => `${prev}${symbol}`.normalize("NFC"));
+      setTextDraft((prev) => `${prev}${symbol}`);
       return;
     }
 
@@ -99,7 +109,7 @@ function EditorPage() {
     const selectionEnd = textareaElement.selectionEnd ?? textDraft.length;
 
     const nextText = `${textDraft.slice(0, selectionStart)}${symbol}${textDraft.slice(selectionEnd)}`;
-    setTextDraft(nextText.normalize("NFC"));
+    setTextDraft(nextText);
 
     window.requestAnimationFrame(() => {
       const nextCursor = selectionStart + symbol.length;
@@ -120,11 +130,14 @@ function EditorPage() {
     <section className="editor-page">
       <header className="editor-header">
         <h1>Editor Page</h1>
-        <p>ამ ეტაპზე ხელმისაწვდომია მხოლოდ audio_segments ტექსტების რედაქტირება.</p>
+        <p>
+          ამ ეტაპზე ხელმისაწვდომია მხოლოდ audio_segments ტექსტების რედაქტირება.
+        </p>
       </header>
 
       <div className="editor-mode-note">
-        <strong>მომავალი:</strong> სიტყვების რედაქტირების ბლოკი დაემატება შემდეგ ვერსიაში.
+        <strong>მომავალი:</strong> სიტყვების რედაქტირების ბლოკი დაემატება შემდეგ
+        ვერსიაში.
       </div>
 
       <div className="editor-audio-wrap">
@@ -134,7 +147,10 @@ function EditorPage() {
       <div className="editor-panel">
         <label className="field">
           <span>ეპიზოდი</span>
-          <select value={selectedSegmentId} onChange={(event) => setSelectedSegmentId(event.target.value)}>
+          <select
+            value={selectedSegmentId}
+            onChange={(event) => setSelectedSegmentId(event.target.value)}
+          >
             {segments.map((segment) => (
               <option key={segment.id} value={segment.id}>
                 ეპიზოდი {segment.id} ({segment.time})
@@ -149,13 +165,17 @@ function EditorPage() {
             ref={textAreaRef}
             rows={12}
             value={textDraft}
-            onChange={(event) => setTextDraft(event.target.value.normalize("NFC"))}
+            onChange={(event) => setTextDraft(event.target.value)}
             placeholder="ტექსტი"
           />
         </label>
 
         <div className="actions">
-          <button type="button" onClick={handleSave} disabled={saving || !selectedSegment}>
+          <button
+            type="button"
+            onClick={handleSave}
+            disabled={saving || !selectedSegment}
+          >
             {saving ? "ინახება..." : "შენახვა"}
           </button>
         </div>
@@ -163,6 +183,8 @@ function EditorPage() {
         {notice ? <p className="message ok">{notice}</p> : null}
         {error ? <p className="message error">{error}</p> : null}
       </div>
+
+      <div className="preview">{toDisplayText(textDraft)}</div>
 
       <div className="editor-keyboard-dock">
         <RareKeyboard
