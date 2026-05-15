@@ -1,106 +1,120 @@
-import { useState, useEffect, useRef } from 'react'
-import { trackAudioPlay, trackAudioSkip } from '../../utils/analytics'
-import './AudioPlayer.scss'
+import { useState, useEffect, useRef } from "react";
+import { trackAudioPlay, trackAudioSkip } from "../../utils/analytics";
+import "./AudioPlayer.scss";
 
-function AudioPlayer({ src, startTime }) {
-  const audioRef = useRef(null)
-  const [isPlaying, setIsPlaying] = useState(false)
-  const [currentTime, setCurrentTime] = useState(0)
-  const [duration, setDuration] = useState(0)
-  const [volume, setVolume] = useState(1)
-  const [isMuted, setIsMuted] = useState(false)
+function AudioPlayer({ src, startTime, onTimeUpdate, seekTrigger }) {
+  const audioRef = useRef(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [volume, setVolume] = useState(1);
+  const [isMuted, setIsMuted] = useState(false);
 
   // Convert time format "M:SS" to seconds
   const convertTimeToSeconds = (timeStr) => {
-    if (!timeStr) return 0
-    const parts = timeStr.split(':')
-    const minutes = parseInt(parts[0], 10)
-    const seconds = parseInt(parts[1], 10)
-    return minutes * 60 + seconds
-  }
+    if (!timeStr) return 0;
+    const parts = timeStr.split(":");
+    const minutes = parseInt(parts[0], 10);
+    const seconds = parseInt(parts[1], 10);
+    return minutes * 60 + seconds;
+  };
 
   useEffect(() => {
-    const audio = audioRef.current
-    if (!audio) return
+    const audio = audioRef.current;
+    if (!audio) return;
 
-    const updateTime = () => setCurrentTime(audio.currentTime)
-    const updateDuration = () => setDuration(audio.duration)
-    
-    audio.addEventListener('timeupdate', updateTime)
-    audio.addEventListener('loadedmetadata', updateDuration)
-    audio.addEventListener('ended', () => setIsPlaying(false))
+    const updateTime = () => {
+      setCurrentTime(audio.currentTime);
+      if (onTimeUpdate) {
+        onTimeUpdate(audio.currentTime);
+      }
+    };
+    const updateDuration = () => setDuration(audio.duration);
+
+    audio.addEventListener("timeupdate", updateTime);
+    audio.addEventListener("loadedmetadata", updateDuration);
+    audio.addEventListener("ended", () => setIsPlaying(false));
 
     return () => {
-      audio.removeEventListener('timeupdate', updateTime)
-      audio.removeEventListener('loadedmetadata', updateDuration)
-      audio.removeEventListener('ended', () => setIsPlaying(false))
-    }
-  }, [])
+      audio.removeEventListener("timeupdate", updateTime);
+      audio.removeEventListener("loadedmetadata", updateDuration);
+      audio.removeEventListener("ended", () => setIsPlaying(false));
+    };
+  }, [onTimeUpdate]);
 
-  // Jump to startTime when it changes
+  // Jump to startTime when it changes, or when parent explicitly requests re-seek.
   useEffect(() => {
     if (startTime && audioRef.current) {
-      const timeInSeconds = convertTimeToSeconds(startTime)
-      audioRef.current.currentTime = timeInSeconds
-      setCurrentTime(timeInSeconds)
+      const timeInSeconds = convertTimeToSeconds(startTime);
+      audioRef.current.currentTime = timeInSeconds;
+      setCurrentTime(timeInSeconds);
+      if (onTimeUpdate) {
+        onTimeUpdate(timeInSeconds);
+      }
     }
-  }, [startTime])
+  }, [onTimeUpdate, seekTrigger, startTime]);
 
   const togglePlay = () => {
     if (isPlaying) {
-      audioRef.current.pause()
+      audioRef.current.pause();
     } else {
-      audioRef.current.play()
+      audioRef.current.play();
       trackAudioPlay(src);
     }
-    setIsPlaying(!isPlaying)
-  }
+    setIsPlaying(!isPlaying);
+  };
 
   const skipBySeconds = (seconds) => {
-    if (!audioRef.current) return
+    if (!audioRef.current) return;
 
-    const audioDuration = duration || audioRef.current.duration || 0
+    const audioDuration = duration || audioRef.current.duration || 0;
     const nextTime = Math.min(
       Math.max(audioRef.current.currentTime + seconds, 0),
-      audioDuration
-    )
+      audioDuration,
+    );
 
-    audioRef.current.currentTime = nextTime
-    setCurrentTime(nextTime)
-    trackAudioSkip(seconds > 0 ? 'forward' : 'backward', Math.abs(seconds));
-  }
+    audioRef.current.currentTime = nextTime;
+    setCurrentTime(nextTime);
+    if (onTimeUpdate) {
+      onTimeUpdate(nextTime);
+    }
+    trackAudioSkip(seconds > 0 ? "forward" : "backward", Math.abs(seconds));
+  };
 
   const handleProgressChange = (e) => {
-    const newTime = parseFloat(e.target.value)
-    audioRef.current.currentTime = newTime
-    setCurrentTime(newTime)
-  }
+    const newTime = parseFloat(e.target.value);
+    audioRef.current.currentTime = newTime;
+    setCurrentTime(newTime);
+    if (onTimeUpdate) {
+      onTimeUpdate(newTime);
+    }
+  };
 
   const handleVolumeChange = (e) => {
-    const newVolume = parseFloat(e.target.value)
-    audioRef.current.volume = newVolume
-    setVolume(newVolume)
+    const newVolume = parseFloat(e.target.value);
+    audioRef.current.volume = newVolume;
+    setVolume(newVolume);
     if (newVolume > 0 && isMuted) {
-      setIsMuted(false)
+      setIsMuted(false);
     }
-  }
+  };
 
   const toggleMute = () => {
     if (isMuted) {
-      audioRef.current.volume = volume
-      setIsMuted(false)
+      audioRef.current.volume = volume;
+      setIsMuted(false);
     } else {
-      audioRef.current.volume = 0
-      setIsMuted(true)
+      audioRef.current.volume = 0;
+      setIsMuted(true);
     }
-  }
+  };
 
   const formatTime = (time) => {
-    if (isNaN(time)) return '0:00'
-    const minutes = Math.floor(time / 60)
-    const seconds = Math.floor(time % 60)
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`
-  }
+    if (isNaN(time)) return "0:00";
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
+    return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+  };
 
   return (
     <div className="audio-player">
@@ -125,16 +139,24 @@ function AudioPlayer({ src, startTime }) {
           <span className="skip-label">-30 წ</span>
         </button> */}
 
-        <button onClick={() => skipBySeconds(-10)} className="control-btn" title="10 წამით უკან">
+        <button
+          onClick={() => skipBySeconds(-10)}
+          className="control-btn"
+          title="10 წამით უკან"
+        >
           <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6l-8.5 6z"/>
+            <path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6l-8.5 6z" />
           </svg>
           <span className="skip-label">-10 წ</span>
         </button>
 
-        <button onClick={() => skipBySeconds(-5)} className="control-btn" title="5 წამით უკან">
+        <button
+          onClick={() => skipBySeconds(-5)}
+          className="control-btn"
+          title="5 წამით უკან"
+        >
           <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6l-8.5 6z"/>
+            <path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6l-8.5 6z" />
           </svg>
           <span className="skip-label">-5 წ</span>
         </button>
@@ -142,25 +164,33 @@ function AudioPlayer({ src, startTime }) {
         <button onClick={togglePlay} className="control-btn play-btn">
           {isPlaying ? (
             <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/>
+              <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
             </svg>
           ) : (
             <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M8 5v14l11-7z"/>
+              <path d="M8 5v14l11-7z" />
             </svg>
           )}
         </button>
 
-        <button onClick={() => skipBySeconds(5)} className="control-btn" title="5 წამით წინ">
+        <button
+          onClick={() => skipBySeconds(5)}
+          className="control-btn"
+          title="5 წამით წინ"
+        >
           <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M4 18l8.5-6L4 6v12zm9-12v12l8.5-6L13 6z"/>
+            <path d="M4 18l8.5-6L4 6v12zm9-12v12l8.5-6L13 6z" />
           </svg>
           <span className="skip-label">+5 წ</span>
         </button>
 
-        <button onClick={() => skipBySeconds(10)} className="control-btn" title="10 წამით წინ">
+        <button
+          onClick={() => skipBySeconds(10)}
+          className="control-btn"
+          title="10 წამით წინ"
+        >
           <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M4 18l8.5-6L4 6v12zm9-12v12l8.5-6L13 6z"/>
+            <path d="M4 18l8.5-6L4 6v12zm9-12v12l8.5-6L13 6z" />
           </svg>
           <span className="skip-label">+10 წ</span>
         </button>
@@ -173,19 +203,19 @@ function AudioPlayer({ src, startTime }) {
         </button> */}
 
         <div className="volume-container">
-          <svg 
-            width="24" 
-            height="24" 
-            viewBox="0 0 24 24" 
-            fill="currentColor" 
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="currentColor"
             className="volume-icon"
             onClick={toggleMute}
-            style={{ cursor: 'pointer' }}
+            style={{ cursor: "pointer" }}
           >
             {isMuted ? (
-              <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>
+              <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z" />
             ) : (
-              <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+              <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
             )}
           </svg>
           <div className="volume-slider-wrapper">
@@ -202,10 +232,8 @@ function AudioPlayer({ src, startTime }) {
           </div>
         </div>
       </div>
-
-      
     </div>
-  )
+  );
 }
 
-export default AudioPlayer
+export default AudioPlayer;

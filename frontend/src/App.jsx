@@ -1,20 +1,21 @@
-import { useEffect, useState } from 'react'
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import Navbar from './components/navbar/Navbar'
-import Home from './pages/home/Home'
-import Words from './pages/words/Words'
-import Sentences from './pages/sentences/Sentences'
-import Listen from './pages/listen/Listen'
-import Login from './pages/login/Login'
-import Register from './pages/register/Register'
-import CookieConsent from './components/CookieConsent/CookieConsent'
-import RequireAdmin from './components/RequireAdmin/RequireAdmin'
-import AdminPage from './pages/admin/AdminPage'
-import RequireEditor from './components/RequireEditor/RequireEditor'
-import EditorPage from './pages/editor/EditorPage'
-import usePageTracking from './utils/usePageTracking'
-import { initGA, hasConsent } from './utils/analytics'
-import './App.scss'
+import { useEffect, useState } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Navbar from "./components/navbar/Navbar";
+import Home from "./pages/home/Home";
+import Words from "./pages/words/Words";
+import Sentences from "./pages/sentences/Sentences";
+import Listen from "./pages/listen/Listen";
+import Poligon from "./pages/poligon/Poligon";
+import Login from "./pages/login/Login";
+import Register from "./pages/register/Register";
+import CookieConsent from "./components/CookieConsent/CookieConsent";
+import RequireAdmin from "./components/RequireAdmin/RequireAdmin";
+import AdminPage from "./pages/admin/AdminPage";
+import RequireEditor from "./components/RequireEditor/RequireEditor";
+import EditorPage from "./pages/editor/EditorPage";
+import usePageTracking from "./utils/usePageTracking";
+import { initGA, hasConsent } from "./utils/analytics";
+import "./App.scss";
 
 function AppContent() {
   useEffect(() => {
@@ -23,13 +24,13 @@ function AppContent() {
     const consentGranted = hasConsent();
     initGA(consentGranted);
   }, []);
-  
+
   usePageTracking();
 
   return (
     <>
       <CookieConsent />
-      <div style={{ minHeight: '100vh' }}>
+      <div style={{ minHeight: "100vh" }}>
         <Navbar />
         <Routes>
           {/* <Route path="/" element={<Home />} /> */}
@@ -37,10 +38,25 @@ function AppContent() {
           <Route path="/words" element={<Words />} />
           <Route path="/sentences" element={<Sentences />} />
           <Route path="/listen" element={<Listen />} />
+          <Route path="/poligon" element={<Poligon />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/admin" element={<RequireAdmin><AdminPage /></RequireAdmin>} />
-          <Route path="/editor-page" element={<RequireEditor><EditorPage /></RequireEditor>} />
+          <Route
+            path="/admin"
+            element={
+              <RequireAdmin>
+                <AdminPage />
+              </RequireAdmin>
+            }
+          />
+          <Route
+            path="/editor-page"
+            element={
+              <RequireEditor>
+                <EditorPage />
+              </RequireEditor>
+            }
+          />
         </Routes>
       </div>
     </>
@@ -52,7 +68,7 @@ function App() {
     <Router>
       <AppContent />
     </Router>
-  )
+  );
 }
 
-export default App
+export default App;
