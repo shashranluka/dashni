@@ -194,6 +194,19 @@ function EditorPage() {
           disabled={!selectedSegment}
         />
       </div>
+
+      <div className="editor-segments-list">
+        <h2>ყველა ეპიზოდი</h2>
+        <ol>
+          {segments.map((segment) => (
+            <li key={segment.id}>
+              ეპიზოდი {segment.id} - დრო: {segment.time}
+              <br />
+              {segment.text}
+            </li>
+          ))}
+        </ol>
+      </div>
     </section>
   );
 }
