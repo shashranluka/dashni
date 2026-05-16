@@ -6,9 +6,9 @@ import MessyDictionary from "../../components/messyDictionary/MessyDictionary";
 import GameWords from "../../components/GameWords/GameWords";
 import WordSelector from "../../components/WordSelector/WordSelector";
 import AudioPlayer from "../../components/AudioPlayer/AudioPlayer";
-import "./Listen.scss";
+import "./AudioToWordGame.scss";
 
-function Listen() {
+function AudioToWordGame() {
   const [gameData, setGameData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -487,4 +487,4 @@ function Listen() {
   );
 }
 
-export default Listen;
+export default AudioToWordGame;
