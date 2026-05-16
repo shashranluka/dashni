@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import newRequest from "../../utils/newRequest";
 import { toDisplayText } from "../../utils/georgiaNormalize";
 import AnkiGame from "../../components/AnkiLikeGame/AnkiLikeGame";
@@ -129,9 +129,9 @@ function Listen() {
     setGameStarted(false); // Reset game when changing segment
   };
 
-  const handleSettingsChange = (nextSettings) => {
+  const handleSettingsChange = useCallback((nextSettings) => {
     setSelectorSettings(nextSettings);
-  };
+  }, []);
 
   const handleSettingsToggle = () => {
     setIsSettingsOpen((prev) => {
