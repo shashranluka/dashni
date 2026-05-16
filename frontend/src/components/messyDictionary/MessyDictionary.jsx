@@ -29,7 +29,11 @@ export default function MessyDictionary({
   const [gameFinished, setGameFinished] = useState(false);
   const [learnedWords, setLearnedWords] = useState([]);
   const [needsLearningWords, setNeedsLearningWords] = useState([]);
-  const [isRevealed, setIsRevealed] = useState(false);
+  const [playStyle, setPlayStyle] = useState(
+    gameType === "cards" ? "cards" : "typing",
+  );
+  const [typingAnswer, setTypingAnswer] = useState("");
+  const [typingFeedback, setTypingFeedback] = useState(null);
 
   const [topDeck, setTopDeck] = useState([]);
   const [bottomDeck, setBottomDeck] = useState([]);
@@ -69,13 +73,15 @@ export default function MessyDictionary({
     setGameFinished(false);
     setLearnedWords([]);
     setNeedsLearningWords([]);
-    setIsRevealed(false);
+    setPlayStyle(gameType === "cards" ? "cards" : "typing");
+    setTypingAnswer("");
+    setTypingFeedback(null);
 
     if (hideTimerRef.current) {
       clearTimeout(hideTimerRef.current);
       hideTimerRef.current = null;
     }
-  }, [cardsData]);
+  }, [cardsData, gameType]);
 
   useEffect(() => {
     resetGame();
@@ -164,37 +170,7 @@ export default function MessyDictionary({
     if (!topDeck.length) return;
     setChosenWordIndex((prev) => (prev + 1) % topDeck.length);
     setTries((t) => t + 1);
-  }
-
-  function handleRevealClick() {
-    if (!topDeck.length) return;
-    const current = topDeck[chosenWordIndex];
-    showFixedWord(current);
-    setIsRevealed(true);
-  }
-
-  function handleLearned() {
-    if (!wonWord.word) return;
-    setLearnedWords((prev) => [...prev, wonWord]);
-
-    // setLearnedWords((prev) => {
-    //   const alreadyInNeeds = needsLearningWords.some((w) => w.id === wonWord.id);
-    //   if (alreadyInNeeds) return prev;
-    //   if (prev.some((w) => w.id === wonWord.id)) return prev;
-    //   return [...prev, wonWord];
-    // });
-
-    removeWordFromDecks(wonWord.id);
-    setIsFixedVisible(false);
-    setIsRevealed(false);
-  }
-
-  function handleNeedsLearning() {
-    if (!wonWord.word) return;
-    setNeedsLearningWords((prev) => [...prev, wonWord]);
-    removeWordFromDecks(wonWord.id);
-    setIsFixedVisible(false);
-    setIsRevealed(false);
+    setTypingFeedback(null);
   }
 
   function playFeedbackSound(type) {
@@ -205,6 +181,54 @@ export default function MessyDictionary({
 
     targetSoundRef.current.currentTime = 0;
     targetSoundRef.current.play().catch(() => {});
+  }
+
+  function markLearnedWord(wordObj) {
+    setLearnedWords((prev) => {
+      const alreadyInNeeds = needsLearningWords.some((w) => w.id === wordObj.id);
+      if (alreadyInNeeds) return prev;
+      if (prev.some((w) => w.id === wordObj.id)) return prev;
+      return [...prev, wordObj];
+    });
+  }
+
+  function normalizeAnswer(value = "") {
+    return value.toString().trim().toLowerCase();
+  }
+
+  function handleTypingSubmit(e) {
+    e.preventDefault();
+    if (!topDeck.length) return;
+
+    const current = topDeck[chosenWordIndex];
+    if (!current) return;
+
+    const expected =
+      direction === "translation-to-word" ? current.word : current.translation;
+    const isCorrect =
+      normalizeAnswer(typingAnswer) === normalizeAnswer(expected);
+
+    setTries((t) => t + 1);
+
+    if (isCorrect) {
+      playFeedbackSound("success");
+      setPoints((p) => p + 1);
+      markLearnedWord(current);
+      showFixedWord(current);
+      removeWordFromDecks(current.id);
+      setTypingAnswer("");
+      setTypingFeedback({ correct: true, expected });
+
+      if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
+      hideTimerRef.current = setTimeout(() => {
+        setIsFixedVisible(false);
+      }, 1800);
+      return;
+    }
+
+    playFeedbackSound("error");
+    setNeedsLearningWords((prev) => [...prev, current]);
+    setTypingFeedback({ correct: false, expected });
   }
 
   function clickCardHandler(cardId) {
@@ -219,15 +243,7 @@ export default function MessyDictionary({
       setPoints((p) => p + 1);
       setTries((t) => t + 1);
       setWrongIds([]);
-
-      setLearnedWords((prev) => {
-        const alreadyInNeeds = needsLearningWords.some(
-          (w) => w.id === clicked.id,
-        );
-        if (alreadyInNeeds) return prev;
-        if (prev.some((w) => w.id === clicked.id)) return prev;
-        return [...prev, clicked];
-      });
+      markLearnedWord(clicked);
 
       const nextTop = topDeck.filter((c) => c.id !== chosen.id);
       const nextBottom = bottomDeck.filter((c) => c.id !== clicked.id);
@@ -239,7 +255,7 @@ export default function MessyDictionary({
       );
 
       showFixedWord(clicked);
-      setIsRevealed(false);
+      setTypingFeedback(null);
 
       if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
       hideTimerRef.current = setTimeout(() => {
@@ -257,6 +273,7 @@ export default function MessyDictionary({
       // setBottomDeck(nextBottom);
       // chosen სიტყვა გადავიდეს სასწავლში
       setNeedsLearningWords((prev) => [...prev, chosen, clicked]);
+      setTypingFeedback(null);
 
       // if (nextBottom.length === 0) {
       //   if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
@@ -286,20 +303,6 @@ export default function MessyDictionary({
                   : `${wonWord.word} → ${wonWord.translation}`,
               )}
             </div>
-
-            {isRevealed && (
-              <div className="word-buttons">
-                <button className="btn-learned" onClick={handleLearned}>
-                  ნასწავლი
-                </button>
-                <button
-                  className="btn-needs-learning"
-                  onClick={handleNeedsLearning}
-                >
-                  სასწავლი
-                </button>
-              </div>
-            )}
           </div>,
           document.body,
         )
@@ -372,11 +375,41 @@ export default function MessyDictionary({
   return (
     <>
       <div className="dictionary">
+        <div className="play-style-switch" role="group" aria-label="თამაშის რეჟიმი">
+          <button
+            type="button"
+            className={playStyle === "cards" ? "active" : ""}
+            onClick={() => {
+              setPlayStyle("cards");
+              setTypingFeedback(null);
+            }}
+          >
+            ბარათები
+          </button>
+          <button
+            type="button"
+            className={playStyle === "typing" ? "active" : ""}
+            onClick={() => {
+              setPlayStyle("typing");
+              setTypingFeedback(null);
+            }}
+          >
+            აკრეფა
+          </button>
+        </div>
+
         <div className="game-panel">
-          {gameType === "cards" && (
+          {playStyle === "cards" && (
             <div className="game-stats">
               <div className="stat">ქულა: {points}</div>
               <div className="stat">მცდელობა: {tries}</div>
+            </div>
+          )}
+          {playStyle === "typing" && (
+            <div className="game-stats">
+              <div className="stat">ქულა: {points}</div>
+              <div className="stat">მცდელობა: {tries}</div>
+              <div className="stat">დარჩენილია: {topDeck.length}</div>
             </div>
           )}
           <button
@@ -402,20 +435,45 @@ export default function MessyDictionary({
             </div>
           )}
         </div>
-        {gameType === "anki" && (
-          <div className="anki-controls">
-            <button
-              type="button"
-              className="revealButton"
-              onClick={handleRevealClick}
-              disabled={!topDeck.length}
-            >
-              გამოჩენა
-            </button>
-            <div className="anki-remaining">დარჩენილია: {topDeck.length}</div>
+
+        {playStyle === "typing" && (
+          <div className="typing-area">
+            <form onSubmit={handleTypingSubmit} className="typing-form">
+              <input
+                type="text"
+                value={typingAnswer}
+                onChange={(e) => setTypingAnswer(e.target.value)}
+                placeholder={
+                  direction === "translation-to-word"
+                    ? "შეიყვანე უცხო სიტყვა..."
+                    : "შეიყვანე თარგმანი..."
+                }
+                autoFocus
+                className="typing-input"
+              />
+              <button type="submit" className="typing-submit-btn">
+                შემოწმება
+              </button>
+            </form>
+
+            {typingFeedback && (
+              <div
+                className={`typing-feedback ${typingFeedback.correct ? "correct" : "incorrect"}`}
+              >
+                {typingFeedback.correct ? (
+                  <p>✓ სწორია</p>
+                ) : (
+                  <p>
+                    ✗ არასწორია. სწორი პასუხი: {" "}
+                    <strong>{toDisplayText(typingFeedback.expected)}</strong>
+                  </p>
+                )}
+              </div>
+            )}
           </div>
         )}
-        {gameType === "cards" && (
+
+        {playStyle === "cards" && (
           <div className="bottomSpace">
             {bottomDeck.map((card) => (
               <button

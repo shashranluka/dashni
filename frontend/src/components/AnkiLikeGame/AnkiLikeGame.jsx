@@ -2,18 +2,21 @@ import { useState, useEffect } from "react";
 import { toDisplayText } from "../../utils/georgiaNormalize";
 import "./AnkiLikeGame.scss";
 
-function AnkiLikeGame({ words }) {
+function AnkiLikeGame({ words, direction = "translation-to-word" }) {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [userAnswer, setUserAnswer] = useState("");
-  const [score, setScore] = useState(0);
-  const [showResult, setShowResult] = useState(false);
-  const [isCorrect, setIsCorrect] = useState(false);
   const [isRandom, setIsRandom] = useState(false);
   const [displayWords, setDisplayWords] = useState([]);
+  const [learnedWords, setLearnedWords] = useState([]);
+  const [needsLearningWords, setNeedsLearningWords] = useState([]);
+  const [isRevealVisible, setIsRevealVisible] = useState(false);
 
   useEffect(() => {
     if (words && words.length > 0) {
       setDisplayWords([...words]);
+      setCurrentIndex(0);
+      setLearnedWords([]);
+      setNeedsLearningWords([]);
+      setIsRevealVisible(false);
     }
   }, [words]);
 
@@ -43,31 +46,37 @@ function AnkiLikeGame({ words }) {
     }
 
     setCurrentIndex(0);
-    setUserAnswer("");
-    setShowResult(false);
-    setIsCorrect(false);
-    setScore(0);
+    setLearnedWords([]);
+    setNeedsLearningWords([]);
+    setIsRevealVisible(false);
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const correct =
-      userAnswer.trim().toLowerCase() === currentWord.translation.toLowerCase();
-    setIsCorrect(correct);
-    setShowResult(true);
-
-    if (correct) {
-      setScore(score + 1);
-    }
+  const addUniqueWord = (setter, wordObj) => {
+    setter((prev) => {
+      const key = (item) => `${item?.the_word || item?.word || ""}__${item?.translation || ""}`;
+      const targetKey = key(wordObj);
+      if (prev.some((item) => key(item) === targetKey)) {
+        return prev;
+      }
+      return [...prev, wordObj];
+    });
   };
 
-  const handleNext = () => {
+  const goToNextWord = () => {
     if (currentIndex < displayWords.length - 1) {
       setCurrentIndex(currentIndex + 1);
-      setUserAnswer("");
-      setShowResult(false);
-      setIsCorrect(false);
+      setIsRevealVisible(false);
     }
+  };
+
+  const handleNeedsLearning = () => {
+    addUniqueWord(setNeedsLearningWords, currentWord);
+    goToNextWord();
+  };
+
+  const handleLearned = () => {
+    addUniqueWord(setLearnedWords, currentWord);
+    goToNextWord();
   };
 
   const handleRestart = () => {
@@ -75,13 +84,30 @@ function AnkiLikeGame({ words }) {
       setDisplayWords(shuffleArray(words));
     }
     setCurrentIndex(0);
-    setUserAnswer("");
-    setScore(0);
-    setShowResult(false);
-    setIsCorrect(false);
+    setLearnedWords([]);
+    setNeedsLearningWords([]);
+    setIsRevealVisible(false);
   };
 
-  const isGameFinished = currentIndex === displayWords.length - 1 && showResult;
+  const isGameFinished = currentIndex === displayWords.length - 1;
+  const isTranslationToWord = direction === "translation-to-word";
+  const currentPromptText = isTranslationToWord
+    ? currentWord.translation
+    : currentWord.the_word || currentWord.word || "";
+  const revealText = isTranslationToWord
+    ? currentWord.the_word || currentWord.word || ""
+    : currentWord.translation || "";
+  const revealButtonLabel = isTranslationToWord
+    ? "სიტყვის ჩვენება"
+    : "თარგმანის ჩვენება";
+
+  const formatPair = (wordObj) => {
+    const wordText = wordObj?.the_word || wordObj?.word || "";
+    const translationText = wordObj?.translation || "";
+    return isTranslationToWord
+      ? `${translationText} → ${wordText}`
+      : `${wordText} → ${translationText}`;
+  };
 
   return (
     <div className="anki-like-game">
@@ -102,9 +128,6 @@ function AnkiLikeGame({ words }) {
             </span>
           </div>
         </div>
-        <div className="score">
-          ქულა: {score} / {displayWords.length || words.length}
-        </div>
         <div className="progress">
           სიტყვა {currentIndex + 1} / {displayWords.length || words.length}
         </div>
@@ -112,8 +135,22 @@ function AnkiLikeGame({ words }) {
 
       <div className="game-content">
         <div className="word-display">
-          <h3>თარგმნე სიტყვა:</h3>
-          <p className="word">{toDisplayText(currentWord.translation)}</p>
+          <h3>{isTranslationToWord ? "თარგმნე სიტყვა:" : "მიუთითე თარგმანი:"}</h3>
+          <p className="word">{toDisplayText(currentPromptText)}</p>
+          {!isGameFinished && (
+            <>
+              <button
+                type="button"
+                className="reveal-btn"
+                onClick={() => setIsRevealVisible((prev) => !prev)}
+              >
+                {revealButtonLabel}
+              </button>
+              {isRevealVisible && (
+                <p className="revealed-word">{toDisplayText(revealText)}</p>
+              )}
+            </>
+          )}
           {/* {currentWord.file_path && (
             <audio controls src={currentWord.file_path} className="word-audio">
               Your browser does not support the audio element.
@@ -121,47 +158,48 @@ function AnkiLikeGame({ words }) {
           )} */}
         </div>
 
-        {!showResult ? (
-          <form onSubmit={handleSubmit} className="answer-form">
-            <input
-              type="text"
-              value={userAnswer}
-              onChange={(e) => setUserAnswer(e.target.value)}
-              placeholder="შეიყვანე უცხო სიტყვა..."
-              autoFocus
-              className="answer-input"
-            />
-            <button type="submit" className="submit-btn">
-              შემოწმება
-            </button>
-          </form>
-        ) : (
-          <div className={`result ${isCorrect ? "correct" : "incorrect"}`}>
-            <p className="result-message">
-              {isCorrect ? "✓ სწორია!" : "✗ არასწორია"}
-            </p>
-            {!isCorrect && (
-              <p className="correct-answer">
-                სწორი პასუხი:{" "}
-                <strong>{toDisplayText(currentWord.translation)}</strong>
-              </p>
-            )}
+        {isGameFinished ? (
+          <div className="result correct">
+            <div className="game-finished">
+              <h3>თამაში დასრულდა!</h3>
 
-            {isGameFinished ? (
-              <div className="game-finished">
-                <h3>თამაში დასრულდა!</h3>
-                <p>
-                  საბოლოო ქულა: {score} / {displayWords.length || words.length}
-                </p>
-                <button onClick={handleRestart} className="restart-btn">
-                  თავიდან დაწყება
-                </button>
+              <div className="words-summary">
+                <div className="learned-words">
+                  <h4>ნასწავლი სიტყვები ({learnedWords.length})</h4>
+                  <ul>
+                    {learnedWords.map((word, index) => (
+                      <li key={`learned-${index}`}>
+                        {toDisplayText(formatPair(word))}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div className="needs-learning-words">
+                  <h4>სასწავლი სიტყვები ({needsLearningWords.length})</h4>
+                  <ul>
+                    {needsLearningWords.map((word, index) => (
+                      <li key={`needs-${index}`}>
+                        {toDisplayText(formatPair(word))}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
-            ) : (
-              <button onClick={handleNext} className="next-btn">
-                შემდეგი სიტყვა
+
+              <button onClick={handleRestart} className="restart-btn">
+                თავიდან დაწყება
               </button>
-            )}
+            </div>
+          </div>
+        ) : (
+          <div className="result correct">
+            <button onClick={handleNeedsLearning} className="next-btn">
+              სასწავლი
+            </button>
+            <button onClick={handleLearned} className="next-btn">
+              ნასწავლი
+            </button>
           </div>
         )}
       </div>

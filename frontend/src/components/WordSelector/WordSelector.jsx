@@ -11,7 +11,6 @@ export default function WordSelector({
   const [selectionMode, setSelectionMode] = useState("sequential");
   const [wordCount, setWordCount] = useState(allWords?.length ?? 0);
   const [direction, setDirection] = useState("translation-to-word");
-  const [gameType, setGameType] = useState("cards");
 
   useEffect(() => {
     setWordCount((prev) => {
@@ -27,9 +26,8 @@ export default function WordSelector({
       selectionMode,
       wordCount,
       direction,
-      gameType,
     });
-  }, [direction, gameType, onSettingsChange, selectionMode, wordCount]);
+  }, [direction, onSettingsChange, selectionMode, wordCount]);
 
   return (
     <div className="word-selector">
@@ -46,17 +44,6 @@ export default function WordSelector({
               >
                 <option value="translation-to-word">თარგმანი → უცხო სიტყვა</option>
                 <option value="word-to-translation">უცხო სიტყვა → თარგმანი</option>
-              </select>
-            </label>
-
-            <label className="compact-field">
-              <span>თამაშის ტიპი:</span>
-              <select
-                value={gameType}
-                onChange={(e) => setGameType(e.target.value)}
-              >
-                <option value="anki">ანკისმაგვარი</option>
-                <option value="cards">ბარათებით</option>
               </select>
             </label>
 

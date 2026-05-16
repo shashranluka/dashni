@@ -23,6 +23,33 @@
     margin-bottom: 10px;
   }
 
+  .play-style-switch {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 10px;
+    padding: 4px;
+    border-radius: 10px;
+    background: #eef3f8;
+
+    button {
+      border: 0;
+      border-radius: 8px;
+      padding: 7px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      background: transparent;
+      color: #3a4a58;
+      cursor: pointer;
+      transition: 0.2s ease;
+
+      &.active {
+        background: #1f7ae0;
+        color: #fff;
+      }
+    }
+  }
+
   .game-stats {
     display: flex;
     flex-direction: row;
@@ -30,6 +57,70 @@
     gap: 8px;
     margin-bottom: 0; // game-panel მართავს დაშორებას
     flex: 1; // შუაში გაწელოს სტატების ბლოკი
+  }
+
+  .typing-area {
+    width: 100%;
+    max-width: 520px;
+    margin-bottom: 12px;
+
+    .typing-form {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+    }
+
+    .typing-input {
+      height: 38px;
+      padding: 0 10px;
+      border: 1px solid #d7dee6;
+      border-radius: 8px;
+      font-size: 14px;
+      color: #24303a;
+
+      &:focus {
+        outline: none;
+        border-color: #1f7ae0;
+        box-shadow: 0 0 0 2px rgba(31, 122, 224, 0.15);
+      }
+    }
+
+    .typing-submit-btn {
+      border: 0;
+      border-radius: 8px;
+      padding: 0 12px;
+      background: #4caf50;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+
+      &:hover {
+        background: #3f9842;
+      }
+    }
+
+    .typing-feedback {
+      margin-top: 8px;
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: 13px;
+      font-weight: 600;
+
+      &.correct {
+        background: #e8f5e9;
+        color: #1e7a36;
+      }
+
+      &.incorrect {
+        background: #fdeceb;
+        color: #b4322a;
+      }
+
+      p {
+        margin: 0;
+      }
+    }
   }
 
   .revealButton {
@@ -260,6 +351,18 @@
         .cardFront {
           font-size: 16px;
         }
+      }
+    }
+  }
+
+  @media (max-width: 640px) {
+    .typing-area {
+      .typing-form {
+        grid-template-columns: 1fr;
+      }
+
+      .typing-submit-btn {
+        height: 36px;
       }
     }
   }

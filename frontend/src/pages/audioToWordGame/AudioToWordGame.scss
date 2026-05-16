@@ -137,15 +137,14 @@
 
   .listen-action-buttons {
     width: 100%;
-    max-width: 365px;
+    max-width: 320px;
     margin: 10px auto 12px;
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr)) 42px;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) 42px;
     gap: 8px;
 
     .compose-text-btn,
     .settings-toggle-btn,
-    .start-game-btn,
     .sound-toggle-btn {
       width: 100%;
       margin: 0;
@@ -191,16 +190,6 @@
       }
     }
 
-    .start-game-btn {
-      border: none;
-      background: #4CAF50;
-      color: #fff;
-
-      &:hover:not(:disabled) {
-        background: #45a049;
-      }
-    }
-
     .sound-toggle-btn {
       padding: 0;
       border: 2px solid #c7c7c7;
@@ -219,8 +208,60 @@
       }
     }
 
-    .compose-text-btn:disabled,
-    .start-game-btn:disabled {
+    .compose-text-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    @media (max-width: 640px) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+
+      .sound-toggle-btn {
+        min-height: 34px;
+      }
+    }
+  }
+
+  .listen-mode-buttons {
+    width: 100%;
+    max-width: 320px;
+    margin: 0 auto 12px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+
+    .start-game-btn,
+    .start-anki-btn {
+      width: 100%;
+      margin: 0;
+      padding: 8px 10px;
+      font-size: 13px;
+      font-weight: 700;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: #fff;
+    }
+
+    .start-game-btn {
+      background: #4CAF50;
+
+      &:hover:not(:disabled) {
+        background: #45a049;
+      }
+    }
+
+    .start-anki-btn {
+      background: #ff9800;
+
+      &:hover:not(:disabled) {
+        background: #f57c00;
+      }
+    }
+
+    .start-game-btn:disabled,
+    .start-anki-btn:disabled {
       opacity: 0.6;
       cursor: not-allowed;
     }

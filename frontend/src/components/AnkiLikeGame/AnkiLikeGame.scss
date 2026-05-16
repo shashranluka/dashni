@@ -104,6 +104,30 @@
         border-radius: 8px;
       }
 
+      .reveal-btn {
+        margin-top: 12px;
+        padding: 10px 16px;
+        font-size: 14px;
+        font-weight: 600;
+        background: #607d8b;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background 0.2s;
+
+        &:hover {
+          background: #546e7a;
+        }
+      }
+
+      .revealed-word {
+        margin-top: 10px;
+        font-size: 24px;
+        font-weight: 700;
+        color: #2e7d32;
+      }
+
       .word-audio {
         margin-top: 15px;
         width: 100%;

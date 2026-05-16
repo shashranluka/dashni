@@ -1,9 +1,8 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import newRequest from "../../utils/newRequest";
 import { toDisplayText } from "../../utils/georgiaNormalize";
-import AnkiGame from "../../components/AnkiLikeGame/AnkiLikeGame";
+import AnkiLikeGame from "../../components/AnkiLikeGame/AnkiLikeGame";
 import MessyDictionary from "../../components/messyDictionary/MessyDictionary";
-import GameWords from "../../components/GameWords/GameWords";
 import WordSelector from "../../components/WordSelector/WordSelector";
 import AudioPlayer from "../../components/AudioPlayer/AudioPlayer";
 import "./AudioToWordGame.scss";
@@ -28,7 +27,6 @@ function AudioToWordGame() {
     selectionMode: "sequential",
     wordCount: 0,
     direction: "translation-to-word",
-    gameType: "cards",
   });
 
   const hasFetched = useRef(false);
@@ -88,7 +86,7 @@ function AudioToWordGame() {
     return newArray;
   };
 
-  const handleStartGame = () => {
+  const getWordsBySelectionMode = () => {
     let words = [];
 
     if (selectorSettings.selectionMode === "sequential") {
@@ -106,17 +104,31 @@ function AudioToWordGame() {
       words = manualSelectedWords;
     }
 
+    return words;
+  };
+
+  const startGameWithType = (nextGameType) => {
+    const words = getWordsBySelectionMode();
+
     if (!words.length) return;
 
     setSelectedWords(words);
     setDirection(selectorSettings.direction);
-    setGameType(selectorSettings.gameType);
+    setGameType(nextGameType);
     setIsComposeMode(false);
     setComposeCards([]);
     setComposeBoardWords([]);
     setUsedComposeCardIds([]);
     setIsSettingsOpen(false);
     setGameStarted(true);
+  };
+
+  const handleStartCardsGame = () => {
+    startGameWithType("cards");
+  };
+
+  const handleStartAnkiGame = () => {
+    startGameWithType("anki");
   };
 
   const handleSegmentSelect = (segment) => {
@@ -267,7 +279,7 @@ function AudioToWordGame() {
     if (!isSoundEnabled || !clearSoundRef.current) return;
 
     clearSoundRef.current.currentTime = 0;
-    clearSoundRef.current.play().catch(() => {});
+    clearSoundRef.current.play().catch(() => { });
   };
 
   const handleComposeClearBoard = () => {
@@ -284,6 +296,11 @@ function AudioToWordGame() {
 
   console.log("Selected segment:", selectedSegment);
   console.log("Words for game:", wordsForGame);
+
+  const isStartDisabled =
+    wordsForGame.length === 0 ||
+    (selectorSettings.selectionMode === "manual" &&
+      manualSelectedWords.length === 0);
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
@@ -344,19 +361,6 @@ function AudioToWordGame() {
 
             <button
               type="button"
-              className="start-game-btn"
-              onClick={handleStartGame}
-              disabled={
-                wordsForGame.length === 0 ||
-                (selectorSettings.selectionMode === "manual" &&
-                  manualSelectedWords.length === 0)
-              }
-            >
-              თამაში
-            </button>
-
-            <button
-              type="button"
               className={`sound-toggle-btn${isSoundEnabled ? "" : " muted"}`}
               onClick={handleToggleSound}
               aria-label={isSoundEnabled ? "ხმის გამორთვა" : "ხმის ჩართვა"}
@@ -398,6 +402,28 @@ function AudioToWordGame() {
                 ) : null
               }
             />
+          )}
+
+          {!isComposeMode && !gameStarted && (
+            <div className="listen-mode-buttons">
+              <button
+                type="button"
+                className="start-anki-btn"
+                onClick={handleStartAnkiGame}
+                disabled={isStartDisabled}
+              >
+                ანკი
+              </button>
+              <button
+                type="button"
+                className="start-game-btn"
+                onClick={handleStartCardsGame}
+                disabled={isStartDisabled}
+              >
+                ბარათები
+              </button>
+
+            </div>
           )}
 
           {!isComposeMode &&
@@ -473,12 +499,19 @@ function AudioToWordGame() {
             </div>
           ) : gameStarted ? (
             <div className="game-section">
-              <MessyDictionary
-                words={selectedWords}
-                direction={direction}
-                gameType={gameType}
-                isSoundEnabled={isSoundEnabled}
-              />
+              {gameType === "anki" ? (
+                <AnkiLikeGame
+                  words={selectedWords}
+                  direction={direction}
+                />
+              ) : (
+                <MessyDictionary
+                  words={selectedWords}
+                  direction={direction}
+                  gameType={gameType}
+                  isSoundEnabled={isSoundEnabled}
+                />
+              )}
             </div>
           ) : null}
         </>
