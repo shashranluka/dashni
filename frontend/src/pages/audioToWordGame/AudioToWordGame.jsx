@@ -324,16 +324,7 @@ function AudioToWordGame() {
             {wordsForGame.length}
           </h2>
           {!selectedSegment ? (
-            <div
-              style={{
-                padding: "15px",
-                margin: "20px 0",
-                backgroundColor: "#f0f8ff",
-                borderRadius: "8px",
-                textAlign: "center",
-                fontSize: "16px",
-              }}
-            >
+            <div className="segment-hint">
               აირჩიე ეპიზოდი ზემოთ მოცემული ღილაკებიდან სათამაშოდ სიტყვების
               ასარჩევად
             </div>

@@ -139,13 +139,15 @@ function AnkiLikeGame({ words, direction = "translation-to-word" }) {
           <p className="word">{toDisplayText(currentPromptText)}</p>
           {!isGameFinished && (
             <>
-              <button
-                type="button"
-                className="reveal-btn"
-                onClick={() => setIsRevealVisible((prev) => !prev)}
-              >
-                {revealButtonLabel}
-              </button>
+              {!isRevealVisible && (
+                <button
+                  type="button"
+                  className="reveal-btn"
+                  onClick={() => setIsRevealVisible(true)}
+                >
+                  {revealButtonLabel}
+                </button>
+              )}
               {isRevealVisible && (
                 <p className="revealed-word">{toDisplayText(revealText)}</p>
               )}

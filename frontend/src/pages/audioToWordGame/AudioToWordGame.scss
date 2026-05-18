@@ -1,204 +1,100 @@
 .listen-page {
-  padding: 5px;
-  max-width: 1200px;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
   margin: 0 auto;
+  padding: 12px;
 
   h1 {
+    margin: 0 0 14px;
     text-align: center;
-    color: #333;
-    margin-bottom: 20px;
+    color: #2f2f2f;
+    font-size: 24px;
+    line-height: 1.3;
   }
 
   .audio-section {
-    text-align: center;
-    margin-bottom: 30px;
-
-    audio {
-      width: 100%;
-      max-width: 500px;
-    }
-  }
-
-  .segments-section {
-    margin: 0 0 22px;
-    padding: 14px;
-    background: #fafafa;
-    border: 1px solid #ececec;
-    border-radius: 12px;
-
-    h2 {
-      margin-bottom: 12px;
-      font-size: 17px;
-      color: #2f2f2f;
-      font-weight: 700;
-    }
-
-    .segments {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(27px, 1fr));
-      gap: 7px;
-    }
-
-    .segment-button {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 3px;
-      min-height: 32px;
-      padding: 4px 15px;
-      border: 1px solid #e0e0e0;
-      border-radius: 6px;
-      background: linear-gradient(135deg, #fff9c4 0%, #fff59d 100%); // ყვითელი
-      color: #424242;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-
-      &:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
-        border-color: #fbc02d;
-      }
-
-      &:active {
-        transform: translateY(0);
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-      }
-
-      &.selected {
-        background: linear-gradient(135deg, #81c784 0%, #66bb6a 100%); // მწვანე
-        border-color: #4caf50;
-        color: #fff;
-        box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
-
-        &:hover {
-          border-color: #388e3c;
-          box-shadow: 0 3px 10px rgba(76, 175, 80, 0.4);
-        }
-      }
-    }
-
-    .segment-label {
-      font-size: 13px;
-      font-weight: 700;
-    }
-
-    .segment-word-count {
-      font-size: 11px;
-      opacity: 0.85;
-    }
-  }
-
-  .segment-info {
-    margin: 8px 0 10px;
-
-    .compose-text-btn {
-      display: block;
-      margin: 8px auto 0;
-      padding: 10px 16px;
-      font-size: 14px;
-      font-weight: 600;
-      background-color: #388e3c;
-      border: 2px solid #2196F3;
-      border-radius: 8px;
-      background: white;
-      color: #2196F3;
-      cursor: pointer;
-      transition: all 0.3s;
-
-      &:hover {
-        background: #2196F3;
-        color: white;
-      }
-
-      &:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-      }
-    }
+    margin-bottom: 16px;
   }
 
   .segment-info-title {
-    margin: 0 0 6px;
-    font-size: 16px;
-    font-weight: 600;
+    margin: 0 0 10px;
+    text-align: center;
     color: #2f2f2f;
+    font-size: 16px;
+    line-height: 1.35;
+    font-weight: 700;
   }
 
-  .segment-info-subtitle {
-    margin: 0;
-    font-size: 13px;
-    color: #5a5a5a;
-    line-height: 1.3;
+  .segment-hint {
+    margin: 0 0 14px;
+    padding: 12px;
+    border-radius: 10px;
+    text-align: center;
+    font-size: 15px;
+    line-height: 1.4;
+    background: #f0f8ff;
+    color: #1f3f63;
   }
 
   .listen-action-buttons {
     width: 100%;
-    max-width: 320px;
-    margin: 10px auto 12px;
+    margin: 0 auto 10px;
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr)) 42px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 8px;
 
     .compose-text-btn,
     .settings-toggle-btn,
     .sound-toggle-btn {
       width: 100%;
+      min-height: 44px;
       margin: 0;
-      padding: 8px 10px;
-      font-size: 13px;
+      padding: 9px 10px;
+      border-radius: 9px;
+      font-size: 14px;
       font-weight: 700;
-      border-radius: 8px;
+      line-height: 1.2;
       cursor: pointer;
       transition: all 0.2s ease;
-      white-space: nowrap;
     }
 
-    .compose-text-btn {
-      border: 2px solid #2196F3;
+    .compose-text-btn,
+    .settings-toggle-btn {
+      border: 2px solid #2196f3;
       background: #fff;
-      color: #2196F3;
+      color: #2196f3;
 
       &:hover:not(:disabled) {
-        background: #2196F3;
+        background: #2196f3;
         color: #fff;
       }
     }
 
-    .settings-toggle-btn {
-      border: 2px solid #2196F3;
-      background: #fff;
-      color: #2196F3;
+    .settings-toggle-btn.is-open {
+      border-color: #4caf50;
+      background: #4caf50;
+      color: #fff;
 
       &:hover {
-        background: #2196F3;
-        color: #fff;
-      }
-
-      &.is-open {
-        border-color: #4CAF50;
-        background: #4CAF50;
-        color: #fff;
-
-        &:hover {
-          background: #45a049;
-          border-color: #45a049;
-        }
+        background: #45a049;
+        border-color: #45a049;
       }
     }
 
     .sound-toggle-btn {
-      padding: 0;
+      grid-column: 1 / -1;
       border: 2px solid #c7c7c7;
       background: #fff;
       color: #555;
-      font-size: 16px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      font-size: 18px;
 
       &:hover {
-        border-color: #999;
+        border-color: #9a9a9a;
         background: #f4f4f4;
       }
 
@@ -208,23 +104,16 @@
       }
     }
 
-    .compose-text-btn:disabled {
+    .compose-text-btn:disabled,
+    .settings-toggle-btn:disabled,
+    .sound-toggle-btn:disabled {
       opacity: 0.6;
       cursor: not-allowed;
-    }
-
-    @media (max-width: 640px) {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-
-      .sound-toggle-btn {
-        min-height: 34px;
-      }
     }
   }
 
   .listen-mode-buttons {
     width: 100%;
-    max-width: 320px;
     margin: 0 auto 12px;
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -233,19 +122,20 @@
     .start-game-btn,
     .start-anki-btn {
       width: 100%;
+      min-height: 44px;
       margin: 0;
-      padding: 8px 10px;
-      font-size: 13px;
+      padding: 9px 10px;
+      border: 0;
+      border-radius: 9px;
+      font-size: 14px;
       font-weight: 700;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: all 0.2s ease;
       color: #fff;
+      cursor: pointer;
+      transition: background 0.2s ease;
     }
 
     .start-game-btn {
-      background: #4CAF50;
+      background: #4caf50;
 
       &:hover:not(:disabled) {
         background: #45a049;
@@ -271,79 +161,52 @@
     margin-bottom: 14px;
 
     p {
+      margin: 0 0 10px;
       text-align: center;
-      font-size: 16px;
-      margin-bottom: 15px;
-      font-weight: 500;
+      font-size: 15px;
+      font-weight: 600;
+      color: #2f2f2f;
     }
 
     .cards-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-      gap: 15px;
-      max-height: 500px;
+      grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+      gap: 10px;
+      max-height: min(52vh, 460px);
       overflow-y: auto;
       padding: 10px;
-      border: 1px solid #ddd;
-      border-radius: 8px;
+      border: 1px solid #d6dde4;
+      border-radius: 10px;
+      background: #fff;
 
       .word-card {
-        padding: 15px;
-        border: 2px solid #ddd;
+        padding: 10px;
+        border: 2px solid #d7dee6;
         border-radius: 8px;
+        background: #fff;
         cursor: pointer;
-        transition: all 0.3s;
         text-align: center;
-        background-color: #fff;
+        transition: all 0.2s ease;
 
         &:hover {
-          border-color: #4CAF50;
-          transform: translateY(-2px);
-          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+          border-color: #4caf50;
+          transform: translateY(-1px);
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
         }
 
         &.selected {
-          border-color: #4CAF50;
-          background-color: #e8f5e9;
-          transform: scale(1.05);
+          border-color: #4caf50;
+          background: #e8f5e9;
+          transform: scale(1.02);
         }
 
         .word {
-          font-size: 18px;
-          font-weight: bold;
-          margin-bottom: 8px;
+          font-size: 16px;
+          line-height: 1.35;
+          font-weight: 700;
           color: #333;
+          word-break: break-word;
         }
-      }
-    }
-  }
-
-  .game-mode-toggle {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    margin-bottom: 30px;
-
-    button {
-      padding: 12px 30px;
-      font-size: 16px;
-      font-weight: 600;
-      border: 2px solid #ddd;
-      border-radius: 8px;
-      background: white;
-      cursor: pointer;
-      transition: all 0.3s;
-      color: #666;
-
-      &:hover {
-        border-color: #2196F3;
-        color: #2196F3;
-      }
-
-      &.active {
-        background: #2196F3;
-        border-color: #2196F3;
-        color: white;
       }
     }
   }
@@ -352,58 +215,19 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 20px;
-    // padding: 20px;
-
-    .action-buttons {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      flex-wrap: wrap;
-
-      .sound-toggle-btn {
-        min-width: 46px;
-        padding: 10px;
-        font-size: 20px;
-        line-height: 1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-    }
-
-    button {
-      padding: 10px 20px;
-      font-size: 16px;
-      font-weight: 500;
-      border: 2px solid #2196F3;
-      border-radius: 8px;
-      background: white;
-      color: #2196F3;
-      cursor: pointer;
-      transition: all 0.3s;
-
-      &:hover {
-        background: #2196F3;
-        color: white;
-      }
-
-      &:active {
-        transform: scale(0.98);
-      }
-    }
+    gap: 14px;
+    width: 100%;
   }
 
   .compose-section {
     width: 100%;
 
     .compose-board {
-      width: 95%;
+      width: 100%;
       min-height: 110px;
-      margin: 10px 0 6px;
+      margin: 0 0 10px;
       padding: 12px;
-      border: 2px dashed #2196F3;
+      border: 2px dashed #2196f3;
       border-radius: 10px;
       background: #f8fbff;
 
@@ -416,25 +240,31 @@
       }
 
       .compose-board-label {
-        margin-bottom: 0;
+        margin: 0;
         font-size: 14px;
         font-weight: 700;
         color: #1f7ae0;
       }
 
       .compose-clear-btn {
+        min-height: 36px;
         padding: 6px 12px;
+        border: 1px solid #2196f3;
+        border-radius: 8px;
+        background: #fff;
+        color: #2196f3;
         font-size: 13px;
-        border-width: 1px;
+        font-weight: 700;
+        cursor: pointer;
+
+        &:hover:not(:disabled) {
+          background: #2196f3;
+          color: #fff;
+        }
 
         &:disabled {
           opacity: 0.55;
           cursor: not-allowed;
-        }
-
-        &:disabled:hover {
-          background: white;
-          color: #2196F3;
         }
       }
 
@@ -448,21 +278,19 @@
 
     .compose-cards-grid {
       width: 100%;
-      display: flex;
-      flex-wrap: wrap;
-      // display: grid;
-      // grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-      // gap: 10px;
-      margin-top: 10px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+      gap: 8px;
     }
 
     .compose-word-card {
-      padding: 10px 12px;
+      min-height: 42px;
+      padding: 8px 10px;
       border: 1px solid #d7dee6;
       border-radius: 8px;
       background: #fff;
       text-align: center;
-      font-weight: 600;
+      font-weight: 700;
       color: #2a3640;
       cursor: pointer;
 
@@ -477,8 +305,135 @@
     }
 
     .compose-empty {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      text-align: center;
       font-size: 15px;
       color: #4a5561;
+      background: #f6f8fa;
+    }
+  }
+}
+
+@media (min-width: 576px) {
+  .listen-page {
+    padding: 16px;
+
+    h1 {
+      margin-bottom: 16px;
+      font-size: 28px;
+    }
+
+    .segment-info-title {
+      margin-bottom: 12px;
+      font-size: 18px;
+    }
+
+    .listen-action-buttons {
+      max-width: 420px;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 50px;
+
+      .sound-toggle-btn {
+        grid-column: auto;
+      }
+    }
+
+    .listen-mode-buttons {
+      max-width: 420px;
+    }
+
+    .listen-word-cards {
+      .cards-grid {
+        grid-template-columns: repeat(auto-fill, minmax(135px, 1fr));
+        gap: 12px;
+      }
+    }
+
+    .game-section {
+      gap: 16px;
+    }
+
+    .compose-section {
+      .compose-board {
+        padding: 14px;
+      }
+
+      .compose-cards-grid {
+        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+        gap: 10px;
+      }
+    }
+  }
+}
+
+@media (min-width: 992px) {
+  .listen-page {
+    max-width: 1040px;
+    padding: 20px;
+
+    h1 {
+      margin-bottom: 20px;
+      font-size: 32px;
+    }
+
+    .audio-section {
+      margin-bottom: 20px;
+    }
+
+    .segment-info-title {
+      font-size: 20px;
+    }
+
+    .listen-action-buttons,
+    .listen-mode-buttons {
+      max-width: 480px;
+      gap: 10px;
+    }
+
+    .listen-word-cards {
+      .cards-grid {
+        grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+        max-height: min(56vh, 520px);
+      }
+    }
+
+    .compose-section {
+      .compose-board {
+        min-height: 128px;
+      }
+
+      .compose-cards-grid {
+        grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
+      }
+    }
+  }
+}
+
+@media (min-width: 1400px) {
+  .listen-page {
+    max-width: 1200px;
+    padding: 24px;
+
+    h1 {
+      font-size: 34px;
+    }
+
+    .listen-action-buttons,
+    .listen-mode-buttons {
+      max-width: 520px;
+    }
+
+    .listen-word-cards {
+      .cards-grid {
+        grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+      }
+    }
+
+    .compose-section {
+      .compose-cards-grid {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      }
     }
   }
 }
