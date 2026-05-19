@@ -26,7 +26,7 @@ export const getAudioData = async (req, res, next) => {
 
     // words ცხრილიდან თარგმანები
     const wordsResult = await pool.query(
-      "SELECT the_word, translation FROM words WHERE the_word = ANY($1)",
+      "SELECT id, the_word, translation FROM words WHERE the_word = ANY($1)",
       [uniqueWords],
     );
 

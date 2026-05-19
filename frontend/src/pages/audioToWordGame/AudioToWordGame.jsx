@@ -23,13 +23,17 @@ function AudioToWordGame() {
   const [selectedSegment, setSelectedSegment] = useState(null);
   const [manualSelectedWords, setManualSelectedWords] = useState([]);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [savedLearnedIds, setSavedLearnedIds] = useState([]);
+  const [savedNeedsIds, setSavedNeedsIds] = useState([]);
   const [selectorSettings, setSelectorSettings] = useState({
     selectionMode: "sequential",
     wordCount: 0,
     direction: "translation-to-word",
+    wordFilter: "all",
   });
 
-  const hasFetched = useRef(false);
+  const hasFetchedAudio = useRef(false);
+  const hasFetchedResults = useRef(false);
   const audiofilePath = useRef(
     "src/assets/audio_files/adas_mier_moyolili_zghapari.m4a",
   );
@@ -37,8 +41,8 @@ function AudioToWordGame() {
 
   useEffect(() => {
     const fetchAudioData = async () => {
-      if (hasFetched.current) return;
-      hasFetched.current = true;
+      if (hasFetchedAudio.current) return;
+      hasFetchedAudio.current = true;
 
       try {
         const response = await newRequest.get("/audio");
@@ -57,6 +61,23 @@ function AudioToWordGame() {
     };
 
     fetchAudioData();
+  }, []);
+
+  useEffect(() => {
+    if (hasFetchedResults.current) return;
+    hasFetchedResults.current = true;
+
+    const fetchSavedWordStatus = async () => {
+      try {
+        const response = await newRequest.get("/results/word-status");
+        setSavedLearnedIds(response?.data?.learned_word_ids || []);
+        setSavedNeedsIds(response?.data?.needs_learning_word_ids || []);
+      } catch {
+        // not logged in or endpoint unavailable — ignore
+      }
+    };
+
+    fetchSavedWordStatus();
   }, []);
 
   useEffect(() => {
@@ -89,18 +110,30 @@ function AudioToWordGame() {
   const getWordsBySelectionMode = () => {
     let words = [];
 
-    if (selectorSettings.selectionMode === "sequential") {
-      words = wordsForGame.slice(
+    const { selectionMode, wordCount, wordFilter } = selectorSettings;
+
+    const baseWords = (() => {
+      if (wordFilter === "learned") {
+        return wordsForGame.filter((w) => savedLearnedIds.includes(w.id));
+      }
+      if (wordFilter === "needs") {
+        return wordsForGame.filter((w) => savedNeedsIds.includes(w.id));
+      }
+      return wordsForGame;
+    })();
+
+    if (selectionMode === "sequential") {
+      words = baseWords.slice(
         0,
-        Math.min(selectorSettings.wordCount, wordsForGame.length),
+        Math.min(wordCount, baseWords.length),
       );
-    } else if (selectorSettings.selectionMode === "random") {
-      const shuffled = [...wordsForGame].sort(() => Math.random() - 0.5);
+    } else if (selectionMode === "random") {
+      const shuffled = [...baseWords].sort(() => Math.random() - 0.5);
       words = shuffled.slice(
         0,
-        Math.min(selectorSettings.wordCount, wordsForGame.length),
+        Math.min(wordCount, baseWords.length),
       );
-    } else if (selectorSettings.selectionMode === "manual") {
+    } else if (selectionMode === "manual") {
       words = manualSelectedWords;
     }
 
@@ -297,8 +330,15 @@ function AudioToWordGame() {
   console.log("Selected segment:", selectedSegment);
   console.log("Words for game:", wordsForGame);
 
+  const { wordFilter } = selectorSettings;
+  const filteredWordsForGame = (() => {
+    if (wordFilter === "learned") return wordsForGame.filter((w) => savedLearnedIds.includes(w.id));
+    if (wordFilter === "needs") return wordsForGame.filter((w) => savedNeedsIds.includes(w.id));
+    return wordsForGame;
+  })();
+
   const isStartDisabled =
-    wordsForGame.length === 0 ||
+    filteredWordsForGame.length === 0 ||
     (selectorSettings.selectionMode === "manual" &&
       manualSelectedWords.length === 0);
 
@@ -363,6 +403,9 @@ function AudioToWordGame() {
 
           {!isComposeMode && !gameStarted && (
             <WordSelector
+              savedLearnedIds={savedLearnedIds}
+              savedNeedsIds={savedNeedsIds}
+              allWordCount={wordsForGame.length}
               allWords={wordsForGame}
               onSettingsChange={handleSettingsChange}
               isOpen={isSettingsOpen}
@@ -472,14 +515,16 @@ function AudioToWordGame() {
               {composeCards.length > 0 ? (
                 <div className="compose-cards-grid">
                   {composeCards.map((card) => (
-                    <button
-                      type="button"
+                    <div
                       key={card.id}
                       className={`compose-word-card ${usedComposeCardIds.includes(card.id) ? "used" : ""}`}
                       onClick={() => handleComposeCardClick(card)}
+                      role="button"
+                      tabIndex={0}
+                      aria-label={toDisplayText(card.text)}
                     >
                       {toDisplayText(card.text)}
-                    </button>
+                    </div>
                   ))}
                 </div>
               ) : (

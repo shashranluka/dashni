@@ -1,24 +1,91 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { toDisplayText } from "../../utils/georgiaNormalize";
+import newRequest from "../../utils/newRequest";
 import "./AnkiLikeGame.scss";
 
 function AnkiLikeGame({ words, direction = "translation-to-word" }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isRandom, setIsRandom] = useState(false);
   const [displayWords, setDisplayWords] = useState([]);
+  const [isGameFinished, setIsGameFinished] = useState(false);
+
   const [learnedWords, setLearnedWords] = useState([]);
   const [needsLearningWords, setNeedsLearningWords] = useState([]);
   const [isRevealVisible, setIsRevealVisible] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState(null);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+  const hasInitializedRef = useRef(false);
 
   useEffect(() => {
     if (words && words.length > 0) {
       setDisplayWords([...words]);
       setCurrentIndex(0);
+      setIsGameFinished(false);
       setLearnedWords([]);
       setNeedsLearningWords([]);
       setIsRevealVisible(false);
+      setSaveError(null);
+      setSaveSuccess(false);
     }
   }, [words]);
+
+  // Load initial learned/needs data from server on component mount
+  useEffect(() => {
+    if (hasInitializedRef.current) return;
+    hasInitializedRef.current = true;
+
+    const loadInitialData = async () => {
+      try {
+        const response = await newRequest.get("/results/word-status");
+        if (response?.data?.learned_word_ids && response?.data?.needs_learning_word_ids) {
+          // Load the learned/needs words based on IDs if needed
+          // For now, we'll just fetch them to verify the endpoint works
+          console.log("Loaded word status:", response.data);
+        }
+      } catch (err) {
+        // Silently fail if not logged in or endpoint doesn't exist
+        console.log("Could not load initial word status");
+      }
+    };
+
+    loadInitialData();
+  }, []);
+
+  const handleSaveResults = async () => {
+    if (isSaving) return;
+
+    setIsSaving(true);
+    setSaveError(null);
+    setSaveSuccess(false);
+
+    try {
+      const learnedIds = learnedWords
+        .map((w) => w?.id ?? w?.word_id)
+        .filter((id) => id !== undefined && id !== null);
+      console.log("Learned word IDs to save:", learnedIds);
+      const needsIds = needsLearningWords
+        .map((w) => w?.id ?? w?.word_id)
+        .filter((id) => id !== undefined && id !== null);
+      console.log("Needs learning word IDs to save:", needsIds);
+      if (learnedIds.length + needsIds.length === 0) {
+        setSaveError("შენახვა ვერ მოხერხდა: სიტყვების id არ მოიძებნა");
+        return;
+      }
+
+      await newRequest.post("/results/word-status", {
+        learned_word_ids: learnedIds,
+        needs_learning_word_ids: needsIds,
+      });
+      console.log("Word status saved successfully");
+
+      setSaveSuccess(true);
+    } catch (err) {
+      setSaveError(err?.response?.data?.message || err.message);
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   if (!words || words.length === 0) {
     return <div className="anki-like-game">No words available</div>;
@@ -46,14 +113,17 @@ function AnkiLikeGame({ words, direction = "translation-to-word" }) {
     }
 
     setCurrentIndex(0);
+    setIsGameFinished(false);
     setLearnedWords([]);
     setNeedsLearningWords([]);
     setIsRevealVisible(false);
+    setSaveError(null);
+    setSaveSuccess(false);
   };
 
   const addUniqueWord = (setter, wordObj) => {
     setter((prev) => {
-      const key = (item) => `${item?.the_word || item?.word || ""}__${item?.translation || ""}`;
+      const key = (item) => `${item?.id ?? item?.word_id ?? ""}__${item?.the_word || item?.word || ""}__${item?.translation || ""}`;
       const targetKey = key(wordObj);
       if (prev.some((item) => key(item) === targetKey)) {
         return prev;
@@ -66,7 +136,11 @@ function AnkiLikeGame({ words, direction = "translation-to-word" }) {
     if (currentIndex < displayWords.length - 1) {
       setCurrentIndex(currentIndex + 1);
       setIsRevealVisible(false);
+      return;
     }
+
+    setIsGameFinished(true);
+    setIsRevealVisible(false);
   };
 
   const handleNeedsLearning = () => {
@@ -84,12 +158,14 @@ function AnkiLikeGame({ words, direction = "translation-to-word" }) {
       setDisplayWords(shuffleArray(words));
     }
     setCurrentIndex(0);
+    setIsGameFinished(false);
     setLearnedWords([]);
     setNeedsLearningWords([]);
     setIsRevealVisible(false);
+    setSaveError(null);
+    setSaveSuccess(false);
   };
 
-  const isGameFinished = currentIndex === displayWords.length - 1;
   const isTranslationToWord = direction === "translation-to-word";
   const currentPromptText = isTranslationToWord
     ? currentWord.translation
@@ -165,6 +241,16 @@ function AnkiLikeGame({ words, direction = "translation-to-word" }) {
             <div className="game-finished">
               <h3>თამაში დასრულდა!</h3>
 
+              {isSaving && (
+                <p className="saving-status">💾 ინახება...</p>
+              )}
+              {saveError && (
+                <p className="save-error">⚠️ შენახვა ვერ მოხერხდა: {saveError}</p>
+              )}
+              {saveSuccess && !isSaving && !saveError && (
+                <p className="save-success">✓ შენახულია</p>
+              )}
+
               <div className="words-summary">
                 <div className="learned-words">
                   <h4>ნასწავლი სიტყვები ({learnedWords.length})</h4>
@@ -191,6 +277,16 @@ function AnkiLikeGame({ words, direction = "translation-to-word" }) {
 
               <button onClick={handleRestart} className="restart-btn">
                 თავიდან დაწყება
+              </button>
+              <button
+                type="button"
+                onClick={handleSaveResults}
+                className="restart-btn"
+                disabled={
+                  isSaving || learnedWords.length + needsLearningWords.length === 0
+                }
+              >
+                {isSaving ? "ინახება..." : "შენახვა"}
               </button>
             </div>
           </div>

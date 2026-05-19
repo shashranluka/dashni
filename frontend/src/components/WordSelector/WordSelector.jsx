@@ -3,6 +3,9 @@ import "./WordSelector.scss";
 
 export default function WordSelector({
   allWords,
+  savedLearnedIds = [],
+  savedNeedsIds = [],
+  allWordCount,
   onSettingsChange,
   settingsTopContent = null,
   isOpen = false,
@@ -11,12 +14,18 @@ export default function WordSelector({
   const [selectionMode, setSelectionMode] = useState("sequential");
   const [wordCount, setWordCount] = useState(allWords?.length ?? 0);
   const [direction, setDirection] = useState("translation-to-word");
+  const [wordFilter, setWordFilter] = useState("all");
+
+  const currentEpisodeWordIds = new Set(
+    (allWords || [])
+      .map((word) => word?.id)
+      .filter((id) => id !== undefined && id !== null),
+  );
+  const learnedCount = savedLearnedIds.filter((id) => currentEpisodeWordIds.has(id)).length;
+  const needsCount = savedNeedsIds.filter((id) => currentEpisodeWordIds.has(id)).length;
 
   useEffect(() => {
-    setWordCount((prev) => {
-      const maxWords = allWords?.length ?? 0;
-      return Math.min(prev || 0, maxWords);
-    });
+    setWordCount(allWords?.length ?? 0);
   }, [allWords]);
 
   useEffect(() => {
@@ -26,8 +35,9 @@ export default function WordSelector({
       selectionMode,
       wordCount,
       direction,
+      wordFilter,
     });
-  }, [direction, onSettingsChange, selectionMode, wordCount]);
+  }, [direction, onSettingsChange, selectionMode, wordCount, wordFilter]);
 
   return (
     <div className="word-selector">
@@ -44,6 +54,18 @@ export default function WordSelector({
               >
                 <option value="translation-to-word">თარგმანი → უცხო სიტყვა</option>
                 <option value="word-to-translation">უცხო სიტყვა → თარგმანი</option>
+              </select>
+            </label>
+
+            <label className="compact-field">
+              <span>სიტყვების ფილტრი:</span>
+              <select
+                value={wordFilter}
+                onChange={(e) => setWordFilter(e.target.value)}
+              >
+                <option value="all">ყველა ({allWordCount ?? allWords?.length ?? 0})</option>
+                <option value="needs">სასწავლი ({needsCount})</option>
+                <option value="learned">ნასწავლი ({learnedCount})</option>
               </select>
             </label>
 

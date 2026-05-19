@@ -5,6 +5,7 @@ import cors from "cors";
 import pg from "pg";
 import authRoute from "./routes/auth.route.js";
 import audioRoute from "./routes/audio.route.js";
+import resultsRoute from "./routes/results.route.js";
 
 const app = express();
 dotenv.config();
@@ -39,6 +40,7 @@ app.use(cookieParser());
 // Routes
 app.use("/api/auth", authRoute);
 app.use("/api/audio", audioRoute);
+app.use("/api/results", resultsRoute);
 
 // Healthcheck route (simple DB + server check)
 app.get("/health", async (req, res) => {

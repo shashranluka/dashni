@@ -27,8 +27,6 @@ export default function MessyDictionary({
   const [isFixedVisible, setIsFixedVisible] = useState(false);
   const [wrongIds, setWrongIds] = useState([]);
   const [gameFinished, setGameFinished] = useState(false);
-  const [learnedWords, setLearnedWords] = useState([]);
-  const [needsLearningWords, setNeedsLearningWords] = useState([]);
   const [playStyle, setPlayStyle] = useState(
     gameType === "cards" ? "cards" : "typing",
   );
@@ -71,8 +69,6 @@ export default function MessyDictionary({
     setIsFixedVisible(false);
     setWrongIds([]);
     setGameFinished(false);
-    setLearnedWords([]);
-    setNeedsLearningWords([]);
     setPlayStyle(gameType === "cards" ? "cards" : "typing");
     setTypingAnswer("");
     setTypingFeedback(null);
@@ -183,15 +179,6 @@ export default function MessyDictionary({
     targetSoundRef.current.play().catch(() => {});
   }
 
-  function markLearnedWord(wordObj) {
-    setLearnedWords((prev) => {
-      const alreadyInNeeds = needsLearningWords.some((w) => w.id === wordObj.id);
-      if (alreadyInNeeds) return prev;
-      if (prev.some((w) => w.id === wordObj.id)) return prev;
-      return [...prev, wordObj];
-    });
-  }
-
   function normalizeAnswer(value = "") {
     return value.toString().trim().toLowerCase();
   }
@@ -213,7 +200,6 @@ export default function MessyDictionary({
     if (isCorrect) {
       playFeedbackSound("success");
       setPoints((p) => p + 1);
-      markLearnedWord(current);
       showFixedWord(current);
       removeWordFromDecks(current.id);
       setTypingAnswer("");
@@ -227,7 +213,6 @@ export default function MessyDictionary({
     }
 
     playFeedbackSound("error");
-    setNeedsLearningWords((prev) => [...prev, current]);
     setTypingFeedback({ correct: false, expected });
   }
 
@@ -243,7 +228,6 @@ export default function MessyDictionary({
       setPoints((p) => p + 1);
       setTries((t) => t + 1);
       setWrongIds([]);
-      markLearnedWord(clicked);
 
       const nextTop = topDeck.filter((c) => c.id !== chosen.id);
       const nextBottom = bottomDeck.filter((c) => c.id !== clicked.id);
@@ -268,11 +252,6 @@ export default function MessyDictionary({
       playFeedbackSound("error");
       setTries((t) => t + 1);
       setWrongIds((prev) => (prev.includes(cardId) ? prev : [...prev, cardId]));
-
-      // const nextBottom = bottomDeck.filter((c) => c.id !== cardId);
-      // setBottomDeck(nextBottom);
-      // chosen სიტყვა გადავიდეს სასწავლში
-      setNeedsLearningWords((prev) => [...prev, chosen, clicked]);
       setTypingFeedback(null);
 
       // if (nextBottom.length === 0) {
@@ -326,40 +305,6 @@ export default function MessyDictionary({
               <p>
                 სიზუსტე: <strong>{accuracy}%</strong>
               </p>
-            </div>
-
-            <div className="words-summary">
-              <div className="learned-words">
-                <h3>✓ ნასწავლი სიტყვები ({learnedWords.length})</h3>
-                <ul>
-                  {learnedWords.map((word) => (
-                    <li key={word.id}>
-                      {toDisplayText(
-                        direction === "translation-to-word"
-                          ? `${word.translation} → ${word.word}`
-                          : `${word.word} → ${word.translation}`,
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              {needsLearningWords.length > 0 && (
-                <div className="needs-learning">
-                  <h3>📚 სასწავლი სიტყვები ({needsLearningWords.length})</h3>
-                  <ul>
-                    {needsLearningWords.map((word) => (
-                      <li key={word.id}>
-                        {toDisplayText(
-                          direction === "translation-to-word"
-                            ? `${word.translation} → ${word.word}`
-                            : `${word.word} → ${word.translation}`,
-                        )}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
             </div>
 
             <button onClick={handleRestart} className="restart-btn">
@@ -476,11 +421,17 @@ export default function MessyDictionary({
         {playStyle === "cards" && (
           <div className="bottomSpace">
             {bottomDeck.map((card) => (
-              <button
-                type="button"
+              <div
                 key={card.id}
                 className={`card ${wrongIds.includes(card.id) ? "hidden-text" : ""}`}
                 onClick={() => clickCardHandler(card.id)}
+                role="button"
+                tabIndex={0}
+                aria-label={toDisplayText(
+                  direction === "translation-to-word"
+                    ? card.word
+                    : card.translation,
+                )}
               >
                 <span className="cardFront">
                   {toDisplayText(
@@ -489,7 +440,7 @@ export default function MessyDictionary({
                       : card.translation,
                   )}
                 </span>
-              </button>
+              </div>
             ))}
           </div>
         )}
