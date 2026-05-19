@@ -9,10 +9,13 @@ const AUDIO_FILE = "src/assets/audio_files/adas_mier_moyolili_zghapari.m4a";
 
 function EditorPage() {
   const [segments, setSegments] = useState([]);
+  const [words, setWords] = useState([]);
   const [selectedSegmentId, setSelectedSegmentId] = useState("");
   const [textDraft, setTextDraft] = useState(""); // ← RAW Unicode
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [savingWordId, setSavingWordId] = useState(null);
+  const [wordDrafts, setWordDrafts] = useState({});
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const [isKeyboardOpen, setIsKeyboardOpen] = useState(true);
@@ -26,6 +29,37 @@ function EditorPage() {
     [segments, selectedSegmentId],
   );
 
+  const normalizeWord = (value = "") =>
+    value
+      .toString()
+      .toLowerCase()
+      .replace(/[.,!?;:"()\-_/\\[\]{}…]/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+
+  const selectedSegmentWords = useMemo(() => {
+    if (!selectedSegment?.text || !Array.isArray(words)) {
+      return [];
+    }
+
+    const segmentWordSet = new Set(
+      normalizeWord(selectedSegment.text).split(" ").filter(Boolean),
+    );
+
+    return words.filter((wordObj) => {
+      const candidateWords = [
+        wordObj?.the_word,
+        wordObj?.word,
+        wordObj?.lemma,
+        wordObj?.base_word,
+      ]
+        .map(normalizeWord)
+        .filter(Boolean);
+
+      return candidateWords.some((w) => segmentWordSet.has(w));
+    });
+  }, [selectedSegment?.text, words]);
+
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -33,7 +67,9 @@ function EditorPage() {
       try {
         const response = await newRequest.get("/audio");
         const nextSegments = response?.data?.segments || [];
+        const nextWords = response?.data?.words || [];
         setSegments(nextSegments);
+        setWords(nextWords);
 
         if (nextSegments.length > 0) {
           const firstSegment = nextSegments[0];
@@ -118,6 +154,74 @@ function EditorPage() {
     });
   };
 
+  const handleWordFieldChange = (wordId, fieldName, value) => {
+    if (!wordId) return;
+
+    setWordDrafts((prev) => ({
+      ...prev,
+      [wordId]: {
+        ...(prev[wordId] || {}),
+        [fieldName]: value,
+      },
+    }));
+  };
+
+  const handleWordSave = async (wordObj) => {
+    const wordId = wordObj?.id;
+    if (!wordId) return;
+
+    const draft = wordDrafts[wordId] || {
+      the_word: wordObj?.the_word || "",
+      translation: wordObj?.translation || "",
+    };
+
+    const nextWord = (draft.the_word || "").trim();
+    const nextTranslation = (draft.translation || "").trim();
+
+    if (!nextWord || !nextTranslation) {
+      setError("სიტყვაც და თარგმანიც სავალდებულოა");
+      setNotice("");
+      return;
+    }
+
+    setSavingWordId(wordId);
+    setError("");
+    setNotice("");
+
+    try {
+      const response = await newRequest.put(`/audio/words/${wordId}`, {
+        the_word: nextWord,
+        translation: nextTranslation,
+      });
+
+      const updatedWord = response?.data;
+      setWords((prev) =>
+        prev.map((entry) =>
+          entry.id === updatedWord.id
+            ? {
+                ...entry,
+                the_word: updatedWord.the_word,
+                translation: updatedWord.translation,
+              }
+            : entry,
+        ),
+      );
+
+      setWordDrafts((prev) => ({
+        ...prev,
+        [wordId]: {
+          the_word: updatedWord.the_word || "",
+          translation: updatedWord.translation || "",
+        },
+      }));
+      setNotice("სიტყვა წარმატებით განახლდა");
+    } catch (err) {
+      setError(err?.response?.data?.message || "სიტყვის შენახვა ვერ მოხერხდა");
+    } finally {
+      setSavingWordId(null);
+    }
+  };
+
   if (loading) {
     return (
       <section className="editor-page">
@@ -131,14 +235,10 @@ function EditorPage() {
       <header className="editor-header">
         <h1>Editor Page</h1>
         <p>
-          ამ ეტაპზე ხელმისაწვდომია მხოლოდ audio_segments ტექსტების რედაქტირება.
+          ხელმისაწვდომია როგორც audio_segments ტექსტების, ასევე ქვემოთ სიტყვის
+          და თარგმანის რედაქტირება.
         </p>
       </header>
-
-      <div className="editor-mode-note">
-        <strong>მომავალი:</strong> სიტყვების რედაქტირების ბლოკი დაემატება შემდეგ
-        ვერსიაში.
-      </div>
 
       <div className="editor-audio-wrap">
         <AudioPlayer src={AUDIO_FILE} startTime={selectedSegment?.time} />
@@ -186,6 +286,75 @@ function EditorPage() {
 
       <div className="preview">{toDisplayText(textDraft)}</div>
 
+      <section className="segment-words">
+        <h2>არჩეული ეპიზოდის სიტყვები</h2>
+        {selectedSegmentWords.length ? (
+          <div className="segment-words-list">
+            {selectedSegmentWords.map((wordObj, index) => {
+              const wordText = wordObj?.the_word || wordObj?.word || "-";
+              const translationText = wordObj?.translation || "-";
+              const itemKey = wordObj?.id || `${wordText}-${translationText}-${index}`;
+              const draft = wordObj?.id
+                ? (wordDrafts[wordObj.id] || {
+                    the_word: wordObj?.the_word || "",
+                    translation: wordObj?.translation || "",
+                  })
+                : {
+                    the_word: wordObj?.the_word || "",
+                    translation: wordObj?.translation || "",
+                  };
+
+              return (
+                <div key={itemKey} className="segment-words-item">
+                  <label className="segment-word-field">
+                    <span>სიტყვა</span>
+                    <input
+                      type="text"
+                      value={draft.the_word}
+                      onChange={(event) =>
+                        handleWordFieldChange(
+                          wordObj?.id,
+                          "the_word",
+                          event.target.value,
+                        )
+                      }
+                      disabled={!wordObj?.id || savingWordId === wordObj.id}
+                    />
+                  </label>
+                  <label className="segment-word-field">
+                    <span>თარგმანი</span>
+                    <input
+                      type="text"
+                      value={draft.translation}
+                      onChange={(event) =>
+                        handleWordFieldChange(
+                          wordObj?.id,
+                          "translation",
+                          event.target.value,
+                        )
+                      }
+                      disabled={!wordObj?.id || savingWordId === wordObj.id}
+                    />
+                  </label>
+                  <button
+                    type="button"
+                    className="save-word-btn"
+                    onClick={() => handleWordSave(wordObj)}
+                    disabled={!wordObj?.id || savingWordId === wordObj.id}
+                  >
+                    {savingWordId === wordObj.id ? "ინახება..." : "შენახვა"}
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <p className="segment-words-empty">
+            ამ ეპიზოდისთვის სიტყვები ვერ მოიძებნა.
+          </p>
+        )}
+      </section>
+
       <div className="editor-keyboard-dock">
         <RareKeyboard
           isOpen={isKeyboardOpen}
@@ -195,7 +364,7 @@ function EditorPage() {
         />
       </div>
 
-      <div className="editor-segments-list">
+      {/* <div className="editor-segments-list">
         <h2>ყველა ეპიზოდი</h2>
         <ol>
           {segments.map((segment) => (
@@ -206,7 +375,7 @@ function EditorPage() {
             </li>
           ))}
         </ol>
-      </div>
+      </div> */}
     </section>
   );
 }

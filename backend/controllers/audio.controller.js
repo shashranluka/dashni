@@ -70,3 +70,33 @@ export const updateAudioSegmentText = async (req, res, next) => {
     next(err);
   }
 };
+
+export const updateWordEntry = async (req, res, next) => {
+  try {
+    const id = parseInt(req.params.id, 10);
+    if (!Number.isFinite(id)) {
+      return res.status(400).json({ message: "სიტყვის ID არასწორია" });
+    }
+
+    const theWord = (req.body?.the_word ?? "").trim();
+    const translation = (req.body?.translation ?? "").trim();
+
+    if (!theWord || !translation) {
+      return res.status(400).json({ message: "სიტყვაც და თარგმანიც სავალდებულოა" });
+    }
+
+    const result = await pool.query(
+      "UPDATE words SET the_word=$1, translation=$2, updated_at=NOW() WHERE id=$3 RETURNING id, the_word, translation",
+      [theWord, translation, id],
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: "სიტყვა ვერ მოიძებნა" });
+    }
+
+    return res.status(200).json(result.rows[0]);
+  } catch (err) {
+    console.error("Error in updateWordEntry:", err);
+    next(err);
+  }
+};
