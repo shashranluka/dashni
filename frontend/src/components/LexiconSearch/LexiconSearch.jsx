@@ -33,7 +33,7 @@ function LexiconSearch() {
       setLoading(false);
     }
   };
-
+  console.log("LexiconSearch results:", results, results.length);
   const handleSubmit = (event) => {
     event.preventDefault();
     handleSearch();

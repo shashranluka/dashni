@@ -327,6 +327,8 @@ function EditorPage() {
         {notice ? <p className="message ok">{notice}</p> : null}
         {error ? <p className="message error">{error}</p> : null}
       </div>
+      <LexiconSearch />
+
 
       <div className="preview">
         <div className="preview-title">Preview</div>
@@ -417,7 +419,6 @@ function EditorPage() {
           </p>
         )}
       </section>
-      <LexiconSearch />
 
       <div className="editor-keyboard-dock">
         <RareKeyboard
