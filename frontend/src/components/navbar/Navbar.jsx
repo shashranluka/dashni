@@ -110,9 +110,14 @@ function Navbar() {
                     ჩემი გვერდი
                   </Link>
                   {isEditorUser(currentUser) && (
-                    <Link to="/editor-page" onClick={() => setOpen(false)}>
-                      ტექსტების რედაქტირება
-                    </Link>
+                    <>
+                      <Link to="/editor-page" onClick={() => setOpen(false)}>
+                        ტექსტების რედაქტირება
+                      </Link>
+                      <Link to="/add-lexicons" onClick={() => setOpen(false)}>
+                        addLexicons
+                      </Link>
+                    </>
                   )}
                   {isAdminUser(currentUser) && (
                     <Link to="/admin" onClick={() => setOpen(false)}>
