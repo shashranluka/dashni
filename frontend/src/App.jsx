@@ -34,11 +34,11 @@ function AppContent() {
       <div style={{ minHeight: "100vh" }}>
         <Navbar />
         <Routes>
-          {/* <Route path="/" element={<Home />} /> */}
+          <Route path="/" element={<Home />} />
           {/* <Route path="/" element={<Listen />} /> */}
           <Route path="/words" element={<Words />} />
           <Route path="/sentences" element={<Sentences />} />
-          <Route path="/audio-to-word-game" element={<AudioToWordGame />} />
+          <Route path="/tale-from-ada" element={<AudioToWordGame />} />
           <Route path="/poligon" element={<Poligon />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
