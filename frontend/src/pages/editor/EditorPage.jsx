@@ -60,6 +60,49 @@ function EditorPage() {
     });
   }, [selectedSegment?.text, words]);
 
+  const wordTranslationMap = useMemo(() => {
+    const map = new Map();
+
+    words.forEach((wordObj) => {
+      const translation = wordObj?.translation || "";
+      const candidates = [
+        wordObj?.the_word,
+        wordObj?.word,
+        wordObj?.lemma,
+        wordObj?.base_word,
+      ]
+        .map(normalizeWord)
+        .filter(Boolean);
+
+      candidates.forEach((candidate) => {
+        if (!map.has(candidate)) {
+          map.set(candidate, translation);
+        }
+      });
+    });
+
+    return map;
+  }, [words]);
+
+  const previewItems = useMemo(() => {
+    const tokens = textDraft.split(/\s+/).filter(Boolean);
+
+    return tokens.map((token, index) => {
+      const cleaned = token.replace(
+        /^[.,!?;:"()\-_/\\[\]{}…]+|[.,!?;:"()\-_/\\[\]{}…]+$/g,
+        "",
+      );
+      const normalized = normalizeWord(cleaned);
+      const translation = wordTranslationMap.get(normalized) || "-";
+
+      return {
+        id: `${token}-${index}`,
+        word: token,
+        translation,
+      };
+    });
+  }, [textDraft, wordTranslationMap]);
+
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -284,7 +327,26 @@ function EditorPage() {
         {error ? <p className="message error">{error}</p> : null}
       </div>
 
-      <div className="preview">{toDisplayText(textDraft)}</div>
+      <div className="preview">
+        <div className="preview-title">Preview</div>
+        {previewItems.length ? (
+          <div className="preview-grid">
+            {previewItems.map((item) => (
+              <div
+                key={item.id}
+                className={`preview-item ${item.translation === "-" ? "missing-translation" : ""}`}
+              >
+                <div className="preview-word">{toDisplayText(item.word)}</div>
+                <div className="preview-translation">
+                  {toDisplayText(item.translation)}
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="preview-empty">ტექსტი ცარიელია</div>
+        )}
+      </div>
 
       <section className="segment-words">
         <h2>არჩეული ეპიზოდის სიტყვები</h2>
