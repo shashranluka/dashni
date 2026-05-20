@@ -62,3 +62,44 @@ export const requireEditor = (req, res, next) => {
   }
   return next();
 };
+
+// შემოწმებს token-ს და აყენებს req.user-ს, მაგრამ არ ბრუნებს 401-ს.
+// თუ token არ არსებობს ან ხარველი, req.user = null დარჩება და მოთხოვნა გაატარდება.
+// ეს კარგია რაც გინდა ნახო ავტორიზაციის სტატუსი, მაგრამ ლოგი არ დაამტკიცო.
+export const checkAuth = async (req, res, next) => {
+  try {
+    const token = req.cookies?.accessToken;
+    if (!token) {
+      // token არ მოითხოვა, როგორც სტუმარი გაიტანე
+      req.user = null;
+      return next();
+    }
+
+    const payload = jwt.verify(token, process.env.JWT_KEY);
+
+    if (!payload.uuid) {
+      req.user = null;
+      return next();
+    }
+
+    const result = await pool.query("SELECT * FROM users WHERE uuid = $1 LIMIT 1", [payload.uuid]);
+
+    if (!result || result.rows.length === 0) {
+      req.user = null;
+      return next();
+    }
+
+    if (!result.rows[0].is_active) {
+      // აქტიური რომ არ იყო, მაინც დააყენებ req.user-ს (თუ გინდა ლოგი)
+      req.user = null;
+      return next();
+    }
+
+    req.user = toPublicUser(result.rows[0]);
+    return next();
+  } catch (err) {
+    // token ხარველი ან წაყენებული - საჯაროდ განვიხილოთ
+    req.user = null;
+    return next();
+  }
+};

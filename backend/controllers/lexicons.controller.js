@@ -167,9 +167,22 @@ export const searchLexicons = async (req, res, next) => {
       [likePattern],
     );
 
+    // Prepare log data
+    const isAuthenticated = !!req.user;
+    const resultCount = result.rows.length;
+    // ზომა ითვლება JSON.stringify-ით, რომ რეალური გადაცემული ბაიტები მივიღოთ
+    const resultSizeBytes = Buffer.byteLength(JSON.stringify(result.rows), 'utf8');
+
+    // Insert log row (async, მაგრამ შეცდომა არ აფერხებს ძებნის შედეგს)
+    pool.query(
+      `INSERT INTO lexicon_search_log (query_text, is_authenticated, result_count, result_size_bytes)
+       VALUES ($1, $2, $3, $4)` ,
+      [queryText, isAuthenticated, resultCount, resultSizeBytes]
+    ).catch((e) => console.error('Failed to log lexicon search:', e));
+
     return res.status(200).json({
       query: queryText,
-      count: result.rows.length,
+      count: resultCount,
       rows: result.rows,
     });
   } catch (err) {
