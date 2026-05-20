@@ -19,7 +19,7 @@ function RequireEditor({ children }) {
 
   if (status === "loading") return null;
   if (status === "unauth") return <Navigate to="/login" replace />;
-  if (status === "forbidden") return <Navigate to="/listen" replace />;
+  if (status === "forbidden") return <Navigate to="/" replace />;
 
   return children;
 }

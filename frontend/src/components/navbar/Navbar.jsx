@@ -115,7 +115,10 @@ function Navbar() {
                         ტექსტების რედაქტირება
                       </Link>
                       <Link to="/add-lexicons" onClick={() => setOpen(false)}>
-                        addLexicons
+                        ლექსიკონების დამატება
+                      </Link>
+                      <Link to="/lexicon-search" onClick={() => setOpen(false)}>
+                        ლექსიკონებში ძიება
                       </Link>
                     </>
                   )}

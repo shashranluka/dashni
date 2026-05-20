@@ -68,13 +68,13 @@ export const login = async (req, res, next) => {
       return res.status(403).json({ message: "მომხმარებელი არააქტიურია" });
     }
 
-    // Generate JWT token (with uuid)
+    // Generate JWT token (uuid-only) with expiration
     const token = jwt.sign(
       {
-        uuid: foundUser.uuid,
-        username: foundUser.username
+        uuid: foundUser.uuid
       },
-      process.env.JWT_KEY
+      process.env.JWT_KEY,
+      { expiresIn: process.env.JWT_EXPIRES_IN || "7d" }
     );
 
     console.log('Login successful for user:', foundUser.username);
@@ -97,7 +97,8 @@ export const me = (req, res) => res.status(200).json(req.user);
 export const logout = async (req, res) => {
   res
     .clearCookie("accessToken", {
-      sameSite: "none",
+      httpOnly: true,
+      sameSite: "lax",
       secure: true,
     })
     .status(200)

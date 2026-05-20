@@ -12,6 +12,9 @@ function Home() {
         <Link to="/tale-from-ada" className="home-link-card">
           ადას მიერ მოყოლილი ზღაპარი
         </Link>
+        <Link to="/lexicon-search" className="home-link-card">
+          ლექსიკონებში ძიება
+        </Link>
       </div>
     </div>
   );

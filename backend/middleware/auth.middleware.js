@@ -22,18 +22,12 @@ export const requireAuth = async (req, res, next) => {
 
     const payload = jwt.verify(token, process.env.JWT_KEY);
 
-    // ვცდილობთ მომხმარებლის იდენტიფიკაციას payload-ის სხვადასხვა ველით
-    // (userId / uuid / username), რომ ძველი და ახალი ტოკენები ორივე იმუშაოს.
-    let result;
-    if (payload.userId) {
-      result = await pool.query("SELECT * FROM users WHERE id = $1 LIMIT 1", [payload.userId]);
-    } else if (payload.uuid) {
-      result = await pool.query("SELECT * FROM users WHERE uuid = $1 LIMIT 1", [payload.uuid]);
-    } else if (payload.username) {
-      result = await pool.query("SELECT * FROM users WHERE username = $1 LIMIT 1", [payload.username]);
-    } else {
+    // იდენტიფიკაცია ხდება მხოლოდ uuid-ით.
+    if (!payload.uuid) {
       return res.status(401).json({ message: "Invalid token" });
     }
+
+    const result = await pool.query("SELECT * FROM users WHERE uuid = $1 LIMIT 1", [payload.uuid]);
 
     if (!result || result.rows.length === 0) {
       return res.status(401).json({ message: "User not found" });

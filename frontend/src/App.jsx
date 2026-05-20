@@ -14,6 +14,7 @@ import AdminPage from "./pages/admin/AdminPage";
 import RequireEditor from "./components/RequireEditor/RequireEditor";
 import EditorPage from "./pages/editor/EditorPage";
 import AddLexicons from "./pages/addLexicons/AddLexicons";
+import LexiconSearchPage from "./pages/lexiconSearch/LexiconSearchPage";
 import usePageTracking from "./utils/usePageTracking";
 import { initGA, hasConsent } from "./utils/analytics";
 import "./App.scss";
@@ -64,6 +65,14 @@ function AppContent() {
               <RequireEditor>
                 <AddLexicons />
               </RequireEditor>
+            }
+          />
+          <Route
+            path="/lexicon-search"
+            element={
+              // <RequireEditor>
+                <LexiconSearchPage />
+              // </RequireEditor>
             }
           />
         </Routes>
