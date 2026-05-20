@@ -156,6 +156,7 @@ export const searchLexicons = async (req, res, next) => {
     }
 
     const likePattern = `%${queryText}%`;
+    const queryStart = process.hrtime.bigint();
     const result = await pool.query(
       `
         SELECT id, text, lexicon_name, created_at, updated_at
@@ -166,6 +167,8 @@ export const searchLexicons = async (req, res, next) => {
       `,
       [likePattern],
     );
+    const queryEnd = process.hrtime.bigint();
+    const dbQueryMs = Number((queryEnd - queryStart) / 1000000n);
 
     // Prepare log data
     const isAuthenticated = !!req.user;
@@ -175,9 +178,9 @@ export const searchLexicons = async (req, res, next) => {
 
     // Insert log row (async, მაგრამ შეცდომა არ აფერხებს ძებნის შედეგს)
     pool.query(
-      `INSERT INTO lexicon_search_log (query_text, is_authenticated, result_count, result_size_bytes)
-       VALUES ($1, $2, $3, $4)` ,
-      [queryText, isAuthenticated, resultCount, resultSizeBytes]
+      `INSERT INTO lexicon_search_log (query_text, is_authenticated, result_count, result_size_bytes, db_query_ms)
+       VALUES ($1, $2, $3, $4, $5)` ,
+      [queryText, isAuthenticated, resultCount, resultSizeBytes, dbQueryMs]
     ).catch((e) => console.error('Failed to log lexicon search:', e));
 
     return res.status(200).json({
