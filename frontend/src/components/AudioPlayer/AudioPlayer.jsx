@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { trackAudioPlay, trackAudioSkip } from "../../utils/analytics";
+// ...existing code...
 import "./AudioPlayer.scss";
 
 function AudioPlayer({ src, startTime, onTimeUpdate, seekTrigger }) {
@@ -59,7 +59,7 @@ function AudioPlayer({ src, startTime, onTimeUpdate, seekTrigger }) {
       audioRef.current.pause();
     } else {
       audioRef.current.play();
-      trackAudioPlay(src);
+      // ...existing code...
     }
     setIsPlaying(!isPlaying);
   };
@@ -78,7 +78,7 @@ function AudioPlayer({ src, startTime, onTimeUpdate, seekTrigger }) {
     if (onTimeUpdate) {
       onTimeUpdate(nextTime);
     }
-    trackAudioSkip(seconds > 0 ? "forward" : "backward", Math.abs(seconds));
+    // ...existing code...
   };
 
   const handleProgressChange = (e) => {

@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
-import { trackGameStart, trackGameComplete } from "../../utils/analytics";
+// ...existing code...
 import { toDisplayText } from "../../utils/georgiaNormalize";
 import "./MessyDictionary.scss";
 
@@ -83,15 +83,9 @@ export default function MessyDictionary({
     resetGame();
   }, [resetGame]);
 
-  useEffect(() => {
-    trackGameStart(gameMode, direction);
-  }, [gameMode, direction]);
+  // ...existing code...
 
-  useEffect(() => {
-    if (gameFinished) {
-      trackGameComplete(points, tries, gameMode);
-    }
-  }, [gameFinished, points, tries, gameMode]);
+  // ...existing code...
 
   useEffect(() => {
     successSoundRef.current = new Audio("/sounds/success.mp3");

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import newRequest from '../../utils/newRequest';
-import { trackLogin } from '../../utils/analytics';
+// ...existing code...
 import './Login.scss';
 
 function Login() {
@@ -21,7 +21,7 @@ function Login() {
       
       localStorage.setItem('currentUser', JSON.stringify(res.data));
       
-      trackLogin('email');
+      // ...existing code...
       
       console.log('წარმატებული შესვლა:', res.data);
       navigate('/');

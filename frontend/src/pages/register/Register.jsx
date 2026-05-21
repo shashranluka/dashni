@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import newRequest from '../../utils/newRequest';
-import { trackSignUp } from '../../utils/analytics';
+// ...existing code...
 import './Register.scss';
 
 function Register() {
@@ -21,7 +21,7 @@ function Register() {
       const res = await newRequest.post('auth/register', formData);
       console.log('წარმატებული რეგისტრაცია:', res.data);
       
-      trackSignUp('email');
+      // ...existing code...
       
       alert('რეგისტრაცია წარმატებით დასრულდა!');
       

@@ -8,30 +8,20 @@ import AudioToWordGame from "./pages/audioToWordGame/AudioToWordGame";
 import Poligon from "./pages/poligon/Poligon";
 import Login from "./pages/login/Login";
 import Register from "./pages/register/Register";
-import CookieConsent from "./components/CookieConsent/CookieConsent";
 import RequireAdmin from "./components/RequireAdmin/RequireAdmin";
 import AdminPage from "./pages/admin/AdminPage";
 import RequireEditor from "./components/RequireEditor/RequireEditor";
 import EditorPage from "./pages/editor/EditorPage";
 import AddLexicons from "./pages/addLexicons/AddLexicons";
 import LexiconSearchPage from "./pages/lexiconSearch/LexiconSearchPage";
-import usePageTracking from "./utils/usePageTracking";
-import { initGA, hasConsent } from "./utils/analytics";
+// ...existing code...
 import "./App.scss";
 
 function AppContent() {
-  useEffect(() => {
-    // თუ მომხმარებელს უკვე აქვს consent, ვრთავთ Full Mode-ს
-    // თუ არა, ვიწყებთ Basic Mode-თ (ანონიმური pageviews)
-    const consentGranted = hasConsent();
-    initGA(consentGranted);
-  }, []);
-
-  usePageTracking();
+  // ...existing code...
 
   return (
     <>
-      <CookieConsent />
       <div style={{ minHeight: "100vh" }}>
         <Navbar />
         <Routes>

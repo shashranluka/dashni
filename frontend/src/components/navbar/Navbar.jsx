@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import newRequest from "../../utils/newRequest";
-import { revokeConsent, hasConsent, setConsent } from "../../utils/analytics";
+// import { revokeConsent, hasConsent, setConsent } from "../../utils/analytics";
 import { isEditorUser, isAdminUser } from "../../utils/roles";
 import "./Navbar.scss";
 
@@ -12,15 +12,15 @@ function Navbar() {
   const [hasAnalyticsConsent, setHasAnalyticsConsent] = useState(false);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const user = localStorage.getItem("currentUser");
-    if (user) {
-      setCurrentUser(JSON.parse(user));
-    }
+  // useEffect(() => {
+  //   const user = localStorage.getItem("currentUser");
+  //   if (user) {
+  //     setCurrentUser(JSON.parse(user));
+  //   }
 
-    // Analytics consent status-ის შემოწმება
-    setHasAnalyticsConsent(hasConsent());
-  }, []);
+  //   // Analytics consent status-ის შემოწმება
+  //   setHasAnalyticsConsent(hasConsent());
+  // }, []);
 
   const handleLogout = async () => {
     try {
@@ -38,31 +38,31 @@ function Navbar() {
    * Analytics-ის ჩართვის handler
    * აძლევს consent-ს და განაახლებს გვერდს
    */
-  const handleEnableAnalytics = () => {
-    setConsent(true); // ვაძლევთ თანხმობას
-    setHasAnalyticsConsent(true);
-    setShowAnalyticsModal(false);
+  // const handleEnableAnalytics = () => {
+  //   setConsent(true); // ვაძლევთ თანხმობას
+  //   setHasAnalyticsConsent(true);
+  //   setShowAnalyticsModal(false);
 
-    // გვერდის reload რომ full tracking ჩაირთოს
-    setTimeout(() => {
-      window.location.reload();
-    }, 500);
-  };
+  //   // გვერდის reload რომ full tracking ჩაირთოს
+  //   setTimeout(() => {
+  //     window.location.reload();
+  //   }, 500);
+  // };
 
   /**
    * Analytics-ის გამორთვის handler (opt-out)
    * წაშლის consent-ს და განაახლებს გვერდს
    */
-  const handleRevokeAnalytics = () => {
-    revokeConsent();
-    setHasAnalyticsConsent(false);
-    setShowAnalyticsModal(false);
+  // const handleRevokeAnalytics = () => {
+  //   revokeConsent();
+  //   setHasAnalyticsConsent(false);
+  //   setShowAnalyticsModal(false);
 
-    // გვერდის reload რომ ახალი settings ამოქმედდეს
-    setTimeout(() => {
-      window.location.reload();
-    }, 500);
-  };
+  //   // გვერდის reload რომ ახალი settings ამოქმედდეს
+  //   setTimeout(() => {
+  //     window.location.reload();
+  //   }, 500);
+  // };
 
   /**
    * Analytics modal-ის გახსნა
@@ -197,12 +197,12 @@ function Navbar() {
                 </button>
               )}
 
-              <button
+              {/* <button
                 className="btn-close"
                 onClick={() => setShowAnalyticsModal(false)}
               >
                 დახურვა
-              </button>
+              </button> */}
             </div>
           </div>
         </div>
