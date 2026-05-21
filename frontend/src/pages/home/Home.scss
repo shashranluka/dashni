@@ -18,8 +18,12 @@
   .home-links {
     margin-top: 18px;
     display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
+    flex-direction: column;
+    // flex-wrap: wrap;
+    gap: 30px;
+    align-items: center;
+    justify-content: center;
+    min-height: 70vh;
   }
 
   .home-link-card {
@@ -30,7 +34,7 @@
     padding: 10px 14px;
     border-radius: 10px;
     border: 1px solid #cfd8e3;
-    background: #f8fbff;
+    background: #6fee59;
     color: #1f3f63;
     font-weight: 600;
     text-decoration: none;

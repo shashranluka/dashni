@@ -3,6 +3,7 @@ import { pool } from "../server.js";
 export const getAudioData = async (req, res, next) => {
   try {
     console.log("Fetching audio segments...");
+    const start = Date.now();
 
     // ამოიღე ყველა audio segment
     const segmentsResult = await pool.query(
@@ -31,6 +32,20 @@ export const getAudioData = async (req, res, next) => {
     );
 
     console.log(`Retrieved ${wordsResult.rows.length} translations`);
+
+    // ლოგირება
+    const dbQueryMs = Date.now() - start;
+    const isAuthenticated = !!req.user;
+    const resultSizeBytes = Buffer.byteLength(JSON.stringify({
+      segments: segments,
+      words: wordsResult.rows,
+      uniqueWords: uniqueWords,
+    }), 'utf8');
+    pool.query(
+      `INSERT INTO audioData_usage_log (is_authenticated, result_size_bytes, db_query_ms)
+       VALUES ($1, $2, $3)` ,
+      [isAuthenticated, resultSizeBytes, dbQueryMs]
+    ).catch((e) => console.error('Failed to log audioData usage:', e));
 
     res.status(200).json({
       segments: segments, // [{id, time, text}, ...]
