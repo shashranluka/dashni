@@ -155,18 +155,21 @@ export const searchLexicons = async (req, res, next) => {
       return res.status(400).json({ message: "q query parameter is required" });
     }
 
+    const lexiconName = req.query?.lexicon_name;
     const likePattern = `%${queryText}%`;
+    let sql = `
+      SELECT id, text, lexicon_name, created_at, updated_at
+      FROM lexicons
+      WHERE text ILIKE $1`;
+    const params = [likePattern];
+    if (lexiconName) {
+      sql += ' AND lexicon_name = $2';
+      params.push(lexiconName);
+    }
+    sql += '\nORDER BY id DESC\nLIMIT 200';
+
     const queryStart = process.hrtime.bigint();
-    const result = await pool.query(
-      `
-        SELECT id, text, lexicon_name, created_at, updated_at
-        FROM lexicons
-        WHERE text ILIKE $1
-        ORDER BY id DESC
-        LIMIT 200
-      `,
-      [likePattern],
-    );
+    const result = await pool.query(sql, params);
     const queryEnd = process.hrtime.bigint();
     const dbQueryMs = Number((queryEnd - queryStart) / 1000000n);
 
@@ -175,12 +178,11 @@ export const searchLexicons = async (req, res, next) => {
     const resultCount = result.rows.length;
     // ზომა ითვლება JSON.stringify-ით, რომ რეალური გადაცემული ბაიტები მივიღოთ
     const resultSizeBytes = Buffer.byteLength(JSON.stringify(result.rows), 'utf8');
-
-    // Insert log row (async, მაგრამ შეცდომა არ აფერხებს ძებნის შედეგს)
+    // ლოგში ჩავწეროთ მოთხოვნილი ლექსიკონის სახელი (ან null თუ ყველა)
     pool.query(
-      `INSERT INTO lexicon_search_log (query_text, is_authenticated, result_count, result_size_bytes, db_query_ms)
-       VALUES ($1, $2, $3, $4, $5)` ,
-      [queryText, isAuthenticated, resultCount, resultSizeBytes, dbQueryMs]
+      `INSERT INTO lexicon_search_log (query_text, lexicon_name, is_authenticated, result_count, result_size_bytes, db_query_ms)
+       VALUES ($1, $2, $3, $4, $5, $6)` ,
+      [queryText, lexiconName || null, isAuthenticated, resultCount, resultSizeBytes, dbQueryMs]
     ).catch((e) => console.error('Failed to log lexicon search:', e));
 
     return res.status(200).json({

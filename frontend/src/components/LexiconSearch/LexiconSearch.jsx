@@ -2,8 +2,17 @@ import { useState } from "react";
 import newRequest from "../../utils/newRequest";
 import "./LexiconSearch.scss";
 
+
+const LEXICON_OPTIONS = [
+  { value: "", label: "ყველა ლექსიკონი" },
+  { value: "სიტყვანი", label: "სიტყვანი" },
+  { value: "ქართ-თუშ_ლექსიკონი", label: "ქართ-თუშ" },
+  { value: "თუშ-ქართ_ლექსიკონი", label: "თუშ-ქართ" },
+];
+
 function LexiconSearch() {
   const [query, setQuery] = useState("");
+  const [lexicon, setLexicon] = useState(LEXICON_OPTIONS[0].value);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [results, setResults] = useState([]);
@@ -22,9 +31,10 @@ function LexiconSearch() {
     setSearched(true);
 
     try {
-      const response = await newRequest.get("/lexicons/search", {
-        params: { q: query },
-      });
+      // თუ lexicon ცარიელია, პარამეტრს არ ვაგზავნით (ყველა ლექსიკონი)
+      const params = { q: query };
+      if (lexicon) params.lexicon_name = lexicon;
+      const response = await newRequest.get("/lexicons/search", { params });
       setResults(response?.data?.rows || []);
     } catch (err) {
       setError(err?.response?.data?.message || "ძებნა ვერ შესრულდა");
@@ -43,6 +53,18 @@ function LexiconSearch() {
     <section className="lexicon-search-panel">
       <h2>Lexicons ძებნა</h2>
       <form className="lexicon-search-form" onSubmit={handleSubmit}>
+        <label style={{ display: "block", marginBottom: 8 }}>
+          ლექსიკონი:
+          <select
+            value={lexicon}
+            onChange={e => setLexicon(e.target.value)}
+            style={{ marginLeft: 8 }}
+          >
+            {LEXICON_OPTIONS.map(opt => (
+              <option key={opt.value} value={opt.value}>{opt.label}</option>
+            ))}
+          </select>
+        </label>
         <input
           type="text"
           value={query}
