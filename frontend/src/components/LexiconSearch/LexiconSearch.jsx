@@ -4,7 +4,7 @@ import "./LexiconSearch.scss";
 
 
 const LEXICON_OPTIONS = [
-  { value: "", label: "ყველა ლექსიკონი" },
+  { value: "", label: "ყველა" },
   { value: "სიტყვანი", label: "სიტყვანი" },
   { value: "ქართ-თუშ_ლექსიკონი", label: "ქართ-თუშ" },
   { value: "თუშ-ქართ_ლექსიკონი", label: "თუშ-ქართ" },
@@ -51,20 +51,24 @@ function LexiconSearch() {
 
   return (
     <section className="lexicon-search-panel">
-      <h2>Lexicons ძებნა</h2>
+      <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 18 }}>
+        <h2 style={{ margin: 0, fontWeight: 700, fontSize: 24 }}>ლექსიკონებში ძებნა</h2>
+        <select
+          value={lexicon}
+          onChange={e => setLexicon(e.target.value)}
+          style={{
+            padding: "7px 12px",
+            borderRadius: 8,
+            border: "1px solid #bbb",
+            fontSize: 16
+          }}
+        >
+          {LEXICON_OPTIONS.map(opt => (
+            <option key={opt.value} value={opt.value}>{opt.label}</option>
+          ))}
+        </select>
+      </div>
       <form className="lexicon-search-form" onSubmit={handleSubmit}>
-        <label style={{ display: "block", marginBottom: 8 }}>
-          ლექსიკონი:
-          <select
-            value={lexicon}
-            onChange={e => setLexicon(e.target.value)}
-            style={{ marginLeft: 8 }}
-          >
-            {LEXICON_OPTIONS.map(opt => (
-              <option key={opt.value} value={opt.value}>{opt.label}</option>
-            ))}
-          </select>
-        </label>
         <input
           type="text"
           value={query}
