@@ -96,11 +96,11 @@ function Navbar() {
           {currentUser ? (
             <div className="user-menu">
               <div className="user-info" onClick={() => setOpen(!open)}>
-                <img
-                  src={currentUser.img || "/img/noavatar.jpg"}
+                {/* <img
+                  src={currentUser.img || ""}
                   alt="user"
                   className="user-avatar"
-                />
+                /> */}
                 <span>{currentUser.username}</span>
               </div>
 
