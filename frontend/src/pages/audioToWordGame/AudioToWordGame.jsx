@@ -359,10 +359,6 @@ function AudioToWordGame() {
       {/* // )} */}
       {gameData && gameData.words && (
         <>
-          <h2 className="segment-info-title">
-            ეპიზოდი {selectedSegment?.id ?? "-"} - სიტყვების რაოდენობა:{" "}
-            {wordsForGame.length}
-          </h2>
           {!selectedSegment ? (
             <div className="segment-hint">
               აირჩიე ეპიზოდი ზემოთ მოცემული ღილაკებიდან სათამაშოდ სიტყვების
@@ -371,15 +367,6 @@ function AudioToWordGame() {
           ) : null}
 
           <div className="listen-action-buttons">
-            <button
-              type="button"
-              className="compose-text-btn"
-              onClick={handleComposeMode}
-              disabled={!wordsForCompose.length}
-            >
-              ტექსტი
-            </button>
-
             <button
               type="button"
               className={`settings-toggle-btn${isSettingsOpen ? " is-open" : ""}`}
@@ -400,7 +387,6 @@ function AudioToWordGame() {
               <span aria-hidden="true">{isSoundEnabled ? "🔊" : "🔇"}</span>
             </button>
           </div>
-
           {!isComposeMode && !gameStarted && (
             <WordSelector
               savedLearnedIds={savedLearnedIds}
@@ -437,26 +423,40 @@ function AudioToWordGame() {
               }
             />
           )}
+          <h2 className="segment-info-title">
+            ეპიზოდი {selectedSegment?.id ?? "-"} - სიტყვების რაოდენობა:{" "}
+            {wordsForGame.length}
+          </h2>
 
           {!isComposeMode && !gameStarted && (
-            <div className="listen-mode-buttons">
+            <div className="listen-mode-buttons" style={{ display: "flex", flexDirection: "column", gap: "0.7rem", alignItems: "stretch", maxWidth: 220, margin: "0 auto 1.5rem auto" }}>
               <button
                 type="button"
                 className="start-anki-btn"
                 onClick={handleStartAnkiGame}
                 disabled={isStartDisabled}
+                style={{ width: "100%" }}
               >
-                ანკი
+                დახარისხება
               </button>
               <button
                 type="button"
                 className="start-game-btn"
                 onClick={handleStartCardsGame}
                 disabled={isStartDisabled}
+                style={{ width: "100%" }}
               >
-                ბარათები
+                თამაში
               </button>
-
+              <button
+                type="button"
+                className="compose-text-btn"
+                onClick={handleComposeMode}
+                disabled={!wordsForCompose.length}
+                style={{ width: "100%" }}
+              >
+                შედგენა
+              </button>
             </div>
           )}
 
