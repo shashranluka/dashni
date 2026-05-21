@@ -1,3 +1,33 @@
+/**
+ * updateLexiconShowToUsers
+ * PATCH /lexicons/:id
+ * მხოლოდ admin-ს შეუძლია შეცვალოს show_to_users ველი.
+ *
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ * @param {import('express').NextFunction} next
+ */
+export const updateLexiconShowToUsers = async (req, res, next) => {
+  console.log("updateLexiconShowToUsers called with:");
+  const lexiconId = req.params.id;
+  const { show_to_users } = req.body;
+  if (typeof show_to_users !== "boolean") {
+    return res.status(400).json({ message: "show_to_users must be boolean" });
+  }
+  try {
+    const result = await pool.query(
+      `UPDATE lexicons SET show_to_users = $1, updated_at = NOW() WHERE id = $2 RETURNING *`,
+      [show_to_users, lexiconId]
+    );
+    console.log("updateLexiconShowToUsers result:", result.rows);
+    if (result.rowCount === 0) {
+      return res.status(404).json({ message: "Lexicon not found" });
+    }
+    return res.status(200).json(result.rows[0]);
+  } catch (err) {
+    next(err);
+  }
+};
 import { pool } from "../server.js";
 
 const CHUNK_SIZE = 800;
@@ -157,14 +187,19 @@ export const searchLexicons = async (req, res, next) => {
 
     const lexiconName = req.query?.lexicon_name;
     const likePattern = `%${queryText}%`;
-    let sql = `
-      SELECT id, text, lexicon_name, created_at, updated_at
-      FROM lexicons
-      WHERE text ILIKE $1`;
+    // admin + fromAdmin=true => ყველა ჩანაწერი, სხვაგან მხოლოდ show_to_users=true
+    const isAdmin = req.user && req.user.role === "admin";
+    const fromAdmin = req.query?.fromAdmin === "true";
+
+    let sql = `SELECT id, text, lexicon_name, show_to_users, created_at, updated_at FROM lexicons WHERE text ILIKE $1`;
     const params = [likePattern];
     if (lexiconName) {
       sql += ' AND lexicon_name = $2';
       params.push(lexiconName);
+    }
+    // თუ არაა admin ან არაა fromAdmin=true, დავამატოთ show_to_users = true
+    if (!(isAdmin && fromAdmin)) {
+      sql += (params.length === 1 ? ' AND' : ' AND') + ' show_to_users = true';
     }
     sql += '\nORDER BY id DESC\nLIMIT 200';
 
@@ -176,9 +211,7 @@ export const searchLexicons = async (req, res, next) => {
     // Prepare log data
     const isAuthenticated = !!req.user;
     const resultCount = result.rows.length;
-    // ზომა ითვლება JSON.stringify-ით, რომ რეალური გადაცემული ბაიტები მივიღოთ
     const resultSizeBytes = Buffer.byteLength(JSON.stringify(result.rows), 'utf8');
-    // ლოგში ჩავწეროთ მოთხოვნილი ლექსიკონის სახელი (ან null თუ ყველა)
     pool.query(
       `INSERT INTO lexicon_search_log (query_text, lexicon_name, is_authenticated, result_count, result_size_bytes, db_query_ms)
        VALUES ($1, $2, $3, $4, $5, $6)` ,

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import newRequest from "../../utils/newRequest";
+import LexiconsForAdmin from "../../components/lexiconsForAdmin/LexiconsForAdmin";
 import "./AdminPage.scss";
 
 // ადმინ პანელი — ყველა მომხმარებლის სია is_active toggle-ითა და role dropdown-ით.
@@ -14,12 +15,17 @@ const AdminPage = () => {
   const [saving, setSaving] = useState({});
   // currentUserId — საჭიროა საკუთარი row-ის გასათიშად.
   const [currentUserId, setCurrentUserId] = useState(null);
+  // სრული currentUser ობიექტი LexiconsForAdmin-სთვის
+  const [currentUser, setCurrentUser] = useState(null);
 
   // კომპონენტის mount-ზე პარალელურად ვიღებთ:
   // 1) /auth/me — მიმდინარე ადმინის id, isSelf-ის გამოსათვლელად.
   // 2) /auth/users — ყველა მომხმარებლის სია ცხრილისთვის.
   useEffect(() => {
-    newRequest.get("/auth/me").then((res) => setCurrentUserId(res.data?.id));
+    newRequest.get("/auth/me").then((res) => {
+      setCurrentUserId(res.data?.id);
+      setCurrentUser(res.data);
+    });
     newRequest
       .get("/auth/users")
       .then((res) => setUsers(res.data))
@@ -121,6 +127,11 @@ const AdminPage = () => {
           })}
         </tbody>
       </table>
+
+      {/* LexiconsForAdmin სექცია */}
+      <div style={{ marginTop: 40 }}>
+        <LexiconsForAdmin currentUser={currentUser} />
+      </div>
     </div>
   );
 };

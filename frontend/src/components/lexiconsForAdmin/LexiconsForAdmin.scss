@@ -1,0 +1,75 @@
+
+// LexiconsForAdmin admin table styles
+.lexicons-admin-container {
+	margin: 2rem 0;
+	padding: 1.5rem;
+	background: #fff;
+	border-radius: 10px;
+	box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+}
+
+table {
+	width: 100%;
+	border-collapse: collapse;
+	margin-top: 1.5rem;
+	background: #fafbfc;
+	border-radius: 8px;
+	overflow: hidden;
+}
+
+th, td {
+	padding: 0.7rem 1rem;
+	text-align: left;
+}
+
+th {
+	background: #f0f4f8;
+	font-weight: 600;
+	color: #333;
+	border-bottom: 2px solid #e0e6ed;
+}
+
+tr:nth-child(even) {
+	background: #f7fafd;
+}
+
+tr:hover {
+	background: #eaf6fb;
+}
+
+input[type="text"] {
+	padding: 0.5rem 0.8rem;
+	border: 1px solid #cfd8dc;
+	border-radius: 5px;
+	margin-right: 0.5rem;
+	font-size: 1rem;
+}
+
+button {
+	padding: 0.5rem 1.1rem;
+	background: #1976d2;
+	color: #fff;
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
+	font-size: 1rem;
+	transition: background 0.2s;
+}
+
+button:hover {
+	background: #125ea2;
+}
+
+input[type="checkbox"] {
+	width: 1.2em;
+	height: 1.2em;
+	accent-color: #1976d2;
+	cursor: pointer;
+}
+
+h2 {
+	margin-bottom: 1rem;
+	color: #1976d2;
+	font-size: 1.3rem;
+	font-weight: 700;
+}
