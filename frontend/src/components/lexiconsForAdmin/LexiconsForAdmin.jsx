@@ -41,6 +41,15 @@ function LexiconsForAdmin({ currentUser }) {
         placeholder="ტექსტის ძებნა"
       />
       <button onClick={handleSearch}>ძებნა</button>
+      {results.length > 0 && (() => {
+        const visible = results.filter(l => l.show_to_users).length;
+        const hidden = results.length - visible;
+        return (
+          <div style={{ margin: "1rem 0", color: "#1976d2", fontWeight: 500 }}>
+            ნაპოვნი ჩანაწერები: {results.length} | <span style={{color:'#388e3c'}}>ჩანს: {visible}</span> | <span style={{color:'#d32f2f'}}>არ ჩანს: {hidden}</span>
+          </div>
+        );
+      })()}
       <table>
         <thead>
           <tr>
