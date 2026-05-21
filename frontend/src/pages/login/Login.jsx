@@ -21,7 +21,6 @@ function Login() {
       
       localStorage.setItem('currentUser', JSON.stringify(res.data));
       
-      // ...existing code...
       
       console.log('წარმატებული შესვლა:', res.data);
       navigate('/');
