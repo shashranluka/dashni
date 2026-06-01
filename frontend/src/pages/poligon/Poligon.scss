@@ -111,47 +111,6 @@
     }
   }
 
-  &__episode-picker {
-    display: flex;
-    flex-wrap: nowrap;
-    justify-content: flex-start;
-    gap: 8px;
-    max-width: 760px;
-    margin: 8px auto 14px;
-    padding: 2px;
-    overflow-x: auto;
-    overflow-y: hidden;
-    scrollbar-width: thin;
-  }
-
-  &__episode-btn {
-    flex: 0 0 auto;
-    padding: 8px 14px;
-    border: 2px solid #b9cee3;
-    border-radius: 8px;
-    background: #fff;
-    color: #203447;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    white-space: nowrap;
-    transition: all 0.15s ease;
-
-    &:hover {
-      border-color: #7ea7cf;
-      background: #f0f7ff;
-    }
-
-    &.is-active {
-      border-color: #1f5f8f;
-      background: #1f5f8f;
-      color: #ffffff;
-      box-shadow:
-        0 0 0 2px rgba(31, 95, 143, 0.2),
-        0 4px 10px rgba(31, 95, 143, 0.35);
-    }
-  }
-
   &__symbol-keyboard {
     display: flex;
     flex-wrap: wrap;

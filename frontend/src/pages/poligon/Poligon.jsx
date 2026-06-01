@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import AudioPlayer from "../../components/AudioPlayer/AudioPlayer";
+import EpisodePicker from "../../components/EpisodePicker/EpisodePicker";
 import newRequest from "../../utils/newRequest";
 import extraSymbols from "./extraSymbols";
 import "./Poligon.scss";
@@ -21,7 +22,6 @@ function Poligon() {
   const [playbackSeconds, setPlaybackSeconds] = useState(0);
   const [seekTrigger, setSeekTrigger] = useState(0);
   const inputRef = useRef(null);
-  const episodeButtonRefs = useRef(new Map());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -63,19 +63,6 @@ function Poligon() {
     fetchAudioData();
   }, []);
 
-  useEffect(() => {
-    if (activeEpisodeId == null) return;
-
-    const activeButton = episodeButtonRefs.current.get(String(activeEpisodeId));
-    if (!activeButton) return;
-
-    activeButton.scrollIntoView({
-      behavior: "smooth",
-      block: "nearest",
-      inline: "center",
-    });
-  }, [activeEpisodeId]);
-
   if (loading) {
     return (
       <section className="poligon-page">
@@ -108,41 +95,12 @@ function Poligon() {
         />
       </div>
 
-      {episodes.length > 0 ? (
-        <div
-          className="poligon-page__episode-picker"
-          aria-label="ეპიზოდის არჩევა"
-        >
-          {episodes.map((episode) => {
-            const isActive = String(activeEpisodeId) === String(episode.id);
-
-            return (
-              <button
-                key={episode.id}
-                ref={(el) => {
-                  const key = String(episode.id);
-                  if (el) {
-                    episodeButtonRefs.current.set(key, el);
-                  } else {
-                    episodeButtonRefs.current.delete(key);
-                  }
-                }}
-                type="button"
-                className={`poligon-page__episode-btn${isActive ? " is-active" : ""}`}
-                onClick={() => {
-                  setSelectedEpisode(episode);
-                  setPlaybackSeconds(toSeconds(episode.time));
-                  setSeekTrigger((prev) => prev + 1);
-                }}
-                aria-pressed={isActive}
-                title={`${episode.id} (${episode.time})`}
-              >
-                {episode.id} ({episode.time})
-              </button>
-            );
-          })}
-        </div>
-      ) : null}
+      <EpisodePicker
+        episodes={episodes}
+        activeEpisodeId={activeEpisodeId}
+        setSelectedEpisode={setSelectedEpisode}
+        setSeekTrigger={setSeekTrigger}
+      />
 
       <div className="poligon-page__input-wrap">
         <div className="poligon-page__input-label-row">
