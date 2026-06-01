@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import newRequest from "../../utils/newRequest";
-import { isEditorUser, isAdminUser } from "../../utils/roles";
+import { isEditorUser, isAdminUser, isPrivateContributorUser } from "../../utils/roles";
 import "./Navbar.scss";
 
 function Navbar() {
@@ -58,6 +58,11 @@ function Navbar() {
                   <Link to="/my-page" onClick={() => setOpen(false)}>
                     ჩემი გვერდი
                   </Link>
+                  {isPrivateContributorUser(currentUser) && (
+                    <Link to="/my-words" onClick={() => setOpen(false)}>
+                      ჩემი private სიტყვები
+                    </Link>
+                  )}
                   {isEditorUser(currentUser) && (
                     <>
                       <Link to="/editor-page" onClick={() => setOpen(false)}>

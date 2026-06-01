@@ -15,3 +15,10 @@ export const isEditorUser = (user) => {
   const r = resolveRoleFromUser(user);
   return r === "editor" || r === "admin";
 };
+
+// ამოწმებს private_contributor უფლებას (ან admin fallback).
+export const isPrivateContributorUser = (user) => {
+  if (!user || typeof user !== "object") return false;
+  if (user.is_private_contributor === true) return true;
+  return resolveRoleFromUser(user) === "admin";
+};

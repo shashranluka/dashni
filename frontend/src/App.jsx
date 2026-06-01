@@ -14,6 +14,7 @@ import RequireEditor from "./components/RequireEditor/RequireEditor";
 import EditorPage from "./pages/editor/EditorPage";
 import AddLexicons from "./pages/addLexicons/AddLexicons";
 import LexiconSearchPage from "./pages/lexiconSearch/LexiconSearchPage";
+import MyWords from "./pages/myWords/MyWords";
 // ...existing code...
 import "./App.scss";
 
@@ -65,6 +66,7 @@ function AppContent() {
               // </RequireEditor>
             }
           />
+          <Route path="/my-words" element={<MyWords />} />
         </Routes>
       </div>
     </>
