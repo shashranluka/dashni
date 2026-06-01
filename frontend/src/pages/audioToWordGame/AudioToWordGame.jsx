@@ -5,6 +5,7 @@ import AnkiLikeGame from "../../components/AnkiLikeGame/AnkiLikeGame";
 import MessyDictionary from "../../components/messyDictionary/MessyDictionary";
 import WordSelector from "../../components/WordSelector/WordSelector";
 import AudioPlayer from "../../components/AudioPlayer/AudioPlayer";
+import EpisodePicker from "../../components/EpisodePicker/EpisodePicker";
 import "./AudioToWordGame.scss";
 
 function AudioToWordGame() {
@@ -21,6 +22,7 @@ function AudioToWordGame() {
   const [gameType, setGameType] = useState("cards");
   const [isSoundEnabled, setIsSoundEnabled] = useState(true);
   const [selectedSegment, setSelectedSegment] = useState(null);
+  const [seekTrigger, setSeekTrigger] = useState(0);
   const [manualSelectedWords, setManualSelectedWords] = useState([]);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [savedLearnedIds, setSavedLearnedIds] = useState([]);
@@ -164,16 +166,6 @@ function AudioToWordGame() {
     startGameWithType("anki");
   };
 
-  const handleSegmentSelect = (segment) => {
-    setSelectedSegment(segment);
-    setIsComposeMode(false);
-    setComposeCards([]);
-    setComposeBoardWords([]);
-    setUsedComposeCardIds([]);
-    setManualSelectedWords([]);
-    setGameStarted(false); // Reset game when changing segment
-  };
-
   const handleSettingsChange = useCallback((nextSettings) => {
     setSelectorSettings(nextSettings);
   }, []);
@@ -211,37 +203,6 @@ function AudioToWordGame() {
       .replace(/[.,!?;:"()\-_/\\[\]{}…]/g, " ")
       .replace(/\s+/g, " ")
       .trim();
-
-  const segmentWordCounts = useMemo(() => {
-    if (!Array.isArray(gameData?.segments) || !Array.isArray(gameData?.words)) {
-      return new Map();
-    }
-
-    return new Map(
-      gameData.segments.map((segment) => {
-        // 1) ამოვიღოთ სიტყვები ამ სეგმენტის ტექსტიდან
-        const segmentWordSet = new Set(
-          normalizeWord(segment.text).split(" ").filter(Boolean),
-        );
-
-        // 2) დავითვალოთ რამდენი უნიკალური სიტყვაა gameData.words-ში
-        const matchedWords = gameData.words.filter((wordObj) => {
-          const candidateWords = [
-            wordObj?.the_word,
-            wordObj?.word,
-            wordObj?.lemma,
-            wordObj?.base_word,
-          ]
-            .map(normalizeWord)
-            .filter(Boolean);
-
-          return candidateWords.some((w) => segmentWordSet.has(w));
-        });
-
-        return [segment.id, matchedWords.length];
-      }),
-    );
-  }, [gameData?.segments, gameData?.words]);
 
   const wordsForGame = useMemo(() => {
     if (!selectedSegment?.text || !Array.isArray(gameData?.words)) {
@@ -354,11 +315,19 @@ function AudioToWordGame() {
           src={audiofilePath.current}
           segments={gameData?.segments || []}
           startTime={selectedSegment?.time}
+          seekTrigger={seekTrigger}
         />
       </div>
       {/* // )} */}
       {gameData && gameData.words && (
         <>
+          <EpisodePicker
+            episodes={gameData?.segments || []}
+            activeEpisodeId={selectedSegment?.id ?? null}
+            setSelectedEpisode={setSelectedSegment}
+            setSeekTrigger={setSeekTrigger}
+          />
+
           {!selectedSegment ? (
             <div className="segment-hint">
               აირჩიე ეპიზოდი ზემოთ მოცემული ღილაკებიდან სათამაშოდ სიტყვების
@@ -395,32 +364,6 @@ function AudioToWordGame() {
               allWords={wordsForGame}
               onSettingsChange={handleSettingsChange}
               isOpen={isSettingsOpen}
-              settingsTopContent={
-                gameData?.segments ? (
-                  <label className="compact-field">
-                    <span>ეპიზოდი:</span>
-                    <select
-                      value={selectedSegment?.id ?? ""}
-                      onChange={(e) => {
-                        const seg = gameData.segments.find(
-                          (s) => String(s.id) === e.target.value,
-                        );
-                        if (seg) handleSegmentSelect(seg);
-                      }}
-                    >
-                      {gameData.segments.map((segment) => {
-                        const wordCount =
-                          segmentWordCounts.get(segment.id) ?? 0;
-                        return (
-                          <option key={segment.id} value={segment.id}>
-                            ეპიზოდი {segment.id} ({wordCount}) სიტყვა
-                          </option>
-                        );
-                      })}
-                    </select>
-                  </label>
-                ) : null
-              }
             />
           )}
           <h2 className="segment-info-title">
