@@ -29,10 +29,10 @@ export const updateUserPermissions = async (req, res, next) => {
       return res.status(403).json({ message: "Cannot modify own permissions" });
     }
 
-    const { is_active, role } = req.body;
+    const { is_active, role, is_private_contributor } = req.body;
     // მოთხოვნა უნდა შეიცავდეს მინიმუმ ერთ მართვად ველს.
-    if (is_active === undefined && role === undefined) {
-      return res.status(400).json({ message: "Provide is_active or role" });
+    if (is_active === undefined && role === undefined && is_private_contributor === undefined) {
+      return res.status(400).json({ message: "Provide is_active, role, or is_private_contributor" });
     }
     // role მხოლოდ დაშვებულ მნიშვნელობებს უნდა შეიცავდეს.
     const ALLOWED_ROLES = ["user", "editor", "admin"];
@@ -50,6 +50,10 @@ export const updateUserPermissions = async (req, res, next) => {
     if (role !== undefined) {
       values.push(role);
       fields.push(`role = $${values.length}`);
+    }
+    if (typeof is_private_contributor === "boolean") {
+      values.push(is_private_contributor);
+      fields.push(`is_private_contributor = $${values.length}`);
     }
     // უფლებების ცვლილებასთან ერთად ვინახავთ update დროსაც.
     fields.push("updated_at = CURRENT_TIMESTAMP");

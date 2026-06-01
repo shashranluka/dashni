@@ -63,6 +63,15 @@ export const requireEditor = (req, res, next) => {
   return next();
 };
 
+// უშვებს მხოლოდ private contributor ან admin მომხმარებელს.
+export const requirePrivateContributor = (req, res, next) => {
+  const isAllowed = req.user?.is_private_contributor === true || req.user?.role === "admin";
+  if (!isAllowed) {
+    return res.status(403).json({ message: "Private contributor only" });
+  }
+  return next();
+};
+
 // შემოწმებს token-ს და აყენებს req.user-ს, მაგრამ არ ბრუნებს 401-ს.
 // თუ token არ არსებობს ან ხარველი, req.user = null დარჩება და მოთხოვნა გაატარდება.
 // ეს კარგია რაც გინდა ნახო ავტორიზაციის სტატუსი, მაგრამ ლოგი არ დაამტკიცო.

@@ -7,6 +7,7 @@ import authRoute from "./routes/auth.route.js";
 import audioRoute from "./routes/audio.route.js";
 import resultsRoute from "./routes/results.route.js";
 import lexiconsRoute from "./routes/lexicons.route.js";
+import privateWordsRoute from "./routes/privateWords.route.js";
 
 const app = express();
 dotenv.config();
@@ -44,6 +45,7 @@ app.use("/api/auth", authRoute);
 app.use("/api/audio", audioRoute);
 app.use("/api/results", resultsRoute);
 app.use("/api/lexicons", lexiconsRoute);
+app.use("/api/private-words", privateWordsRoute);
 
 // Healthcheck route (simple DB + server check)
 app.get("/health", async (req, res) => {
