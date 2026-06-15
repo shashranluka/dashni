@@ -1,0 +1,283 @@
+.listen-action-buttons {
+  box-sizing: border-box;
+  display: flex;
+  justify-content: space-around;
+//   flex-wrap: wrap;
+  gap: 0.3rem;
+  width: 100%;
+  max-width: 100%;
+  margin: 0 0 1rem;
+  
+  button {
+    // width: 100%;
+    min-width: 0;
+    min-height: 44px;
+    padding: 0.65rem 0.3rem;
+    border: 2px solid #2196f3;
+    border-radius: 0.6rem;
+    background: #fff;
+    color: #2196f3;
+    font-size: 0.7em;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease,
+      opacity 0.2s ease;
+
+    &:hover:not(:disabled) {
+      background: #2196f3;
+      color: #fff;
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+
+  .settings-toggle-btn.is-open {
+    background: #4caf50;
+    border-color: #4caf50;
+    color: #fff;
+  }
+
+  .sound-toggle-btn {
+    flex: 0 0 44px;
+    width: 44px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    line-height: 1;
+    border-color: #5f6f82;
+    color: #4f5f72;
+
+    &:hover:not(:disabled) {
+      background: #4f5f72;
+      border-color: #4f5f72;
+      color: #fff;
+    }
+
+    &:not(.muted) {
+      background: #4f5f72;
+      border-color: #4f5f72;
+      color: #fff;
+    }
+
+    &.muted {
+      background: #fff;
+      border-color: #5f6f82;
+      color: #4f5f72;
+    }
+  }
+}
+
+.listen-word-cards {
+  width: 100%;
+  margin-bottom: 1rem;
+
+  p {
+    margin: 0 0 0.625rem;
+    text-align: center;
+    font-size: 0.95rem;
+  }
+
+  .cards-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.625rem;
+  }
+
+  .word-card {
+    padding: 0.75rem;
+    border: 2px solid #d7dee6;
+    border-radius: 0.6rem;
+    background: #fff;
+    cursor: pointer;
+    text-align: center;
+
+    &.selected {
+      border-color: #4caf50;
+      background: #e8f5e9;
+    }
+
+    .word {
+      font-weight: 700;
+      word-break: break-word;
+      line-height: 1.35;
+    }
+  }
+}
+
+.game-section {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.875rem;
+}
+
+.compose-section {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+
+  .compose-board {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+    min-height: 110px;
+    padding: 0.75rem;
+    border: 2px dashed #2196f3;
+    border-radius: 0.7rem;
+    background: #f8fbff;
+  }
+
+  .compose-board-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    gap: 0.625rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .compose-board-label {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #1f7ae0;
+  }
+
+  .compose-clear-btn {
+    min-height: 36px;
+    padding: 0.45rem 0.75rem;
+    border: 1px solid #2196f3;
+    border-radius: 0.5rem;
+    background: #fff;
+    color: #2196f3;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+
+    &:hover:not(:disabled) {
+      background: #2196f3;
+      color: #fff;
+    }
+
+    &:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+  }
+
+  .compose-board-content {
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #2a3640;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  .compose-cards-grid {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .compose-word-card {
+    min-height: 42px;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #d7dee6;
+    border-radius: 0.5rem;
+    background: #fff;
+    font-weight: 700;
+    text-align: center;
+    cursor: pointer;
+
+    &.used {
+      opacity: 0.45;
+      pointer-events: none;
+    }
+  }
+
+  .compose-empty {
+    width: 100%;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    text-align: center;
+    background: #f6f8fa;
+    color: #4a5561;
+  }
+}
+
+@media (min-width: 576px) {
+  .listen-action-buttons {
+    justify-content: space-between;
+
+    width: 100%;
+    flex-direction: row;
+
+    button {
+      flex: 1 1 calc(50% - 0.5rem);
+      font-size: 0.875rem;
+    }
+
+    .sound-toggle-btn {
+      flex: 0 0 44px;
+    }
+  }
+
+  .listen-word-cards {
+    .cards-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+}
+
+@media (min-width: 768px) {
+  .listen-action-buttons {
+    button {
+      flex: 1 1 calc(25% - 0.75rem);
+    }
+  }
+
+  .listen-word-cards {
+    .cards-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .compose-section {
+    .compose-board {
+      padding: 1rem;
+    }
+
+    .compose-cards-grid {
+      gap: 0.625rem;
+    }
+  }
+}
+
+@media (min-width: 992px) {
+  .game-section {
+    gap: 1rem;
+  }
+
+  .listen-word-cards {
+    .cards-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  .compose-section {
+    .compose-cards-grid {
+      grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+    }
+  }
+}

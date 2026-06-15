@@ -1,15 +1,18 @@
 .my-words-page {
+  box-sizing: border-box;
+  width: 100%;
   max-width: 960px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 16px;
 }
 
 .my-words-header {
-  margin-bottom: 14px;
+  margin-bottom: 12px;
 
   h1 {
     margin: 0 0 8px;
     color: #173a56;
+    font-size: 1.5rem;
   }
 
   p {
@@ -26,13 +29,13 @@
 
 .my-words-list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 12px;
+  grid-template-columns: 1fr;
+  gap: 10px;
 }
 
 .my-word-card {
   border: 1px solid #d7e3ee;
-  border-radius: 12px;
+  border-radius: 10px;
   background: #fbfdff;
   padding: 12px;
 
@@ -51,7 +54,7 @@
 
 .my-words-info,
 .my-words-empty {
-  margin-top: 12px;
+  margin-top: 10px;
   color: #43627d;
 }
 
@@ -59,4 +62,43 @@
   margin-top: 12px;
   color: #b42318;
   font-weight: 600;
+}
+
+.my-words-game {
+  margin-top: 16px;
+  padding: 12px;
+  border: 1px solid #d7e3ee;
+  border-radius: 10px;
+  background: #fbfdff;
+
+  h2 {
+    margin: 0 0 10px;
+    color: #173a56;
+    font-size: 1.1rem;
+  }
+}
+
+@media (min-width: 576px) {
+  .my-words-page {
+    padding: 20px;
+  }
+
+  .my-words-header {
+    margin-bottom: 14px;
+
+    h1 {
+      font-size: 1.8rem;
+    }
+  }
+
+  .my-words-list {
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 12px;
+  }
+
+  .my-words-game {
+    margin-top: 20px;
+    padding: 14px;
+    border-radius: 12px;
+  }
 }

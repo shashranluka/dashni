@@ -19,6 +19,8 @@ export const saveWordStatus = async (req, res, next) => {
     const {
       learned_word_ids = [],
       needs_learning_word_ids = [],
+      learned_words = [],
+      needs_learning_words = [],
       remove_learned_word_ids = [],
       remove_needs_learning_word_ids = [],
     } = req.body || {};
@@ -35,57 +37,106 @@ export const saveWordStatus = async (req, res, next) => {
     const removeLearned = toIntArray(remove_learned_word_ids);
     const removeNeeds = toIntArray(remove_needs_learning_word_ids);
 
+    const toWordEntries = (arr, fallbackSource = "public") => {
+      if (!Array.isArray(arr)) return [];
+
+      return arr
+        .map((item) => {
+          const wordId = Number(item?.word_id ?? item?.id);
+          if (!Number.isInteger(wordId) || wordId <= 0) return null;
+
+          const source = item?.source === "private" ? "private" : fallbackSource;
+
+          return { word_id: wordId, source };
+        })
+        .filter(Boolean);
+    };
+
+    const incomingLearnedEntries = [
+      ...incomingLearned.map((wordId) => ({ word_id: wordId, source: "public" })),
+      ...toWordEntries(learned_words),
+    ];
+
+    const incomingNeedsEntries = [
+      ...incomingNeeds.map((wordId) => ({ word_id: wordId, source: "public" })),
+      ...toWordEntries(needs_learning_words),
+    ];
+
+    const removeLearnedEntries = removeLearned.map((wordId) => ({ word_id: wordId, source: "public" }));
+    const removeNeedsEntries = removeNeeds.map((wordId) => ({ word_id: wordId, source: "public" }));
+
     const existingResult = await pool.query(
-      `SELECT learned_word_ids, needs_learning_word_ids
-       FROM results
-       WHERE user_id = $1
-       LIMIT 1`,
+      `SELECT source, word_id, status
+       FROM user_word_status
+       WHERE user_id = $1`,
       [userId],
     );
 
-    const currentLearned = existingResult.rows[0]?.learned_word_ids || [];
-    const currentNeeds = existingResult.rows[0]?.needs_learning_word_ids || [];
+    const statusMap = new Map();
+    const makeKey = (source, wordId) => `${source}:${wordId}`;
 
-    const learnedSet = new Set(currentLearned);
-    const needsSet = new Set(currentNeeds);
-
-    // Optional explicit removals
-    for (const id of removeLearned) learnedSet.delete(id);
-    for (const id of removeNeeds) needsSet.delete(id);
-
-    // Move to learned: add there, remove from needs
-    for (const id of incomingLearned) {
-      learnedSet.add(id);
-      needsSet.delete(id);
+    for (const row of existingResult.rows) {
+      statusMap.set(makeKey(row.source, row.word_id), {
+        source: row.source,
+        word_id: row.word_id,
+        status: row.status,
+      });
     }
 
-    // Move to needs: add there, remove from learned
-    for (const id of incomingNeeds) {
-      needsSet.add(id);
-      learnedSet.delete(id);
+    for (const entry of removeLearnedEntries) {
+      statusMap.delete(makeKey(entry.source, entry.word_id));
+    }
+    for (const entry of removeNeedsEntries) {
+      statusMap.delete(makeKey(entry.source, entry.word_id));
     }
 
-    const nextLearned = [...learnedSet];
-    const nextNeeds = [...needsSet];
+    for (const entry of incomingLearnedEntries) {
+      statusMap.set(makeKey(entry.source, entry.word_id), {
+        source: entry.source,
+        word_id: entry.word_id,
+        status: "learned",
+      });
+    }
 
-    const upsertQuery = `
-      INSERT INTO results (user_id, learned_word_ids, needs_learning_word_ids, updated_at)
-      VALUES ($1, $2::INTEGER[], $3::INTEGER[], CURRENT_TIMESTAMP)
-      ON CONFLICT (user_id)
-      DO UPDATE SET
-        learned_word_ids = EXCLUDED.learned_word_ids,
-        needs_learning_word_ids = EXCLUDED.needs_learning_word_ids,
-        updated_at = CURRENT_TIMESTAMP
-      RETURNING id, user_id, learned_word_ids, needs_learning_word_ids, updated_at;
-    `;
+    for (const entry of incomingNeedsEntries) {
+      statusMap.set(makeKey(entry.source, entry.word_id), {
+        source: entry.source,
+        word_id: entry.word_id,
+        status: "needs",
+      });
+    }
 
-    const result = await pool.query(upsertQuery, [userId, nextLearned, nextNeeds]);
+    const nextRows = [...statusMap.values()];
+
+    await pool.query("BEGIN");
+
+    await pool.query("DELETE FROM user_word_status WHERE user_id = $1", [userId]);
+
+    for (const row of nextRows) {
+      await pool.query(
+        `INSERT INTO user_word_status (user_id, source, word_id, status, updated_at)
+         VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP)`,
+        [userId, row.source, row.word_id, row.status],
+      );
+    }
+
+    await pool.query("COMMIT");
+
+    const learnedRows = nextRows.filter((row) => row.status === "learned");
+    const needsRows = nextRows.filter((row) => row.status === "needs");
+
+    const learnedWordIds = [...new Set(learnedRows.map((row) => row.word_id))];
+    const needsWordIds = [...new Set(needsRows.map((row) => row.word_id))];
 
     return res.status(200).json({
-      message: "სიტყვების სტატუსი განახლდა (merge)",
-      data: result.rows[0],
+      message: "სიტყვების სტატუსი განახლდა (user_word_status)",
+      learned_word_ids: learnedWordIds,
+      needs_learning_word_ids: needsWordIds,
+      learned_words: learnedRows,
+      needs_learning_words: needsRows,
     });
   } catch (err) {
+    await pool.query("ROLLBACK").catch(() => {});
     return next(err);
   }
 };
@@ -107,8 +158,8 @@ export const getWordStatus = async (req, res, next) => {
     }
 
     const query = `
-      SELECT id, user_id, learned_word_ids, needs_learning_word_ids, created_at, updated_at
-      FROM results
+      SELECT source, word_id, status, updated_at
+      FROM user_word_status
       WHERE user_id = $1;
     `;
 
@@ -119,15 +170,29 @@ export const getWordStatus = async (req, res, next) => {
       return res.status(200).json({
         learned_word_ids: [],
         needs_learning_word_ids: [],
+        learned_words: [],
+        needs_learning_words: [],
         updated_at: null,
       });
     }
 
-    const row = result.rows[0];
+    const learnedRows = result.rows.filter((row) => row.status === "learned");
+    const needsRows = result.rows.filter((row) => row.status === "needs");
+
+    const learnedWordIds = [...new Set(learnedRows.map((row) => row.word_id))];
+    const needsWordIds = [...new Set(needsRows.map((row) => row.word_id))];
+
+    const updatedAt = result.rows
+      .map((row) => row.updated_at)
+      .filter(Boolean)
+      .sort((a, b) => new Date(b) - new Date(a))[0] || null;
+
     return res.status(200).json({
-      learned_word_ids: row.learned_word_ids || [],
-      needs_learning_word_ids: row.needs_learning_word_ids || [],
-      updated_at: row.updated_at,
+      learned_word_ids: learnedWordIds,
+      needs_learning_word_ids: needsWordIds,
+      learned_words: learnedRows,
+      needs_learning_words: needsRows,
+      updated_at: updatedAt,
     });
   } catch (err) {
     return next(err);

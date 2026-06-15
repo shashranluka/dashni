@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { arrangeWords } from "../../utils/arrange";
 import "./WordSelector.scss";
 
 export default function WordSelector({
@@ -16,13 +17,10 @@ export default function WordSelector({
   const [direction, setDirection] = useState("translation-to-word");
   const [wordFilter, setWordFilter] = useState("all");
 
-  const currentEpisodeWordIds = new Set(
-    (allWords || [])
-      .map((word) => word?.id)
-      .filter((id) => id !== undefined && id !== null),
-  );
-  const learnedCount = savedLearnedIds.filter((id) => currentEpisodeWordIds.has(id)).length;
-  const needsCount = savedNeedsIds.filter((id) => currentEpisodeWordIds.has(id)).length;
+  const arranged = arrangeWords(allWords || [], savedLearnedIds, savedNeedsIds);
+  const learnedCount = arranged.learned.length;
+  const needsCount = arranged.needs.length;
+  const newCount = arranged.fresh.length;
 
   useEffect(() => {
     setWordCount(allWords?.length ?? 0);
@@ -66,6 +64,7 @@ export default function WordSelector({
                 <option value="all">ყველა ({allWordCount ?? allWords?.length ?? 0})</option>
                 <option value="needs">სასწავლი ({needsCount})</option>
                 <option value="learned">ნასწავლი ({learnedCount})</option>
+                <option value="new">ახალი ({newCount})</option>
               </select>
             </label>
 

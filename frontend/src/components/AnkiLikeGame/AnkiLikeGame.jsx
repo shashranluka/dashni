@@ -5,7 +5,6 @@ import "./AnkiLikeGame.scss";
 
 function AnkiLikeGame({ words, direction = "translation-to-word" }) {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isRandom, setIsRandom] = useState(false);
   const [displayWords, setDisplayWords] = useState([]);
   const [isGameFinished, setIsGameFinished] = useState(false);
 
@@ -60,14 +59,45 @@ function AnkiLikeGame({ words, direction = "translation-to-word" }) {
     setSaveSuccess(false);
 
     try {
+      const resolveWordId = (wordObj) => wordObj?.id ?? wordObj?.word_id;
+      const resolveWordSource = (wordObj) => {
+        if (wordObj?.source === "private") return "private";
+        if (wordObj?.is_private === true) return "private";
+        return "public";
+      };
+
       const learnedIds = learnedWords
-        .map((w) => w?.id ?? w?.word_id)
+        .map((w) => resolveWordId(w))
         .filter((id) => id !== undefined && id !== null);
       console.log("Learned word IDs to save:", learnedIds);
+
+      const learnedWordsWithSource = learnedWords
+        .map((w) => {
+          const wordId = resolveWordId(w);
+          if (wordId === undefined || wordId === null) return null;
+          return {
+            word_id: wordId,
+            source: resolveWordSource(w),
+          };
+        })
+        .filter(Boolean);
+
       const needsIds = needsLearningWords
-        .map((w) => w?.id ?? w?.word_id)
+        .map((w) => resolveWordId(w))
         .filter((id) => id !== undefined && id !== null);
       console.log("Needs learning word IDs to save:", needsIds);
+
+      const needsWordsWithSource = needsLearningWords
+        .map((w) => {
+          const wordId = resolveWordId(w);
+          if (wordId === undefined || wordId === null) return null;
+          return {
+            word_id: wordId,
+            source: resolveWordSource(w),
+          };
+        })
+        .filter(Boolean);
+
       if (learnedIds.length + needsIds.length === 0) {
         setSaveError("შენახვა ვერ მოხერხდა: სიტყვების id არ მოიძებნა");
         return;
@@ -76,6 +106,8 @@ function AnkiLikeGame({ words, direction = "translation-to-word" }) {
       await newRequest.post("/results/word-status", {
         learned_word_ids: learnedIds,
         needs_learning_word_ids: needsIds,
+        learned_words: learnedWordsWithSource,
+        needs_learning_words: needsWordsWithSource,
       });
       console.log("Word status saved successfully");
 
@@ -92,34 +124,6 @@ function AnkiLikeGame({ words, direction = "translation-to-word" }) {
   }
 
   const currentWord = displayWords[currentIndex] || words[0];
-
-  const shuffleArray = (array) => {
-    const newArray = [...array];
-    for (let i = newArray.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
-    }
-    return newArray;
-  };
-
-  const handleToggleRandom = () => {
-    const newIsRandom = !isRandom;
-    setIsRandom(newIsRandom);
-
-    if (newIsRandom) {
-      setDisplayWords(shuffleArray(words));
-    } else {
-      setDisplayWords([...words]);
-    }
-
-    setCurrentIndex(0);
-    setIsGameFinished(false);
-    setLearnedWords([]);
-    setNeedsLearningWords([]);
-    setIsRevealVisible(false);
-    setSaveError(null);
-    setSaveSuccess(false);
-  };
 
   const addUniqueWord = (setter, wordObj) => {
     setter((prev) => {
@@ -154,9 +158,7 @@ function AnkiLikeGame({ words, direction = "translation-to-word" }) {
   };
 
   const handleRestart = () => {
-    if (isRandom) {
-      setDisplayWords(shuffleArray(words));
-    }
+    setDisplayWords([...words]);
     setCurrentIndex(0);
     setIsGameFinished(false);
     setLearnedWords([]);
@@ -188,30 +190,14 @@ function AnkiLikeGame({ words, direction = "translation-to-word" }) {
   return (
     <div className="anki-like-game">
       <div className="game-header">
-        <h2>სიტყვების გამოცნობა</h2>
-        <div className="mode-toggle">
-          <div className="toggle-container">
-            <span className={`toggle-label ${!isRandom ? "active" : ""}`}>
-              📋 მიმდევრობით
-            </span>
-            <div className="toggle-switch" onClick={handleToggleRandom}>
-              <div
-                className={`toggle-slider ${isRandom ? "random" : "sequential"}`}
-              ></div>
-            </div>
-            <span className={`toggle-label ${isRandom ? "active" : ""}`}>
-              🔀 შემთხვევითი
-            </span>
-          </div>
-        </div>
         <div className="progress">
-          სიტყვა {currentIndex + 1} / {displayWords.length || words.length}
+          {currentIndex + 1} / {displayWords.length || words.length}
         </div>
       </div>
 
       <div className="game-content">
         <div className="word-display">
-          <h3>{isTranslationToWord ? "თარგმნე სიტყვა:" : "მიუთითე თარგმანი:"}</h3>
+          {/* <h3>{isTranslationToWord ? "თარგმნე სიტყვა:" : "მიუთითე თარგმანი:"}</h3> */}
           <p className="word">{toDisplayText(currentPromptText)}</p>
           {!isGameFinished && (
             <>
