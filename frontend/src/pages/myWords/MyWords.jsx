@@ -19,6 +19,7 @@ function MyWords() {
     const [editDefinition, setEditDefinition] = useState("");
     const [savingId, setSavingId] = useState(null);
     const [deletingId, setDeletingId] = useState(null);
+    const [isListOpen, setIsListOpen] = useState(false);
 
     useEffect(() => {
         const loadMyWords = async () => {
@@ -134,7 +135,7 @@ function MyWords() {
         <section className="my-words-page">
             <header className="my-words-header">
                 {/* <h1>ჩემი სიტყვები</h1> */}
-                <p>ჩემს მიერ დამატებული სიტყვები და მათი განმარტებები.</p>
+                <h2>ჩემს მიერ დამატებული სიტყვები</h2>
             </header>
 
             {loading ? <p className="my-words-info">იტვირთება...</p> : null}
@@ -143,10 +144,25 @@ function MyWords() {
 
             {!loading && !error ? (
                 <>
-                    <p className="my-words-count">ნაპოვნია: {rows.length} სიტყვა</p>
+                    <button
+                        type="button"
+                        className="my-words-count"
+                        onClick={() => setIsListOpen((prev) => !prev)}
+                        aria-expanded={isListOpen}
+                        aria-controls="my-words-list"
+                        disabled={rows.length === 0}
+                    >
+                        ნაპოვნია: {rows.length} სიტყვა
+                        {rows.length > 0 ? (
+                            <span className="my-words-count-icon" aria-hidden="true">
+                                {isListOpen ? "▾" : "▸"}
+                            </span>
+                        ) : null}
+                    </button>
 
-                    {rows.length > 0 ? (
-                        <div className="my-words-list">
+                    <div id="my-words-list" className="my-words-list">
+                    {rows.length > 0 && isListOpen ? (
+                        <>
                             {rows.map((item) => (
                                 <article key={item.id} className="my-word-card">
                                     {editingId === item.id ? (
@@ -213,14 +229,14 @@ function MyWords() {
                                     </div>
                                 </article>
                             ))}
+                        </>
+                        ) : null}
                         </div>
-                    ) : (
-                        <p className="my-words-empty">შენთვის private სიტყვები ჯერ არ დამატებულა.</p>
-                    )}
+                    {privateGameWords.length === 0 && (<p className="my-words-empty">შენთვის private სიტყვები ჯერ არ დამატებულა.</p>)}
 
                     {privateGameWords.length > 0 ? (
                         <section className="my-words-game">
-                            <h2>სიტყვების თამაში (private)</h2>
+                            {/* <h2>თამაში </h2> */}
                             <WordGamePanel
                                 words={privateGameWords}
                                 wordStatus={wordStatus}

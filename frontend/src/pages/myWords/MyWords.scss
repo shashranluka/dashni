@@ -22,14 +22,36 @@
 }
 
 .my-words-count {
-  margin: 10px 0 12px;
+  margin: 10px 0 0;
   color: #2c4f6a;
   font-weight: 600;
+  height: 24px;
+  border-radius: 8px 8px 0 0;
+  border: 0;
+  background: rgb(199, 197, 197);
+  // padding: 10px 200px;
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.75;
+    cursor: default;
+  }
+}
+
+.my-words-count-icon {
+  font-size: 0.92rem;
+  line-height: 1;
 }
 
 .my-words-list {
   display: grid;
   grid-template-columns: 1fr;
+  border: 3px solid gray;
+  border-radius: 0 0 8px 8px;
   gap: 10px;
 }
 
@@ -87,6 +109,7 @@
 .my-word-actions {
   display: flex;
   flex-wrap: wrap;
+  justify-content: space-between;
   gap: 8px;
 }
 

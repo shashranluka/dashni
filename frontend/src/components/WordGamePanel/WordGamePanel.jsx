@@ -35,7 +35,7 @@ export default function WordGamePanel({
   const [selectedWords, setSelectedWords] = useState(null);
   const [direction, setDirection] = useState("translation-to-word");
   const [gameType, setGameType] = useState("cards");
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(true);
   const [manualSelectedWords, setManualSelectedWords] = useState([]);
   const [selectorSettings, setSelectorSettings] = useState({
     selectionMode: "sequential",
