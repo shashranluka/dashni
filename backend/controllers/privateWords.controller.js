@@ -61,3 +61,81 @@ export const upsertPrivateWord = async (req, res, next) => {
     return next(err);
   }
 };
+
+// PUT /private-words/:id
+// აახლებს მიმდინარე მომხმარებლის private სიტყვას ID-ით.
+export const updatePrivateWord = async (req, res, next) => {
+  try {
+    const userId = req.user?.id;
+    if (!userId) {
+      return res.status(401).json({ message: "ავტორიზაცია აუცილებელია" });
+    }
+
+    const id = Number(req.params?.id);
+    if (!Number.isInteger(id) || id <= 0) {
+      return res.status(400).json({ message: "არასწორი სიტყვის id" });
+    }
+
+    const word = (req.body?.word ?? "").toString().trim();
+    const definition = (req.body?.definition ?? "").toString().trim();
+
+    if (!word || !definition) {
+      return res.status(400).json({ message: "word და definition სავალდებულოა" });
+    }
+
+    const result = await pool.query(
+      `UPDATE private_words
+       SET word = $1,
+           definition = $2,
+           updated_at = CURRENT_TIMESTAMP
+       WHERE id = $3 AND user_id = $4
+       RETURNING id, user_id, word, definition, created_at, updated_at`,
+      [word, definition, id, userId]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ message: "სიტყვა ვერ მოიძებნა" });
+    }
+
+    return res.status(200).json({
+      message: "Private სიტყვა წარმატებით განახლდა",
+      data: result.rows[0],
+    });
+  } catch (err) {
+    if (err?.code === "23505") {
+      return res.status(409).json({ message: "ეს სიტყვა უკვე არსებობს" });
+    }
+    return next(err);
+  }
+};
+
+// DELETE /private-words/:id
+// შლის მიმდინარე მომხმარებლის private სიტყვას ID-ით.
+export const deletePrivateWord = async (req, res, next) => {
+  try {
+    const userId = req.user?.id;
+    if (!userId) {
+      return res.status(401).json({ message: "ავტორიზაცია აუცილებელია" });
+    }
+
+    const id = Number(req.params?.id);
+    if (!Number.isInteger(id) || id <= 0) {
+      return res.status(400).json({ message: "არასწორი სიტყვის id" });
+    }
+
+    const result = await pool.query(
+      `DELETE FROM private_words
+       WHERE id = $1 AND user_id = $2
+       RETURNING id`,
+      [id, userId]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ message: "სიტყვა ვერ მოიძებნა" });
+    }
+
+    return res.status(200).json({ message: "Private სიტყვა წარმატებით წაიშალა" });
+  } catch (err) {
+    return next(err);
+  }
+};

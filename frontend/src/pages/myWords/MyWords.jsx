@@ -13,6 +13,12 @@ function MyWords() {
     });
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+    const [actionError, setActionError] = useState("");
+    const [editingId, setEditingId] = useState(null);
+    const [editWord, setEditWord] = useState("");
+    const [editDefinition, setEditDefinition] = useState("");
+    const [savingId, setSavingId] = useState(null);
+    const [deletingId, setDeletingId] = useState(null);
 
     useEffect(() => {
         const loadMyWords = async () => {
@@ -56,6 +62,74 @@ function MyWords() {
         [rows],
     );
 
+    const startEditing = (item) => {
+        setActionError("");
+        setEditingId(item.id);
+        setEditWord(item.word || "");
+        setEditDefinition(item.definition || "");
+    };
+
+    const cancelEditing = () => {
+        setEditingId(null);
+        setEditWord("");
+        setEditDefinition("");
+    };
+
+    const saveWordEdit = async (id) => {
+        const nextWord = editWord.trim();
+        const nextDefinition = editDefinition.trim();
+
+        if (!nextWord || !nextDefinition) {
+            setActionError("სიტყვა და განმარტება სავალდებულოა");
+            return;
+        }
+
+        setActionError("");
+        setSavingId(id);
+
+        try {
+            const res = await newRequest.put(`/private-words/${id}`, {
+                word: nextWord,
+                definition: nextDefinition,
+            });
+
+            const updated = res?.data?.data;
+            if (updated) {
+                setRows((prev) =>
+                    prev.map((row) => (row.id === id ? { ...row, ...updated } : row)),
+                );
+            }
+
+            cancelEditing();
+        } catch (err) {
+            setActionError(err?.response?.data?.message || "რედაქტირება ვერ შესრულდა");
+        } finally {
+            setSavingId(null);
+        }
+    };
+
+    const deleteWord = async (id, word) => {
+        const confirmed = window.confirm(`ნამდვილად გინდა სიტყვის წაშლა: "${word}"?`);
+        if (!confirmed) {
+            return;
+        }
+
+        setActionError("");
+        setDeletingId(id);
+
+        try {
+            await newRequest.delete(`/private-words/${id}`);
+            setRows((prev) => prev.filter((row) => row.id !== id));
+            if (editingId === id) {
+                cancelEditing();
+            }
+        } catch (err) {
+            setActionError(err?.response?.data?.message || "წაშლა ვერ შესრულდა");
+        } finally {
+            setDeletingId(null);
+        }
+    };
+
     return (
         <section className="my-words-page">
             <header className="my-words-header">
@@ -65,17 +139,78 @@ function MyWords() {
 
             {loading ? <p className="my-words-info">იტვირთება...</p> : null}
             {error ? <p className="my-words-error">{error}</p> : null}
+            {actionError ? <p className="my-words-error">{actionError}</p> : null}
 
             {!loading && !error ? (
                 <>
-                    <p className="my-words-count">ნაპოვნია: {rows.length}</p>
+                    <p className="my-words-count">ნაპოვნია: {rows.length} სიტყვა</p>
 
                     {rows.length > 0 ? (
                         <div className="my-words-list">
                             {rows.map((item) => (
                                 <article key={item.id} className="my-word-card">
-                                    <h3>{item.word}</h3>
-                                    <p>{item.definition}</p>
+                                    {editingId === item.id ? (
+                                        <div className="my-word-edit-form">
+                                            <input
+                                                type="text"
+                                                value={editWord}
+                                                onChange={(e) => setEditWord(e.target.value)}
+                                                placeholder="სიტყვა"
+                                            />
+                                            <textarea
+                                                value={editDefinition}
+                                                onChange={(e) => setEditDefinition(e.target.value)}
+                                                placeholder="განმარტება"
+                                                rows={3}
+                                            />
+                                        </div>
+                                    ) : (
+                                        <>
+                                            <h3>{item.word}</h3>
+                                            <p>{item.definition}</p>
+                                        </>
+                                    )}
+
+                                    <div className="my-word-actions">
+                                        {editingId === item.id ? (
+                                            <>
+                                                <button
+                                                    type="button"
+                                                    className="my-word-btn my-word-btn-save"
+                                                    onClick={() => saveWordEdit(item.id)}
+                                                    disabled={savingId === item.id}
+                                                >
+                                                    {savingId === item.id ? "ინახება..." : "შენახვა"}
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    className="my-word-btn my-word-btn-cancel"
+                                                    onClick={cancelEditing}
+                                                    disabled={savingId === item.id}
+                                                >
+                                                    გაუქმება
+                                                </button>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <button
+                                                    type="button"
+                                                    className="my-word-btn my-word-btn-edit"
+                                                    onClick={() => startEditing(item)}
+                                                >
+                                                    რედაქტირება
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    className="my-word-btn my-word-btn-delete"
+                                                    onClick={() => deleteWord(item.id, item.word)}
+                                                    disabled={deletingId === item.id}
+                                                >
+                                                    {deletingId === item.id ? "იშლება..." : "წაშლა"}
+                                                </button>
+                                            </>
+                                        )}
+                                    </div>
                                 </article>
                             ))}
                         </div>
