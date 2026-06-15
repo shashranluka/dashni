@@ -10,10 +10,12 @@ COPY package*.json ./
 RUN npm install --production
 
 # Copy application files
-COPY server.js ./
-COPY controllers ./controllers
-COPY routes ./routes
-COPY middleware ./middleware
+# COPY server.js ./
+# COPY controllers ./controllers
+# COPY routes ./routes
+# COPY middleware ./middleware
+COPY . .
+
 
 # Expose port
 EXPOSE 8800
