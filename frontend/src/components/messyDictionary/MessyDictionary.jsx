@@ -357,7 +357,7 @@ export default function MessyDictionary({
             onClick={clickNextHandler}
             aria-label="გამოტოვება"
           >
-            <span className="next-icon"></span>
+            <span className="next-icon" aria-hidden="true">→</span>
           </button>
         </div>
 
