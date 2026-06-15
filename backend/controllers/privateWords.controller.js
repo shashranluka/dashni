@@ -1,4 +1,5 @@
 import { pool } from "../server.js";
+import { deleteUserWordStatus } from "../services/userWordStatus.service.js";
 
 // GET /private-words
 // აბრუნებს მიმდინარე მომხმარებლის private სიტყვების სიას.
@@ -122,6 +123,12 @@ export const deletePrivateWord = async (req, res, next) => {
     if (!Number.isInteger(id) || id <= 0) {
       return res.status(400).json({ message: "არასწორი სიტყვის id" });
     }
+
+    await deleteUserWordStatus({
+      userId,
+      wordId: id,
+      source: "private",
+    });
 
     const result = await pool.query(
       `DELETE FROM private_words
