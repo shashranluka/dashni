@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import newRequest from "../../utils/newRequest";
 import WordGamePanel from "../../components/WordGamePanel/WordGamePanel";
+import { useConfirmDelete } from "../../hooks/useConfirmDelete";
 import "./MyWords.scss";
 
 function MyWords() {
@@ -20,6 +21,7 @@ function MyWords() {
     const [savingId, setSavingId] = useState(null);
     const [deletingId, setDeletingId] = useState(null);
     const [isListOpen, setIsListOpen] = useState(false);
+    const { confirm: confirmDelete, ConfirmDialog } = useConfirmDelete();
 
     useEffect(() => {
         const loadMyWords = async () => {
@@ -110,10 +112,8 @@ function MyWords() {
     };
 
     const deleteWord = async (id, word) => {
-        const confirmed = window.confirm(`ნამდვილად გინდა სიტყვის წაშლა: "${word}"?`);
-        if (!confirmed) {
-            return;
-        }
+        const confirmed = await confirmDelete(word);
+        if (!confirmed) return;
 
         setActionError("");
         setDeletingId(id);
@@ -141,6 +141,7 @@ function MyWords() {
             {loading ? <p className="my-words-info">იტვირთება...</p> : null}
             {error ? <p className="my-words-error">{error}</p> : null}
             {actionError ? <p className="my-words-error">{actionError}</p> : null}
+            {ConfirmDialog}
 
             {!loading && !error ? (
                 <>
