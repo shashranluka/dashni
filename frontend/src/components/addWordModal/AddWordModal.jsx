@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import newRequest from "../../utils/newRequest";
 import "./AddWordModal.scss";
 
-function AddWordModal({ open, initialWord = "", onClose, onSaved }) {
+function AddWordModal({ open, initialWord = "", initialDefinition = "", onClose, onSaved }) {
   const [word, setWord] = useState(initialWord);
   const [definition, setDefinition] = useState("");
   const [saving, setSaving] = useState(false);
@@ -16,6 +16,9 @@ function AddWordModal({ open, initialWord = "", onClose, onSaved }) {
     originX: 0,
     originY: 0,
   });
+  const wasOpenRef = useRef(false);
+  const prevInitialWordRef = useRef("");
+  const prevInitialDefinitionRef = useRef("");
 
   useEffect(() => {
     try {
@@ -27,13 +30,34 @@ function AddWordModal({ open, initialWord = "", onClose, onSaved }) {
   }, []);
 
   useEffect(() => {
-    if (open) {
+    if (!open) {
+      wasOpenRef.current = false;
+      prevInitialWordRef.current = "";
+      prevInitialDefinitionRef.current = "";
+      return;
+    }
+
+    if (!wasOpenRef.current) {
       setWord(initialWord || "");
-      setDefinition("");
+      setDefinition(initialDefinition || "");
       setError("");
       setSaving(false);
+      wasOpenRef.current = true;
+      prevInitialWordRef.current = initialWord || "";
+      prevInitialDefinitionRef.current = initialDefinition || "";
+      return;
     }
-  }, [open, initialWord]);
+
+    if (initialWord && initialWord !== prevInitialWordRef.current) {
+      setWord(initialWord);
+      prevInitialWordRef.current = initialWord;
+    }
+
+    if (initialDefinition && initialDefinition !== prevInitialDefinitionRef.current) {
+      setDefinition(initialDefinition);
+      prevInitialDefinitionRef.current = initialDefinition;
+    }
+  }, [open, initialWord, initialDefinition]);
 
 
   const handleSubmit = async (e) => {

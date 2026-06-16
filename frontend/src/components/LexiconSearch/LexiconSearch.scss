@@ -14,8 +14,15 @@
   }
 }
 
-.selection-plus-badge {
+.selection-plus-badges {
   position: absolute;
+  z-index: 5;
+  display: flex;
+  gap: 8px;
+  transform: translate(-50%, -100%);
+}
+
+.selection-plus-badge {
   z-index: 5;
   display: grid;
   place-items: center;
@@ -30,8 +37,12 @@
   line-height: 1;
   box-shadow: 0 8px 18px rgba(15, 106, 77, 0.24);
   pointer-events: auto;
-  transform: translate(-50%, -100%);
   cursor: pointer;
+}
+
+.selection-plus-badge--danger {
+  background: #d92d20;
+  box-shadow: 0 8px 18px rgba(217, 45, 32, 0.24);
 }
 
 .lexicon-search-form {

@@ -120,9 +120,23 @@ function LexiconSearch() {
     setIsAddModalOpen(true);
   };
 
+  const handleDangerPlusMouseDown = (event) => {
+    event.preventDefault();
+    if (!selectionBadge?.text) return;
+    setPrefillDefinition(selectionBadge.text);
+    setIsAddModalOpen(true);
+  };
+
+  const handleAddModalClose = () => {
+    setIsAddModalOpen(false);
+    setPrefillWord("");
+    setPrefillDefinition("");
+  };
+
   // state-ები
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [prefillWord, setPrefillWord] = useState("");
+  const [prefillDefinition, setPrefillDefinition] = useState("");
 
   return (
     <section className="lexicon-search-panel" ref={panelRef}>
@@ -163,15 +177,27 @@ function LexiconSearch() {
       {searched && !error ? <p className="summary">ნაპოვნი ჩანაწერები: {results.length}</p> : null}
 
       {isPrivateContributor && selectionBadge ? (
-        <button
-          type="button"
-          className="selection-plus-badge"
+        <div
+          className="selection-plus-badges"
           style={{ top: selectionBadge.top, left: selectionBadge.left }}
-          aria-label="მონიშნული ტექსტის დამატება"
-          onMouseDown={handlePlusMouseDown}
         >
-          +
-        </button>
+          <button
+            type="button"
+            className="selection-plus-badge"
+            aria-label="მონიშნული ტექსტის დამატება"
+            onMouseDown={handlePlusMouseDown}
+          >
+            +
+          </button>
+          <button
+            type="button"
+            className="selection-plus-badge selection-plus-badge--danger"
+            aria-label="მონიშნული ტექსტის განმარტებაში დამატება"
+            onMouseDown={handleDangerPlusMouseDown}
+          >
+            +
+          </button>
+        </div>
       ) : null}
 
       {results.length > 0 ? (
@@ -191,7 +217,8 @@ function LexiconSearch() {
         <AddWordModal
           open={isAddModalOpen}
           initialWord={prefillWord}
-          onClose={() => setIsAddModalOpen(false)}
+          initialDefinition={prefillDefinition}
+          onClose={handleAddModalClose}
           onSaved={() => {
             // სურვილისამებრ toast ან refresh
           }}
