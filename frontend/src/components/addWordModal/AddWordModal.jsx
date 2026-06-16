@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import newRequest from "../../utils/newRequest";
 import "./AddWordModal.scss";
 
@@ -8,6 +8,14 @@ function AddWordModal({ open, initialWord = "", onClose, onSaved }) {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [isPrivateContributor, setIsPrivateContributor] = useState(false);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const dragRef = useRef({
+    dragging: false,
+    startX: 0,
+    startY: 0,
+    originX: 0,
+    originY: 0,
+  });
 
   useEffect(() => {
     try {
@@ -27,7 +35,6 @@ function AddWordModal({ open, initialWord = "", onClose, onSaved }) {
     }
   }, [open, initialWord]);
 
-  if (!open || !isPrivateContributor) return null;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -53,9 +60,46 @@ function AddWordModal({ open, initialWord = "", onClose, onSaved }) {
     }
   };
 
+  const handleMouseDown = (e) => {
+    dragRef.current.dragging = true;
+    dragRef.current.startX = e.clientX;
+    dragRef.current.startY = e.clientY;
+    dragRef.current.originX = position.x;
+    dragRef.current.originY = position.y;
+  };
+
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      if (!dragRef.current.dragging) return;
+
+      const nextX = dragRef.current.originX + (e.clientX - dragRef.current.startX);
+      const nextY = dragRef.current.originY + (e.clientY - dragRef.current.startY);
+
+      setPosition({ x: nextX, y: nextY });
+    };
+
+    const handleMouseUp = () => {
+      dragRef.current.dragging = false;
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mouseup", handleMouseUp);
+
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, [position.x, position.y]);
+
+  if (!open || !isPrivateContributor) return null;
+
   return (
-    <div className="awm-backdrop" onClick={onClose}>
-      <div className="awm-modal" onClick={(e) => e.stopPropagation()}>
+    <div className="awm-backdrop" >
+      <div
+        className="awm-modal"
+        onMouseDown={handleMouseDown}
+        style={{ transform: `translate(${position.x}px, ${position.y}px)` }}
+      >
         <h3>Private სიტყვის დამატება</h3>
 
         <form onSubmit={handleSubmit}>
