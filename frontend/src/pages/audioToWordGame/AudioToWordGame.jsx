@@ -54,7 +54,7 @@ function AudioToWordGame() {
 
     const fetchSavedWordStatus = async () => {
       try {
-        const response = await newRequest.get("/results/word-status");
+        const response = await newRequest.get("/results/word-status?source=public");
         setWordStatus({
           learned_word_ids: response?.data?.learned_word_ids || [],
           needs_learning_word_ids: response?.data?.needs_learning_word_ids || [],
@@ -69,6 +69,7 @@ function AudioToWordGame() {
     fetchSavedWordStatus();
   }, []);
 
+  console.log("wordStatus:", wordStatus);
   const normalizeWord = (value = "") =>
     value
       .toString()

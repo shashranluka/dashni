@@ -22,7 +22,7 @@ function MyWords() {
     const [deletingId, setDeletingId] = useState(null);
     const [isListOpen, setIsListOpen] = useState(false);
     const { confirm: confirmDelete, ConfirmDialog } = useConfirmDelete();
-
+    console.log("wordStatus in MyWords:", wordStatus);
     useEffect(() => {
         const loadMyWords = async () => {
             setLoading(true);
@@ -31,7 +31,7 @@ function MyWords() {
             try {
                 const [privateWordsRes, wordStatusRes] = await Promise.all([
                     newRequest.get("/private-words"),
-                    newRequest.get("/results/word-status").catch(() => ({ data: {} })),
+                    newRequest.get("/results/word-status?source=private").catch(() => ({ data: {} })),
                 ]);
 
                 setRows(privateWordsRes?.data?.rows || []);

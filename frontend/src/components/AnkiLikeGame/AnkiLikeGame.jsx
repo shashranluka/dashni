@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { toDisplayText } from "../../utils/georgiaNormalize";
 import newRequest from "../../utils/newRequest";
 import "./AnkiLikeGame.scss";
@@ -14,7 +14,6 @@ function AnkiLikeGame({ words, direction = "translation-to-word" }) {
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState(null);
   const [saveSuccess, setSaveSuccess] = useState(false);
-  const hasInitializedRef = useRef(false);
 
   useEffect(() => {
     if (words && words.length > 0) {
@@ -28,28 +27,6 @@ function AnkiLikeGame({ words, direction = "translation-to-word" }) {
       setSaveSuccess(false);
     }
   }, [words]);
-
-  // Load initial learned/needs data from server on component mount
-  useEffect(() => {
-    if (hasInitializedRef.current) return;
-    hasInitializedRef.current = true;
-
-    const loadInitialData = async () => {
-      try {
-        const response = await newRequest.get("/results/word-status");
-        if (response?.data?.learned_word_ids && response?.data?.needs_learning_word_ids) {
-          // Load the learned/needs words based on IDs if needed
-          // For now, we'll just fetch them to verify the endpoint works
-          console.log("Loaded word status:", response.data);
-        }
-      } catch (err) {
-        // Silently fail if not logged in or endpoint doesn't exist
-        console.log("Could not load initial word status");
-      }
-    };
-
-    loadInitialData();
-  }, []);
 
   const handleSaveResults = async () => {
     if (isSaving) return;
@@ -66,11 +43,6 @@ function AnkiLikeGame({ words, direction = "translation-to-word" }) {
         return "public";
       };
 
-      const learnedIds = learnedWords
-        .map((w) => resolveWordId(w))
-        .filter((id) => id !== undefined && id !== null);
-      console.log("Learned word IDs to save:", learnedIds);
-
       const learnedWordsWithSource = learnedWords
         .map((w) => {
           const wordId = resolveWordId(w);
@@ -81,11 +53,6 @@ function AnkiLikeGame({ words, direction = "translation-to-word" }) {
           };
         })
         .filter(Boolean);
-
-      const needsIds = needsLearningWords
-        .map((w) => resolveWordId(w))
-        .filter((id) => id !== undefined && id !== null);
-      console.log("Needs learning word IDs to save:", needsIds);
 
       const needsWordsWithSource = needsLearningWords
         .map((w) => {
@@ -98,14 +65,12 @@ function AnkiLikeGame({ words, direction = "translation-to-word" }) {
         })
         .filter(Boolean);
 
-      if (learnedIds.length + needsIds.length === 0) {
+      if (learnedWordsWithSource.length + needsWordsWithSource.length === 0) {
         setSaveError("შენახვა ვერ მოხერხდა: სიტყვების id არ მოიძებნა");
         return;
       }
 
       await newRequest.post("/results/word-status", {
-        learned_word_ids: learnedIds,
-        needs_learning_word_ids: needsIds,
         learned_words: learnedWordsWithSource,
         needs_learning_words: needsWordsWithSource,
       });
