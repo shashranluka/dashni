@@ -8,7 +8,7 @@ const router = express.Router();
 
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 წუთი
-  max: 10, // მაქს 10 მცდელობა
+  max: 5, // მაქს 5 მცდელობა
   message: { message: 'ძალიან ბევრი მცდელობა, სცადე 15 წუთში' }
 });
 

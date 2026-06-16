@@ -3,6 +3,17 @@ import jwt from "jsonwebtoken";
 import { pool } from "../server.js";
 import { toPublicUser } from "../middleware/auth.middleware.js";
 
+const logAuth = async (event_type, { user_id = null, email = null, reason = null, userAgent = null }) => {
+  try {
+    await pool.query(
+      'INSERT INTO auth_log (user_id, email, event_type, reason, user_agent) VALUES ($1, $2, $3, $4, $5)',
+      [user_id, email, event_type, reason, userAgent]
+    );
+  } catch (err) {
+    console.error('Auth log error:', err);
+  }
+};
+
 export const register = async (req, res, next) => {
   try {
     const { username, email, password } = req.body;
@@ -32,6 +43,7 @@ export const register = async (req, res, next) => {
     );
 
     const { uuid, username: newUsername, email: newEmail, created_at } = newUser.rows[0];
+    await logAuth('register', { user_id: newUser.rows[0].id, email, userAgent: req.headers['user-agent'] });
     res.status(201).json({
       message: "რეგისტრაცია წარმატებით დასრულდა!",
       user: { uuid, username: newUsername, email: newEmail, created_at }
@@ -53,6 +65,7 @@ export const login = async (req, res, next) => {
     );
 
     if (user.rows.length === 0) {
+      await logAuth('login_failed', { email, reason: 'user_not_found', userAgent: req.headers['user-agent'] });
       return res.status(404).json({ message: "მომხმარებელი ვერ მოიძებნა" });
     }
 
@@ -61,10 +74,12 @@ export const login = async (req, res, next) => {
     // Check password
     const isCorrect = bcrypt.compareSync(password, foundUser.password);
     if (!isCorrect) {
+      await logAuth('login_failed', { user_id: foundUser.id, email, reason: 'invalid_password', userAgent: req.headers['user-agent'] });
       return res.status(400).json({ message: "პაროლი არასწორია" });
     }
 
     if (!foundUser.is_active) {
+      await logAuth('login_failed', { user_id: foundUser.id, email, reason: 'user_inactive', userAgent: req.headers['user-agent'] });
       return res.status(403).json({ message: "მომხმარებელი არააქტიურია" });
     }
 
@@ -78,6 +93,7 @@ export const login = async (req, res, next) => {
     );
 
     console.log('Login successful for user:', foundUser.username);
+    await logAuth('login_success', { user_id: foundUser.id, email: foundUser.email, userAgent: req.headers['user-agent'] });
     res
       .cookie("accessToken", token, {
         httpOnly: true,
@@ -95,6 +111,7 @@ export const login = async (req, res, next) => {
 export const me = (req, res) => res.status(200).json(req.user);
 
 export const logout = async (req, res) => {
+  await logAuth('logout', { userAgent: req.headers['user-agent'] });
   res
     .clearCookie("accessToken", {
       httpOnly: true,
