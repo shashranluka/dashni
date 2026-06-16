@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import { pool } from "../server.js";
+import { logSecurity } from "../services/securityLog.service.js";
 
 // ბრუნებს მომხმარებლის როლს DB role სვეტიდან, fallback — "user".
 export const resolveUserRole = (user = {}) => user.role || "user";
@@ -42,22 +43,39 @@ export const requireAuth = async (req, res, next) => {
     return next();
   } catch (err) {
     // აქ მოექცევა არავალიდური/ვადაგასული JWT და სხვა ავტორიზაციის შეცდომები.
+    await logSecurity('token_invalid', 'medium', {
+      ip: req.ip,
+      userAgent: req.headers['user-agent'],
+      metadata: { path: req.path, method: req.method }
+    });
     return res.status(401).json({ message: "Unauthorized" });
   }
 };
 
 // უშვებს მხოლოდ admin როლის მქონე ავტორიზებულ მომხმარებელს.
-export const requireAdmin = (req, res, next) => {
+export const requireAdmin = async (req, res, next) => {
   if (!req.user || req.user.role !== "admin") {
+    await logSecurity('permission_denied', 'medium', {
+      actor_user_id: req.user?.id,
+      ip: req.ip,
+      userAgent: req.headers['user-agent'],
+      metadata: { required_role: 'admin', path: req.path, method: req.method }
+    });
     return res.status(403).json({ message: "Admin only" });
   }
   return next();
 };
 
 // უშვებს editor ან admin როლის მქონე ავტორიზებულ მომხმარებელს.
-export const requireEditor = (req, res, next) => {
+export const requireEditor = async (req, res, next) => {
   const role = req.user?.role;
   if (role !== "editor" && role !== "admin") {
+    await logSecurity('permission_denied', 'low', {
+      actor_user_id: req.user?.id,
+      ip: req.ip,
+      userAgent: req.headers['user-agent'],
+      metadata: { required_role: 'editor', path: req.path, method: req.method }
+    });
     return res.status(403).json({ message: "Editor only" });
   }
   return next();

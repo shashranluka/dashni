@@ -12,6 +12,8 @@ import privateWordsRoute from "./routes/privateWords.route.js";
 const app = express();
 dotenv.config();
 
+app.set('trust proxy', 1);
+
 const { Pool } = pg;
 
 // PostgreSQL connection
