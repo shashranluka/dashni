@@ -67,6 +67,22 @@ const AdminPage = () => {
       setSaving((prev) => ({ ...prev, [user.id]: false }));
     }
   };
+
+  const exportCSV = (data, filename = "export.csv") => {
+    const headers = Object.keys(data[0]).join(",");
+    const rows = data.map(row =>
+      Object.values(row).map(v => `"${String(v ?? "").replace(/"/g, '""')}"`).join(",")
+    ).join("\n");
+
+    const blob = new Blob([`${headers}\n${rows}`], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   console.log("AdminPage render:", { users, loading, error, saving });
   if (loading) return <div className="admin-page"><p>იტვირთება...</p></div>;
   if (error) return <div className="admin-page"><p className="admin-error">{error}</p></div>;
@@ -132,6 +148,8 @@ const AdminPage = () => {
       <div style={{ marginTop: 40 }}>
         <LexiconsForAdmin currentUser={currentUser} />
       </div>
+
+      <button onClick={() => exportCSV(users, "users.csv")}>Export CSV</button>
     </div>
   );
 };

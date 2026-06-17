@@ -104,6 +104,21 @@ function EditorPage() {
     });
   }, [textDraft, wordTranslationMap]);
 
+  const exportCSV = (data, filename = "export.csv") => {
+    const headers = Object.keys(data[0]).join(",");
+    const rows = data.map(row =>
+      Object.values(row).map(v => `"${String(v ?? "").replace(/"/g, '""')}"`).join(",")
+    ).join("\n");
+
+    const blob = new Blob([`${headers}\n${rows}`], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -420,6 +435,7 @@ function EditorPage() {
         )}
       </section>
 
+
       <div className="editor-keyboard-dock">
         <RareKeyboard
           isOpen={isKeyboardOpen}
@@ -428,7 +444,9 @@ function EditorPage() {
           disabled={!selectedSegment}
         />
       </div>
-
+      <button onClick={() => exportCSV(segments, "segments.csv")}>Export segments CSV</button>
+      <button onClick={() => exportCSV(words, "words.csv")}>Export words CSV</button>
+    
       {/* <div className="editor-segments-list">
         <h2>ყველა ეპიზოდი</h2>
         <ol>
