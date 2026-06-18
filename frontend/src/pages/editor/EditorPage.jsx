@@ -4,6 +4,7 @@ import RareKeyboard from "../../components/RareKeyboard/RareKeyboard";
 import LexiconSearch from "../../components/LexiconSearch/LexiconSearch";
 import newRequest from "../../utils/newRequest";
 import { toDisplayText } from "../../utils/georgiaNormalize";
+import FullRareKeyboard from "../../components/FullRareKeyboard/FullRareKeyboard";
 import "./EditorPage.scss";
 
 const AUDIO_FILE = "src/assets/audio_files/adas_mier_moyolili_zghapari.m4a";
@@ -459,6 +460,12 @@ function EditorPage() {
           ))}
         </ol>
       </div> */}
+      {/* <FullRareKeyboard 
+        isOpen={isKeyboardOpen}
+        onToggle={() => setIsKeyboardOpen((prev) => !prev)}
+        onInsert={handleInsertRareSymbol}
+        disabled={!selectedSegment}
+      /> */}
     </section>
   );
 }
