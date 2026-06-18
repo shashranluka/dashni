@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import AudioPlayer from "../../components/AudioPlayer/AudioPlayer";
-import RareKeyboard from "../../components/RareKeyboard/RareKeyboard";
+// import RareKeyboard from "../../components/RareKeyboard/RareKeyboard";
 import LexiconSearch from "../../components/LexiconSearch/LexiconSearch";
 import newRequest from "../../utils/newRequest";
 import { toDisplayText } from "../../utils/georgiaNormalize";
