@@ -298,7 +298,7 @@ export default function WordGamePanel({
 
         <button
           type="button"
-          className="start-anki-btn"
+          className={`start-anki-btn${gameStarted && gameType === "anki" ? " is-open" : ""}`}
           onClick={() => startGameWithType("anki")}
           disabled={isStartDisabled}
         >
@@ -307,7 +307,7 @@ export default function WordGamePanel({
 
         <button
           type="button"
-          className="start-game-btn"
+          className={`start-game-btn${gameStarted && gameType === "cards" ? " is-open" : ""}`}
           onClick={() => startGameWithType("cards")}
           disabled={isStartDisabled}
         >
@@ -317,7 +317,7 @@ export default function WordGamePanel({
         {allowCompose ? (
           <button
             type="button"
-            className="compose-text-btn"
+            className={`compose-text-btn${isComposeMode ? " is-open" : ""}`}
             onClick={handleComposeMode}
             disabled={!composeWords.length}
           >
