@@ -60,7 +60,7 @@ function Navbar() {
                   </Link>
                   {isPrivateContributorUser(currentUser) && (
                     <Link to="/my-words" onClick={() => setOpen(false)}>
-                      ჩემი private სიტყვები
+                      ჩემი სიტყვები
                     </Link>
                   )}
                   {isEditorUser(currentUser) && (
