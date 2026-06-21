@@ -9,9 +9,9 @@ function Home() {
       <p>კეთილი იყოს თქვენი მობრძანება Dashni-ში!</p> */}
 
       <div className="home-links">
-        <Link to="/tale-from-ada" className="home-link-card">
+        {/* <Link to="/tale-from-ada" className="home-link-card">
           ადას მიერ მოყოლილი ზღაპარი
-        </Link>
+        </Link> */}
         <Link to="/lexicon-search" className="home-link-card">
           ლექსიკონებში ძიება
         </Link>
