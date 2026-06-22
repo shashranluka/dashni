@@ -51,10 +51,12 @@ function LexiconSearch() {
       const selectedText = selection.toString().trim();
       const range = selection.getRangeAt(0);
       const container = range.commonAncestorContainer;
-      const insidePanel =
-        container && panel.contains(container.nodeType === 1 ? container : container.parentNode);
+      const containerEl = container?.nodeType === 1 ? container : container?.parentNode;
+      const insideLexiconText = Boolean(
+        containerEl && panel.contains(containerEl) && containerEl.closest(".lexicon-text")
+      );
 
-      if (!selectedText || !insidePanel) {
+      if (!selectedText || !insideLexiconText) {
         clearBadge();
         return;
       }
