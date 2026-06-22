@@ -124,7 +124,7 @@ function AddWordModal({ open, initialWord = "", initialDefinition = "", onClose,
         onMouseDown={handleMouseDown}
         style={{ transform: `translate(${position.x}px, ${position.y}px)` }}
       >
-        <h3>Private სიტყვის დამატება</h3>
+        <h3>სიტყვის დამატების ფანჯარა. შეგიძლიათ "მაუსით" ეკრანზე ამოძრაოთ</h3>
 
         <form onSubmit={handleSubmit}>
           <label>სიტყვა</label>
