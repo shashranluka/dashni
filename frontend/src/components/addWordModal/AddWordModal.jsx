@@ -2,9 +2,15 @@ import { useEffect, useRef, useState } from "react";
 import newRequest from "../../utils/newRequest";
 import "./AddWordModal.scss";
 
+const LANGUAGE_OPTIONS = [
+  { value: "tushetian", label: "თუშური" },
+  { value: "english", label: "ინგლისური" },
+];
+
 function AddWordModal({ open, initialWord = "", initialDefinition = "", onClose, onSaved }) {
   const [word, setWord] = useState(initialWord);
   const [definition, setDefinition] = useState("");
+  const [language, setLanguage] = useState(LANGUAGE_OPTIONS[0].value);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [isPrivateContributor, setIsPrivateContributor] = useState(false);
@@ -40,6 +46,7 @@ function AddWordModal({ open, initialWord = "", initialDefinition = "", onClose,
     if (!wasOpenRef.current) {
       setWord(initialWord || "");
       setDefinition(initialDefinition || "");
+      setLanguage(LANGUAGE_OPTIONS[0].value);
       setError("");
       setSaving(false);
       wasOpenRef.current = true;
@@ -74,6 +81,7 @@ function AddWordModal({ open, initialWord = "", initialDefinition = "", onClose,
       await newRequest.post("/private-words", {
         word: word.trim(),
         definition: definition.trim(),
+        language,
       });
       if (onSaved) onSaved();
       if (onClose) onClose();
@@ -133,6 +141,19 @@ function AddWordModal({ open, initialWord = "", initialDefinition = "", onClose,
             onChange={(e) => setWord(e.target.value)}
             placeholder="სიტყვა"
           />
+
+          <label htmlFor="awm-language">ენა</label>
+          <select
+            id="awm-language"
+            value={language}
+            onChange={(e) => setLanguage(e.target.value)}
+          >
+            {LANGUAGE_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
 
           <label>განმარტება</label>
           <textarea

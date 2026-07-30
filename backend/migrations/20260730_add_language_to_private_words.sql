@@ -1,0 +1,2 @@
+ALTER TABLE private_words
+ADD COLUMN IF NOT EXISTS language VARCHAR(50) NOT NULL DEFAULT 'tushetian';

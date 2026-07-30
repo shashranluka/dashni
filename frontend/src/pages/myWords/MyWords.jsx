@@ -4,6 +4,14 @@ import WordGamePanel from "../../components/WordGamePanel/WordGamePanel";
 import { useConfirmDelete } from "../../hooks/useConfirmDelete";
 import "./MyWords.scss";
 
+const LANGUAGE_OPTIONS = [
+    { value: "all", label: "ყველა ენა" },
+    { value: "tushetian", label: "თუშური" },
+    { value: "english", label: "ინგლისური" },
+];
+
+const getWordLanguage = (item) => item.language || "tushetian";
+
 function MyWords() {
     const [rows, setRows] = useState([]);
     const [wordStatus, setWordStatus] = useState({
@@ -21,6 +29,7 @@ function MyWords() {
     const [savingId, setSavingId] = useState(null);
     const [deletingId, setDeletingId] = useState(null);
     const [isListOpen, setIsListOpen] = useState(false);
+    const [languageFilter, setLanguageFilter] = useState("all");
     const { confirm: confirmDelete, ConfirmDialog } = useConfirmDelete();
     console.log("wordStatus in MyWords:", wordStatus);
     useEffect(() => {
@@ -52,17 +61,26 @@ function MyWords() {
         loadMyWords();
     }, []);
 
+    const filteredRows = useMemo(
+        () =>
+            languageFilter === "all"
+                ? rows
+                : rows.filter((item) => getWordLanguage(item) === languageFilter),
+        [rows, languageFilter],
+    );
+
     const privateGameWords = useMemo(
         () =>
-            rows.map((item) => ({
+            filteredRows.map((item) => ({
                 id: item.id,
                 word: item.word,
                 the_word: item.word,
                 translation: item.definition,
+                language: getWordLanguage(item),
                 source: "private",
                 is_private: true,
             })),
-        [rows],
+        [filteredRows],
     );
 
     const startEditing = (item) => {
@@ -145,16 +163,30 @@ function MyWords() {
 
             {!loading && !error ? (
                 <>
+                    <label className="my-words-language-filter">
+                        <span>ენა</span>
+                        <select
+                            value={languageFilter}
+                            onChange={(event) => setLanguageFilter(event.target.value)}
+                        >
+                            {LANGUAGE_OPTIONS.map((option) => (
+                                <option key={option.value} value={option.value}>
+                                    {option.label}
+                                </option>
+                            ))}
+                        </select>
+                    </label>
+
                     <button
                         type="button"
                         className="my-words-count"
                         onClick={() => setIsListOpen((prev) => !prev)}
                         aria-expanded={isListOpen}
                         aria-controls="my-words-list"
-                        disabled={rows.length === 0}
+                        disabled={filteredRows.length === 0}
                     >
-                        ნაპოვნია: {rows.length} სიტყვა
-                        {rows.length > 0 ? (
+                        ნაპოვნია: {filteredRows.length} სიტყვა
+                        {filteredRows.length > 0 ? (
                             <span className="my-words-count-icon" aria-hidden="true">
                                 {isListOpen ? "▾" : "▸"}
                             </span>
@@ -162,9 +194,9 @@ function MyWords() {
                     </button>
 
                     <div id="my-words-list" className="my-words-list">
-                    {rows.length > 0 && isListOpen ? (
+                    {filteredRows.length > 0 && isListOpen ? (
                         <>
-                            {rows.map((item) => (
+                            {filteredRows.map((item) => (
                                 <article key={item.id} className="my-word-card">
                                     {editingId === item.id ? (
                                         <div className="my-word-edit-form">
@@ -184,6 +216,9 @@ function MyWords() {
                                     ) : (
                                         <>
                                             <h3>{item.word}</h3>
+                                            <span className="my-word-language">
+                                                {getWordLanguage(item) === "english" ? "ინგლისური" : "თუშური"}
+                                            </span>
                                             <p>{item.definition}</p>
                                         </>
                                     )}
@@ -233,7 +268,13 @@ function MyWords() {
                         </>
                         ) : null}
                         </div>
-                    {privateGameWords.length === 0 && (<p className="my-words-empty">შენთვის private სიტყვები ჯერ არ დამატებულა.</p>)}
+                    {privateGameWords.length === 0 && (
+                        <p className="my-words-empty">
+                            {rows.length === 0
+                                ? "შენთვის private სიტყვები ჯერ არ დამატებულა."
+                                : "არჩეულ ენაზე სიტყვები ვერ მოიძებნა."}
+                        </p>
+                    )}
 
                     {privateGameWords.length > 0 ? (
                         <section className="my-words-game">

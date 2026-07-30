@@ -11,7 +11,7 @@ export const listPrivateWords = async (req, res, next) => {
     }
 
     const result = await pool.query(
-      `SELECT id, user_id, word, definition, created_at, updated_at
+      `SELECT id, user_id, word, definition, language, created_at, updated_at
        FROM private_words
        WHERE user_id = $1
        ORDER BY updated_at DESC, id DESC`,
@@ -38,20 +38,22 @@ export const upsertPrivateWord = async (req, res, next) => {
 
     const word = (req.body?.word ?? "").toString().trim();
     const definition = (req.body?.definition ?? "").toString().trim();
+    const language = (req.body?.language ?? "tushetian").toString();
 
     if (!word || !definition) {
       return res.status(400).json({ message: "word და definition სავალდებულოა" });
     }
 
     const result = await pool.query(
-      `INSERT INTO private_words (user_id, word, definition)
-       VALUES ($1, $2, $3)
+      `INSERT INTO private_words (user_id, word, definition, language)
+       VALUES ($1, $2, $3, $4)
        ON CONFLICT (user_id, word)
        DO UPDATE SET
          definition = EXCLUDED.definition,
+         language = EXCLUDED.language,
          updated_at = CURRENT_TIMESTAMP
-       RETURNING id, user_id, word, definition, created_at, updated_at`,
-      [userId, word, definition]
+       RETURNING id, user_id, word, definition, language, created_at, updated_at`,
+      [userId, word, definition, language]
     );
 
     return res.status(201).json({
@@ -90,7 +92,7 @@ export const updatePrivateWord = async (req, res, next) => {
            definition = $2,
            updated_at = CURRENT_TIMESTAMP
        WHERE id = $3 AND user_id = $4
-       RETURNING id, user_id, word, definition, created_at, updated_at`,
+       RETURNING id, user_id, word, definition, language, created_at, updated_at`,
       [word, definition, id, userId]
     );
 

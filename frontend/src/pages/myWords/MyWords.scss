@@ -21,6 +21,30 @@
   }
 }
 
+.my-words-language-filter {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #21435f;
+  font-weight: 600;
+
+  select {
+    min-width: 160px;
+    border: 1px solid #b8cadb;
+    border-radius: 8px;
+    padding: 8px 10px;
+    font: inherit;
+    color: #15354d;
+    background: #fff;
+
+    &:focus {
+      outline: none;
+      border-color: #2d7ab8;
+      box-shadow: 0 0 0 2px rgba(45, 122, 184, 0.18);
+    }
+  }
+}
+
 .my-words-count {
   margin: 10px 0 0;
   color: #2c4f6a;
@@ -75,6 +99,16 @@
     color: #2e526f;
     line-height: 1.45;
   }
+}
+
+.my-word-language {
+  align-self: flex-start;
+  border-radius: 999px;
+  padding: 3px 8px;
+  color: #1f5578;
+  background: #e8f2f9;
+  font-size: 0.78rem;
+  font-weight: 700;
 }
 
 .my-word-edit-form {

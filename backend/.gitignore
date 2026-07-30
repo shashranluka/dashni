@@ -1,3 +1,4 @@
 node_modules/
 .env
-migrations/
+migrations/*
+!migrations/20260730_add_language_to_private_words.sql
