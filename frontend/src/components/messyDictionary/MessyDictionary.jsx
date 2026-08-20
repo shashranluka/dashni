@@ -36,7 +36,6 @@ export default function MessyDictionary({
   const [topDeck, setTopDeck] = useState([]);
   const [bottomDeck, setBottomDeck] = useState([]);
 
-  const hideTimerRef = useRef(null);
   const successSoundRef = useRef(null);
   const errorSoundRef = useRef(null);
 
@@ -72,11 +71,6 @@ export default function MessyDictionary({
     setPlayStyle(gameType === "cards" ? "cards" : "typing");
     setTypingAnswer("");
     setTypingFeedback(null);
-
-    if (hideTimerRef.current) {
-      clearTimeout(hideTimerRef.current);
-      hideTimerRef.current = null;
-    }
   }, [cardsData, gameType]);
 
   useEffect(() => {
@@ -111,10 +105,6 @@ export default function MessyDictionary({
 
   useEffect(() => {
     return () => {
-      if (hideTimerRef.current) {
-        clearTimeout(hideTimerRef.current);
-      }
-
       if (successSoundRef.current) {
         successSoundRef.current.pause();
         successSoundRef.current.currentTime = 0;
@@ -198,11 +188,6 @@ export default function MessyDictionary({
       removeWordFromDecks(current.id);
       setTypingAnswer("");
       setTypingFeedback({ correct: true, expected });
-
-      if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
-      hideTimerRef.current = setTimeout(() => {
-        setIsFixedVisible(false);
-      }, 1800);
       return;
     }
 
@@ -235,13 +220,9 @@ export default function MessyDictionary({
       showFixedWord(clicked);
       setTypingFeedback(null);
 
-      if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
-      hideTimerRef.current = setTimeout(() => {
-        setIsFixedVisible(false);
-        if (nextBottom.length === 0) {
-          setGameFinished(true);
-        }
-      }, 2000);
+      if (nextBottom.length === 0) {
+        setGameFinished(true);
+      }
     } else {
       playFeedbackSound("error");
       setTries((t) => t + 1);
@@ -269,6 +250,14 @@ export default function MessyDictionary({
             role="status"
             aria-live="assertive"
           >
+            <button
+              type="button"
+              className="fixed-won-word-close"
+              onClick={() => setIsFixedVisible(false)}
+              aria-label="დახურვა"
+            >
+              ×
+            </button>
             <div className="won-word-animation">
               {toDisplayText(
                 direction === "translation-to-word"

@@ -421,6 +421,33 @@
   height: 100dvh;
   margin: 0;
 
+  .fixed-won-word-close {
+    position: absolute;
+    top: 80px;
+    right: 70px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.92);
+    color: #1e5d25;
+    font-size: 32px;
+    line-height: 1;
+    cursor: pointer;
+
+    &:hover {
+      background: #fff;
+    }
+
+    &:focus-visible {
+      outline: 3px solid #fff;
+      outline-offset: 3px;
+    }
+  }
+
   .won-word-animation {
     max-width: 100%;
     padding: 32px;
