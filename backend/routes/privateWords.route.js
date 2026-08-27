@@ -1,6 +1,7 @@
 import express from "express";
 import {
 	deletePrivateWord,
+	bulkUpsertPrivateWords,
 	listPrivateWords,
 	updatePrivateWord,
 	upsertPrivateWord,
@@ -14,6 +15,8 @@ router.get("/", requireAuth, requirePrivateContributor, listPrivateWords);
 
 // private სიტყვის დამატება/განახლება (private_contributor ან admin)
 router.post("/", requireAuth, requirePrivateContributor, upsertPrivateWord);
+
+router.post("/bulk", requireAuth, requirePrivateContributor, bulkUpsertPrivateWords);
 
 // private სიტყვის რედაქტირება
 router.put("/:id", requireAuth, requirePrivateContributor, updatePrivateWord);

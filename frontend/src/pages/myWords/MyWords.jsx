@@ -29,6 +29,8 @@ function MyWords() {
     const [savingId, setSavingId] = useState(null);
     const [deletingId, setDeletingId] = useState(null);
     const [isListOpen, setIsListOpen] = useState(false);
+    const [isLearnedListOpen, setIsLearnedListOpen] = useState(false);
+    const [isNeedsListOpen, setIsNeedsListOpen] = useState(false);
     const [languageFilter, setLanguageFilter] = useState("all");
     const { confirm: confirmDelete, ConfirmDialog } = useConfirmDelete();
     console.log("wordStatus in MyWords:", wordStatus);
@@ -38,17 +40,30 @@ function MyWords() {
             setError("");
 
             try {
-                const [privateWordsRes, wordStatusRes] = await Promise.all([
+                const [privateWordsRes, privateStatusRes, publicStatusRes] = await Promise.all([
                     newRequest.get("/private-words"),
                     newRequest.get("/results/word-status?source=private").catch(() => ({ data: {} })),
+                    newRequest.get("/results/word-status?source=public").catch(() => ({ data: {} })),
                 ]);
 
                 setRows(privateWordsRes?.data?.rows || []);
                 setWordStatus({
-                    learned_word_ids: wordStatusRes?.data?.learned_word_ids || [],
-                    needs_learning_word_ids: wordStatusRes?.data?.needs_learning_word_ids || [],
-                    learned_words: wordStatusRes?.data?.learned_words || [],
-                    needs_learning_words: wordStatusRes?.data?.needs_learning_words || [],
+                    learned_word_ids: [
+                        ...(privateStatusRes?.data?.learned_word_ids || []),
+                        ...(publicStatusRes?.data?.learned_word_ids || []),
+                    ],
+                    needs_learning_word_ids: [
+                        ...(privateStatusRes?.data?.needs_learning_word_ids || []),
+                        ...(publicStatusRes?.data?.needs_learning_word_ids || []),
+                    ],
+                    learned_words: [
+                        ...(privateStatusRes?.data?.learned_words || []),
+                        ...(publicStatusRes?.data?.learned_words || []),
+                    ],
+                    needs_learning_words: [
+                        ...(privateStatusRes?.data?.needs_learning_words || []),
+                        ...(publicStatusRes?.data?.needs_learning_words || []),
+                    ],
                 });
             } catch (err) {
                 setRows([]);
@@ -81,6 +96,43 @@ function MyWords() {
                 is_private: true,
             })),
         [filteredRows],
+    );
+
+    const audioGameWords = useMemo(() => {
+        const byWordId = new Map();
+
+        [...wordStatus.learned_words, ...wordStatus.needs_learning_words].forEach((item) => {
+            if (item?.source !== "public" || !item?.the_word) return;
+            byWordId.set(item.word_id, {
+                id: item.word_id,
+                word: item.the_word,
+                the_word: item.the_word,
+                translation: item.translation,
+                language: item.language || "tushetian",
+                source: "public",
+                is_private: false,
+                status: item.status,
+            });
+        });
+
+        return [...byWordId.values()].filter(
+            (item) => languageFilter === "all" || getWordLanguage(item) === languageFilter,
+        );
+    }, [wordStatus, languageFilter]);
+
+    const learnedAudioWords = useMemo(
+        () => audioGameWords.filter((item) => item.status === "learned"),
+        [audioGameWords],
+    );
+
+    const needsAudioWords = useMemo(
+        () => audioGameWords.filter((item) => item.status === "needs"),
+        [audioGameWords],
+    );
+
+    const gamePanelWords = useMemo(
+        () => [...privateGameWords, ...audioGameWords],
+        [privateGameWords, audioGameWords],
     );
 
     const startEditing = (item) => {
@@ -276,14 +328,88 @@ function MyWords() {
                         </p>
                     )}
 
-                    {privateGameWords.length > 0 ? (
+                    {audioGameWords.length > 0 ? (
+                        <div className="my-words-audio-words">
+                            <h2>სიტყვების თამაშიდან დამახსოვრებული სიტყვები</h2>
+
+                            {learnedAudioWords.length > 0 ? (
+                                <div className="my-words-audio-group">
+                                    <button
+                                        type="button"
+                                        className="my-words-count"
+                                        onClick={() => setIsLearnedListOpen((prev) => !prev)}
+                                        aria-expanded={isLearnedListOpen}
+                                        aria-controls="my-words-learned-list"
+                                    >
+                                        ნასწავლი: {learnedAudioWords.length} სიტყვა
+                                        <span className="my-words-count-icon" aria-hidden="true">
+                                            {isLearnedListOpen ? "▾" : "▸"}
+                                        </span>
+                                    </button>
+
+                                    {isLearnedListOpen ? (
+                                        <div id="my-words-learned-list" className="my-words-list">
+                                            {learnedAudioWords.map((item) => (
+                                                <article key={`public-learned-${item.id}`} className="my-word-card">
+                                                    <h3>{item.word}</h3>
+                                                    <span className="my-word-language">
+                                                        {item.language === "english" ? "ინგლისური" : "თუშური"}
+                                                    </span>
+                                                    <p>{item.translation}</p>
+                                                    <span className="my-word-status my-word-status-learned">
+                                                        ნასწავლი
+                                                    </span>
+                                                </article>
+                                            ))}
+                                        </div>
+                                    ) : null}
+                                </div>
+                            ) : null}
+
+                            {needsAudioWords.length > 0 ? (
+                                <div className="my-words-audio-group">
+                                    <button
+                                        type="button"
+                                        className="my-words-count"
+                                        onClick={() => setIsNeedsListOpen((prev) => !prev)}
+                                        aria-expanded={isNeedsListOpen}
+                                        aria-controls="my-words-needs-list"
+                                    >
+                                        სასწავლი: {needsAudioWords.length} სიტყვა
+                                        <span className="my-words-count-icon" aria-hidden="true">
+                                            {isNeedsListOpen ? "▾" : "▸"}
+                                        </span>
+                                    </button>
+
+                                    {isNeedsListOpen ? (
+                                        <div id="my-words-needs-list" className="my-words-list">
+                                            {needsAudioWords.map((item) => (
+                                                <article key={`public-needs-${item.id}`} className="my-word-card">
+                                                    <h3>{item.word}</h3>
+                                                    <span className="my-word-language">
+                                                        {item.language === "english" ? "ინგლისური" : "თუშური"}
+                                                    </span>
+                                                    <p>{item.translation}</p>
+                                                    <span className="my-word-status my-word-status-needs">
+                                                        სასწავლი
+                                                    </span>
+                                                </article>
+                                            ))}
+                                        </div>
+                                    ) : null}
+                                </div>
+                            ) : null}
+                        </div>
+                    ) : null}
+
+                    {gamePanelWords.length > 0 ? (
                         <section className="my-words-game">
                             {/* <h2>თამაში </h2> */}
                             <WordGamePanel
-                                words={privateGameWords}
+                                words={gamePanelWords}
                                 wordStatus={wordStatus}
                                 allowCompose={false}
-                                getWordSource={() => "private"}
+                                caller="myWords"
                             />
                         </section>
                     ) : null}

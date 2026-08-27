@@ -11,20 +11,31 @@ export default function WordSelector({
   settingsTopContent = null,
   isOpen = false,
   onToggle,
+  showSourceFilter = false,
 }) {
   const [selectionMode, setSelectionMode] = useState("sequential");
   const [wordCount, setWordCount] = useState(allWords?.length ?? 0);
   const [direction, setDirection] = useState("translation-to-word");
   const [wordFilter, setWordFilter] = useState("all");
+  const [sourceFilter, setSourceFilter] = useState("all");
 
-  const arranged = arrangeWords(allWords || [], savedLearnedIds, savedNeedsIds);
+  const sourceFilteredWords = (allWords || []).filter(
+    (word) => sourceFilter === "all" || word?.source === sourceFilter,
+  );
+  const arranged = arrangeWords(sourceFilteredWords, savedLearnedIds, savedNeedsIds);
   const learnedCount = arranged.learned.length;
   const needsCount = arranged.needs.length;
   const newCount = arranged.fresh.length;
 
+  const sourceWordCount = sourceFilteredWords.length;
+
   useEffect(() => {
     setWordCount(allWords?.length ?? 0);
   }, [allWords]);
+
+  useEffect(() => {
+    setWordCount((previousCount) => Math.min(previousCount, sourceWordCount));
+  }, [sourceWordCount]);
 
   useEffect(() => {
     if (typeof onSettingsChange !== "function") return;
@@ -34,8 +45,9 @@ export default function WordSelector({
       wordCount,
       direction,
       wordFilter,
+      sourceFilter,
     });
-  }, [direction, onSettingsChange, selectionMode, wordCount, wordFilter]);
+  }, [direction, onSettingsChange, selectionMode, sourceFilter, wordCount, wordFilter]);
 
   return (
     <div className="word-selector">
@@ -43,6 +55,20 @@ export default function WordSelector({
         <div id="word-selector-settings">
           <div className="compact-selects">
             {settingsTopContent}
+
+            {showSourceFilter && (
+              <label className="compact-field">
+                <span>სიტყვების წყარო:</span>
+                <select
+                  value={sourceFilter}
+                  onChange={(e) => setSourceFilter(e.target.value)}
+                >
+                  <option value="all">ყველა</option>
+                  <option value="public">ზღაპრიდან</option>
+                  <option value="private">დამატებული სიტყვებიდან</option>
+                </select>
+              </label>
+            )}
 
             <label className="compact-field">
               <span>თამაშის მიმართულება:</span>
@@ -61,7 +87,7 @@ export default function WordSelector({
                 value={wordFilter}
                 onChange={(e) => setWordFilter(e.target.value)}
               >
-                <option value="all">ყველა ({allWordCount ?? allWords?.length ?? 0})</option>
+                <option value="all">ყველა ({sourceWordCount})</option>
                 <option value="needs">სასწავლი ({needsCount})</option>
                 <option value="learned">ნასწავლი ({learnedCount})</option>
                 <option value="new">ახალი ({newCount})</option>
@@ -86,13 +112,13 @@ export default function WordSelector({
                 <input
                   type="number"
                   min="0"
-                  max={allWords.length}
+                  max={sourceWordCount}
                   value={wordCount}
                   onChange={(e) =>
                     setWordCount(
                       Math.max(
                         0,
-                        Math.min(Number(e.target.value) || 0, allWords.length)
+                        Math.min(Number(e.target.value) || 0, sourceWordCount)
                       )
                     )
                   }

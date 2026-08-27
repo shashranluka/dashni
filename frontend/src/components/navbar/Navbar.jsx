@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import newRequest from "../../utils/newRequest";
 import { isEditorUser, isAdminUser, isPrivateContributorUser } from "../../utils/roles";
@@ -59,9 +59,14 @@ function Navbar() {
                     ჩემი გვერდი
                   </Link>
                   {isPrivateContributorUser(currentUser) && (
-                    <Link to="/my-words" onClick={() => setOpen(false)}>
-                      ჩემი სიტყვები
-                    </Link>
+                    <>
+                      <Link to="/add-words" onClick={() => setOpen(false)}>
+                        სიტყვების დამატება
+                      </Link>
+                      <Link to="/my-words" onClick={() => setOpen(false)}>
+                        ჩემი სიტყვები
+                      </Link>
+                    </>
                   )}
                   {isEditorUser(currentUser) && (
                     <>

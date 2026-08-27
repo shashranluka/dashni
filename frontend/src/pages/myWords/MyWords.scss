@@ -189,6 +189,38 @@
   font-weight: 600;
 }
 
+.my-words-audio-words {
+  margin-top: 20px;
+
+  h2 {
+    margin: 0 0 10px;
+    color: #173a56;
+    font-size: 1.1rem;
+  }
+}
+
+.my-words-audio-group + .my-words-audio-group {
+  margin-top: 14px;
+}
+
+.my-word-status {
+  align-self: flex-start;
+  border-radius: 999px;
+  padding: 3px 8px;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.my-word-status-learned {
+  color: #1f7a3d;
+  background: #e6f6ea;
+}
+
+.my-word-status-needs {
+  color: #b45309;
+  background: #fdf1e0;
+}
+
 .my-words-game {
   margin-top: 16px;
   padding: 12px;

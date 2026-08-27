@@ -130,10 +130,16 @@ export const getWordStatus = async (req, res, next) => {
       return res.status(400).json({ message: "source უნდა იყოს public ან private" });
     }
 
+    const wordTable = normalizedSource === "public" ? "words" : "private_words";
+    const wordCol = normalizedSource === "public" ? "the_word" : "word";
+    const translationCol = normalizedSource === "public" ? "translation" : "definition";
+
     const result = await pool.query(
-      `SELECT source, word_id, status, updated_at
-       FROM user_word_status
-       WHERE user_id = $1 AND source = $2;`,
+      `SELECT uws.source, uws.word_id, uws.status, uws.updated_at,
+              w.${wordCol} AS the_word, w.${translationCol} AS translation, w.language
+       FROM user_word_status uws
+       LEFT JOIN ${wordTable} w ON w.id = uws.word_id
+       WHERE uws.user_id = $1 AND uws.source = $2;`,
       [userId, normalizedSource],
     );
 

@@ -28,6 +28,7 @@ export default function WordGamePanel({
   allowCompose = false,
   composeWords = [],
   isSoundEnabled: initialSoundEnabled = true,
+  caller,
 }) {
   const [isSoundEnabled, setIsSoundEnabled] = useState(Boolean(initialSoundEnabled));
   const [gameStarted, setGameStarted] = useState(false);
@@ -42,6 +43,7 @@ export default function WordGamePanel({
     wordCount: 0,
     direction: "translation-to-word",
     wordFilter: "all",
+    sourceFilter: "all",
   });
 
   const [composeCards, setComposeCards] = useState([]);
@@ -119,14 +121,17 @@ export default function WordGamePanel({
 
   const filteredWords = useMemo(() => {
     const filter = selectorSettings.wordFilter;
-
-    if (filter === "all") return words;
+    const sourceFilter = selectorSettings.sourceFilter;
 
     return words.filter((word) => {
       const id = word?.id;
       if (id === undefined || id === null) return false;
 
       const source = resolveWordSource(word);
+      if (sourceFilter !== "all" && source !== sourceFilter) return false;
+
+      if (filter === "all") return true;
+
       const key = `${source}:${id}`;
 
       const isLearned = learnedSourceSet.size
@@ -145,6 +150,7 @@ export default function WordGamePanel({
   }, [
     words,
     selectorSettings.wordFilter,
+    selectorSettings.sourceFilter,
     learnedSourceSet,
     learnedIdSet,
     needsSourceSet,
@@ -343,6 +349,7 @@ export default function WordGamePanel({
           allWordCount={words.length}
           allWords={words}
           onSettingsChange={setSelectorSettings}
+          showSourceFilter={caller === "myWords"}
           isOpen={isSettingsOpen}
         />
       ) : null}

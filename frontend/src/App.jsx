@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/navbar/Navbar";
 import Home from "./pages/home/Home";
@@ -15,6 +14,8 @@ import EditorPage from "./pages/editor/EditorPage";
 import AddLexicons from "./pages/addLexicons/AddLexicons";
 import LexiconSearchPage from "./pages/lexiconSearch/LexiconSearchPage";
 import MyWords from "./pages/myWords/MyWords";
+import AddWords from "./pages/addWords/AddWords";
+import RequirePrivateContributor from "./components/RequirePrivateContributor/RequirePrivateContributor";
 // ...existing code...
 import "./App.scss";
 
@@ -67,6 +68,14 @@ function AppContent() {
             }
           />
           <Route path="/my-words" element={<MyWords />} />
+          <Route
+            path="/add-words"
+            element={
+              <RequirePrivateContributor>
+                <AddWords />
+              </RequirePrivateContributor>
+            }
+          />
         </Routes>
       </div>
     </>
