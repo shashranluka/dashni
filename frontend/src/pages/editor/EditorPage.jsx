@@ -1,11 +1,17 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import AudioPlayer from "../../components/AudioPlayer/AudioPlayer";
-import RareKeyboard from "../../components/RareKeyboard/RareKeyboard";
+import FullRareKeyboard from "../../components/fullRareKeyboard/FullRareKeyboard";
+import ExtraSymbolKeyboard from "../../components/ExtraSymbolKeyboard/ExtraSymbolKeyboard";
 import LexiconSearch from "../../components/LexiconSearch/LexiconSearch";
 import newRequest from "../../utils/newRequest";
 import { toDisplayText } from "../../utils/georgiaNormalize";
-// import FullRareKeyboard from "../../components/FullRareKeyboard/FullRareKeyboard";
 import "./EditorPage.scss";
+
+const KEYBOARD_KINDS = {
+  rare: "იშვიათი სიმბოლოები",
+  extra: "დამატებითი ასოები",
+};
+const KEYBOARD_STORAGE_KEY = "editor:keyboardKind";
 
 const AUDIO_FILE = "src/assets/audio_files/adas_mier_moyolili_zghapari.m4a";
 
@@ -20,8 +26,25 @@ function EditorPage() {
   const [wordDrafts, setWordDrafts] = useState({});
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
-  const [isKeyboardOpen, setIsKeyboardOpen] = useState(true);
+  const [keyboardKind, setKeyboardKind] = useState(() => {
+    try {
+      const saved = localStorage.getItem(KEYBOARD_STORAGE_KEY);
+      if (saved && saved in KEYBOARD_KINDS) return saved;
+    } catch {
+      /* localStorage unavailable */
+    }
+    return "rare";
+  });
   const textAreaRef = useRef(null);
+
+  const chooseKeyboard = (kind) => {
+    setKeyboardKind(kind);
+    try {
+      localStorage.setItem(KEYBOARD_STORAGE_KEY, kind);
+    } catch {
+      /* localStorage unavailable */
+    }
+  };
   console.log("segments", segments);
   const selectedSegment = useMemo(
     () =>
@@ -437,35 +460,42 @@ function EditorPage() {
       </section>
 
 
-      <div className="editor-keyboard-dock">
-        <RareKeyboard
-          isOpen={isKeyboardOpen}
-          onToggle={() => setIsKeyboardOpen((prev) => !prev)}
-          onInsert={handleInsertRareSymbol}
-          disabled={!selectedSegment}
-        />
+      <div
+        className="editor-keyboard-picker"
+        role="group"
+        aria-label="კლავიატურის არჩევა"
+      >
+        {Object.entries(KEYBOARD_KINDS).map(([kind, label]) => (
+          <button
+            key={kind}
+            type="button"
+            className={keyboardKind === kind ? "is-active" : ""}
+            aria-pressed={keyboardKind === kind}
+            onClick={() => chooseKeyboard(kind)}
+          >
+            {label}
+          </button>
+        ))}
       </div>
+
+      {keyboardKind === "extra" ? (
+        <div className="editor-keyboard-dock">
+          <ExtraSymbolKeyboard
+            onInsert={handleInsertRareSymbol}
+            disabled={!selectedSegment}
+          />
+        </div>
+      ) : (
+        <div className="editor-keyboard-dock">
+          <FullRareKeyboard
+            onInsert={handleInsertRareSymbol}
+            disabled={!selectedSegment}
+          />
+        </div>
+      )}
+
       <button onClick={() => exportCSV(segments, "segments.csv")}>Export segments CSV</button>
       <button onClick={() => exportCSV(words, "words.csv")}>Export words CSV</button>
-    
-      {/* <div className="editor-segments-list">
-        <h2>ყველა ეპიზოდი</h2>
-        <ol>
-          {segments.map((segment) => (
-            <li key={segment.id}>
-              ეპიზოდი {segment.id} - დრო: {segment.time}
-              <br />
-              {segment.text}
-            </li>
-          ))}
-        </ol>
-      </div> */}
-      {/* <FullRareKeyboard 
-        isOpen={isKeyboardOpen}
-        onToggle={() => setIsKeyboardOpen((prev) => !prev)}
-        onInsert={handleInsertRareSymbol}
-        disabled={!selectedSegment}
-      /> */}
     </section>
   );
 }

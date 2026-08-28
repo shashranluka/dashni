@@ -241,6 +241,53 @@
     width: min(1060px, calc(100vw - 20px));
     z-index: 920;
   }
+
+  // .editor-keyboard-dock--extra {
+  //   left: auto;
+  //   right: 10px;
+  //   transform: none;
+  //   width: fit-content;
+  //   max-width: calc(100vw - 20px);
+  // }
+
+  .editor-keyboard-picker {
+    position: fixed;
+    left: 10px;
+    bottom: 10px;
+    z-index: 921;
+    display: flex;
+    gap: 4px;
+    padding: 4px;
+    border: 1px solid #c6d9ea;
+    border-radius: 10px;
+    background: #f6fbff;
+    box-shadow: 0 4px 10px rgba(7, 29, 53, 0.14);
+
+    button {
+      border: 1px solid #b9cee3;
+      border-radius: 7px;
+      background: #fff;
+      color: #1f4b6f;
+      padding: 5px 9px;
+      font-size: 0.78rem;
+      line-height: 1.1;
+      cursor: pointer;
+      transition:
+        background 0.12s ease,
+        border-color 0.12s ease;
+
+      &:hover {
+        border-color: #7ea7cf;
+        background: #f0f7ff;
+      }
+
+      &.is-active {
+        border-color: #1f5f8f;
+        background: #1f5f8f;
+        color: #fff;
+      }
+    }
+  }
 }
 
 @media (max-width: 820px) {
