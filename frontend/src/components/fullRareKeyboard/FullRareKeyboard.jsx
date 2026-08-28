@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import PropTypes from "prop-types";
 import "./FullRareKeyboard.scss";
 
 const diacretials = [
@@ -128,10 +129,12 @@ function FullRareKeyboard({ onInsert, disabled = false }) {
     const viewport = window.visualViewport;
     if (!viewport) return;
 
+    const dock =
+      keyboardRootRef.current?.closest(".editor-keyboard-dock") ||
+      keyboardRootRef.current;
+    if (!dock) return;
+
     const updateDockOffset = () => {
-      const root = keyboardRootRef.current;
-      if (!root) return;
-      const dock = root.closest(".editor-keyboard-dock") || root;
       const offset = Math.max(
         0,
         window.innerHeight - viewport.height - viewport.offsetTop,
@@ -146,11 +149,7 @@ function FullRareKeyboard({ onInsert, disabled = false }) {
     return () => {
       viewport.removeEventListener("resize", updateDockOffset);
       viewport.removeEventListener("scroll", updateDockOffset);
-      const root = keyboardRootRef.current;
-      const dock = root?.closest(".editor-keyboard-dock") || root;
-      if (dock) {
-        dock.style.bottom = "";
-      }
+      dock.style.bottom = "";
     };
   }, []);
 
@@ -220,5 +219,10 @@ function FullRareKeyboard({ onInsert, disabled = false }) {
     </div>
   );
 }
+
+FullRareKeyboard.propTypes = {
+  onInsert: PropTypes.func.isRequired,
+  disabled: PropTypes.bool,
+};
 
 export default FullRareKeyboard;

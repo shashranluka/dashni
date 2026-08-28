@@ -26,7 +26,7 @@ const DOSH_FONT_FAMILY = SYMBOL_FONT_SOURCES.dosh.fontFamily;
  */
 function ExtraSymbolKeyboard({
   onInsert,
-  insertMode = "seq",
+  insertMode = "dosh",
   disabled = false,
   className = "",
 }) {
@@ -75,9 +75,9 @@ function ExtraSymbolKeyboard({
 
   const handleClick = (entry) => {
     if (disabled) return;
-    onInsert?.(insertMode === "display" ? entry.dosh : entry.seq);
+    onInsert?.(insertMode === "dosh" ? entry.dosh : entry.seq);
   };
-
+  console.log(groups);
   return (
     <div
       ref={keyboardRootRef}

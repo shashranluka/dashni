@@ -1,0 +1,141 @@
+.rare-keyboard {
+	--toggle-safe-width: 96px;
+	--toggle-safe-height: 40px;
+	position: relative;
+	width: fit-content;
+	max-width: 100%;
+	margin-left: auto;
+	border: 1px solid #c6d9ea;
+	border-radius: 12px;
+	background: #f6fbff;
+	box-shadow: 0 6px 16px rgba(7, 29, 53, 0.14);
+	padding: 8px;
+	min-height: calc(var(--toggle-safe-height) + 16px);
+
+	&__top {
+		display: flex;
+		align-items: center;
+		justify-content: flex-end;
+		gap: 8px;
+		position: absolute;
+		bottom: 8px;
+		right: 8px;
+		z-index: 2;
+
+		strong {
+			font-size: 0.85rem;
+			color: #1e3f5b;
+		}
+	}
+
+	&__toggle {
+		border: 1px solid #7ea3c2;
+		border-radius: 8px;
+		background: #fff;
+		color: #1f4b6f;
+		padding: 5px 10px;
+		font-size: 0.82rem;
+		cursor: pointer;
+		white-space: nowrap;
+	}
+
+	&__body {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+	}
+
+	&__section {
+		display: flex;
+		flex-direction: column;
+		gap: 5px;
+	}
+
+	&__section-label {
+		font-size: 0.72rem;
+		font-weight: 600;
+		color: #4a6a88;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+	}
+
+	&__grid {
+		display: flex;
+		flex-wrap: nowrap;
+		gap: 5px;
+		overflow-x: auto;
+		overflow-y: hidden;
+	}
+
+	&__key {
+		flex: 0 0 auto;
+		min-width: 26px;
+		min-height: 26px;
+		padding: 0 4px;
+		border: 1px solid #9eb8cf;
+		border-radius: 7px;
+		background: #fff;
+		color: #183852;
+		font-size: 0.9rem;
+		font-family: "ICL Symbol", "Noto Sans Georgian", "Noto Sans Symbols", sans-serif;
+		line-height: 1;
+		cursor: pointer;
+
+		&:disabled {
+			opacity: 0.4;
+			cursor: not-allowed;
+		}
+	}
+
+	&__key--letters {
+		border-color: #4f8bb5;
+		background: #e9f5ff;
+		color: #0f3f62;
+	}
+
+	&__key--modifiers {
+		border-color: #a66cb6;
+		background: #f7ecfb;
+		color: #5a2a68;
+	}
+
+	@media (min-width: 540px) {
+		padding: 10px;
+
+		&__top strong {
+			font-size: 0.9rem;
+		}
+
+		&__body {
+			gap: 10px;
+		}
+
+		&__grid {
+			gap: 6px;
+		}
+
+		&__key {
+			min-width: 38px;
+			min-height: 38px;
+			font-size: 1rem;
+		}
+	}
+
+	@media (min-width: 820px) {
+		padding: 12px;
+
+		&__body {
+			gap: 12px;
+		}
+
+		&__grid {
+			gap: 8px;
+		}
+
+		&__key {
+			min-width: 42px;
+			min-height: 42px;
+			font-size: 1.1rem;
+		}
+	}
+}

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import newRequest from "../../utils/newRequest";
 import "./LexiconSearch.scss";
 import AddWordModal from "../addWordModal/AddWordModal";
+import ExtraSymbolKeyboard from "../ExtraSymbolKeyboard/ExtraSymbolKeyboard";
 
 const LEXICON_OPTIONS = [
   { value: "", label: "ყველა" },
@@ -12,6 +13,7 @@ const LEXICON_OPTIONS = [
 
 function LexiconSearch() {
   const panelRef = useRef(null);
+  const queryInputRef = useRef(null);
 
   const [query, setQuery] = useState("");
   const [lexicon, setLexicon] = useState(LEXICON_OPTIONS[0].value);
@@ -115,6 +117,24 @@ function LexiconSearch() {
     handleSearch();
   };
 
+  const handleInsertSymbol = (symbol) => {
+    const input = queryInputRef.current;
+    if (!input) {
+      setQuery((previous) => `${previous}${symbol}`);
+      return;
+    }
+
+    const selectionStart = input.selectionStart ?? query.length;
+    const selectionEnd = input.selectionEnd ?? query.length;
+    setQuery(`${query.slice(0, selectionStart)}${symbol}${query.slice(selectionEnd)}`);
+
+    window.requestAnimationFrame(() => {
+      const cursor = selectionStart + symbol.length;
+      input.focus();
+      input.setSelectionRange(cursor, cursor);
+    });
+  };
+
   const handlePlusMouseDown = (event) => {
     event.preventDefault();
     if (!selectionBadge?.text) return;
@@ -165,6 +185,7 @@ function LexiconSearch() {
 
       <form className="lexicon-search-form" onSubmit={handleSubmit}>
         <input
+          ref={queryInputRef}
           type="text"
           value={query}
           onChange={(event) => setQuery(event.target.value)}
@@ -174,6 +195,8 @@ function LexiconSearch() {
           {loading ? "ძებნა..." : "ძებნა"}
         </button>
       </form>
+
+      <ExtraSymbolKeyboard onInsert={handleInsertSymbol} />
 
       {error ? <p className="error">{error}</p> : null}
       {searched && !error ? <p className="summary">ნაპოვნი ჩანაწერები: {results.length}</p> : null}
