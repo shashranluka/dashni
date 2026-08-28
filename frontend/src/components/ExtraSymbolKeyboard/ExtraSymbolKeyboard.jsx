@@ -10,9 +10,10 @@ const DOSH_FONT_FAMILY = SYMBOL_FONT_SOURCES.dosh.fontFamily;
 /**
  * Virtual keyboard for the "extra" Georgian letter+diacritic symbols.
  *
- * Collapsible like `FullRareKeyboard`: starts closed, a toggle at the bottom
- * shows/hides the keys. Keys render with the "ICL Symbol" font (the `dosh`
- * codepoint of each entry). What gets inserted is controlled by `insertMode`:
+ * Pinned to the bottom-right of the viewport and collapsible like
+ * `FullRareKeyboard`: starts closed, a toggle shows/hides the keys. Keys render
+ * with the "ICL Symbol" font (the `dosh` codepoint of each entry). What gets
+ * inserted is controlled by `insertMode`:
  *   - "seq"     -> the canonical Unicode sequence (`entry.seq`), matching the
  *                  rest of the app / georgiaNormalize.
  *   - "display" -> the shown PUA codepoint (`entry.dosh`).
@@ -36,7 +37,12 @@ function ExtraSymbolKeyboard({
     const viewport = window.visualViewport;
     if (!viewport) return;
 
-    const dock = keyboardRootRef.current?.closest(".editor-keyboard-dock");
+    // Keep the pinned keyboard above the on-screen keyboard. Prefer an
+    // `.editor-keyboard-dock` wrapper if the component is used inside one,
+    // otherwise nudge the component's own fixed root.
+    const dock =
+      keyboardRootRef.current?.closest(".editor-keyboard-dock") ||
+      keyboardRootRef.current;
     if (!dock) return;
 
     const updateDockOffset = () => {
