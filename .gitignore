@@ -1,4 +1,5 @@
 manual_scripts/
+.claude/
 dashni_db*.sql
 dashni_db.sql
 dashni_db_backup.sql

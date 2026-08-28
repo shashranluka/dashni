@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import AudioPlayer from "../../components/AudioPlayer/AudioPlayer";
 import EpisodePicker from "../../components/EpisodePicker/EpisodePicker";
 import newRequest from "../../utils/newRequest";
-import extraSymbols from "./extraSymbols";
+import ExtraSymbolKeyboard from "../../components/ExtraSymbolKeyboard/ExtraSymbolKeyboard";
 import "./Poligon.scss";
 
 const AUDIO_FILE = "src/assets/audio_files/adas_mier_moyolili_zghapari.m4a";
@@ -24,6 +24,23 @@ function Poligon() {
   const inputRef = useRef(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  const insertAtCursor = (text) => {
+    const el = inputRef.current;
+    if (!el) {
+      setTypedText((prev) => prev + text);
+      return;
+    }
+    const start = el.selectionStart ?? typedText.length;
+    const end = el.selectionEnd ?? typedText.length;
+    const next = typedText.slice(0, start) + text + typedText.slice(end);
+    setTypedText(next);
+    window.requestAnimationFrame(() => {
+      const cursor = start + text.length;
+      el.focus();
+      el.setSelectionRange(cursor, cursor);
+    });
+  };
 
   const activeEpisodeId = (() => {
     if (!episodes.length) return null;
@@ -148,38 +165,7 @@ function Poligon() {
         />
       </div>
 
-      <div
-        className="poligon-page__symbol-keyboard"
-        aria-label="დამატებითი სიმბოლოები"
-      >
-        {extraSymbols.map((symbol) => (
-          <button
-            key={symbol}
-            type="button"
-            className="poligon-page__symbol-btn"
-            title={symbol}
-            onClick={() => {
-              const el = inputRef.current;
-              if (!el) {
-                setTypedText((prev) => prev + symbol);
-                return;
-              }
-              const start = el.selectionStart ?? typedText.length;
-              const end = el.selectionEnd ?? typedText.length;
-              const next =
-                typedText.slice(0, start) + symbol + typedText.slice(end);
-              setTypedText(next);
-              window.requestAnimationFrame(() => {
-                const cursor = start + symbol.length;
-                el.focus();
-                el.setSelectionRange(cursor, cursor);
-              });
-            }}
-          >
-            {symbol}
-          </button>
-        ))}
-      </div>
+      <ExtraSymbolKeyboard insertMode="display" onInsert={insertAtCursor} />
     </section>
   );
 }
