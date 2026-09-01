@@ -1,6 +1,11 @@
 import { pool } from "../server.js";
 import { deleteUserWordStatus } from "../services/userWordStatus.service.js";
 
+const normalizeTags = (tags) => {
+  const values = Array.isArray(tags) ? tags : (tags ?? "").toString().split(",");
+  return [...new Set(values.map((tag) => tag.toString().trim()).filter(Boolean))];
+};
+
 // GET /private-words
 // აბრუნებს მიმდინარე მომხმარებლის private სიტყვების სიას.
 export const listPrivateWords = async (req, res, next) => {
@@ -11,7 +16,7 @@ export const listPrivateWords = async (req, res, next) => {
     }
 
     const result = await pool.query(
-      `SELECT id, user_id, word, definition, language, created_at, updated_at
+      `SELECT id, user_id, word, definition, language, tags, created_at, updated_at
        FROM private_words
        WHERE user_id = $1
        ORDER BY updated_at DESC, id DESC`,
@@ -39,21 +44,23 @@ export const upsertPrivateWord = async (req, res, next) => {
     const word = (req.body?.word ?? "").toString().trim();
     const definition = (req.body?.definition ?? "").toString().trim();
     const language = (req.body?.language ?? "tushetian").toString();
+    const tags = normalizeTags(req.body?.tags);
 
     if (!word || !definition) {
       return res.status(400).json({ message: "word და definition სავალდებულოა" });
     }
 
     const result = await pool.query(
-      `INSERT INTO private_words (user_id, word, definition, language)
-       VALUES ($1, $2, $3, $4)
+      `INSERT INTO private_words (user_id, word, definition, language, tags)
+       VALUES ($1, $2, $3, $4, $5)
        ON CONFLICT (user_id, word)
        DO UPDATE SET
          definition = EXCLUDED.definition,
          language = EXCLUDED.language,
+         tags = EXCLUDED.tags,
          updated_at = CURRENT_TIMESTAMP
-       RETURNING id, user_id, word, definition, language, created_at, updated_at`,
-      [userId, word, definition, language]
+       RETURNING id, user_id, word, definition, language, tags, created_at, updated_at`,
+      [userId, word, definition, language, tags]
     );
 
     return res.status(201).json({
@@ -86,6 +93,7 @@ export const bulkUpsertPrivateWords = async (req, res, next) => {
     word: (row?.word ?? "").toString().trim(),
     definition: (row?.definition ?? "").toString().trim(),
     language: (row?.language ?? "").toString().trim().toLowerCase(),
+    tags: normalizeTags(row?.tags),
   }));
   const invalidRows = normalizedRows.filter(
     (row) =>
@@ -125,15 +133,16 @@ export const bulkUpsertPrivateWords = async (req, res, next) => {
 
     for (const row of uniqueRows) {
       const result = await client.query(
-        `INSERT INTO private_words (user_id, word, definition, language)
-         VALUES ($1, $2, $3, $4)
+        `INSERT INTO private_words (user_id, word, definition, language, tags)
+         VALUES ($1, $2, $3, $4, $5)
          ON CONFLICT (user_id, word)
          DO UPDATE SET
            definition = EXCLUDED.definition,
            language = EXCLUDED.language,
+           tags = EXCLUDED.tags,
            updated_at = CURRENT_TIMESTAMP
          RETURNING (xmax = 0) AS inserted`,
-        [userId, row.word, row.definition, row.language],
+        [userId, row.word, row.definition, row.language, row.tags],
       );
       if (result.rows[0]?.inserted) inserted += 1;
       else updated += 1;
@@ -181,7 +190,7 @@ export const updatePrivateWord = async (req, res, next) => {
            definition = $2,
            updated_at = CURRENT_TIMESTAMP
        WHERE id = $3 AND user_id = $4
-       RETURNING id, user_id, word, definition, language, created_at, updated_at`,
+      RETURNING id, user_id, word, definition, language, tags, created_at, updated_at`,
       [word, definition, id, userId]
     );
 

@@ -55,6 +55,7 @@ const parseWordFile = (text, fallbackLanguage) => {
     ? Math.max(firstCells.indexOf("definition"), firstCells.indexOf("translation"))
     : 1;
   const languageIndex = hasHeader ? firstCells.indexOf("language") : 2;
+  const tagsIndex = hasHeader ? firstCells.indexOf("tags") : 3;
 
   return lines.slice(hasHeader ? 1 : 0).map((line, index) => {
     const cells = parseDelimitedLine(line, delimiter);
@@ -63,6 +64,7 @@ const parseWordFile = (text, fallbackLanguage) => {
       word: cells[wordIndex]?.trim() || "",
       definition: cells[definitionIndex]?.trim() || "",
       language: cells[languageIndex]?.trim().toLowerCase() || fallbackLanguage,
+      tags: cells[tagsIndex]?.trim() || "",
     };
   });
 };
@@ -70,6 +72,7 @@ const parseWordFile = (text, fallbackLanguage) => {
 function AddWords() {
   const [word, setWord] = useState("");
   const [definition, setDefinition] = useState("");
+  const [tags, setTags] = useState("");
   const [language, setLanguage] = useState("tushetian");
   const [customLanguage, setCustomLanguage] = useState("");
   const [rows, setRows] = useState([]);
@@ -107,9 +110,11 @@ function AddWords() {
         word: word.trim(),
         definition: definition.trim(),
         language: selectedLanguage,
+        tags,
       });
       setWord("");
       setDefinition("");
+      setTags("");
       setNotice("სიტყვა წარმატებით შეინახა");
     } catch (err) {
       setError(err?.response?.data?.message || "სიტყვის შენახვა ვერ შესრულდა");
@@ -145,10 +150,11 @@ function AddWords() {
     setSaving(true);
     try {
       const response = await newRequest.post("/private-words/bulk", {
-        rows: validRows.map(({ word: rowWord, definition: rowDefinition, language: rowLanguage }) => ({
+        rows: validRows.map(({ word: rowWord, definition: rowDefinition, language: rowLanguage, tags: rowTags }) => ({
           word: rowWord,
           definition: rowDefinition,
           language: rowLanguage,
+          tags: rowTags,
         })),
       });
       setResult(response.data);
@@ -220,6 +226,15 @@ function AddWords() {
               />
             </label>
           ) : null}
+          <label>
+            <span>თეგები</span>
+            <input
+              value={tags}
+              onChange={(event) => setTags(event.target.value)}
+              placeholder="მაგ. ზღაპარი, სასწავლი"
+              disabled={saving}
+            />
+          </label>
           <label className="add-words-wide">
             <span>განმარტება</span>
             <textarea
@@ -265,8 +280,9 @@ function AddWords() {
         </div>
 
         <div className="add-words-format">
-          <strong>სვეტები:</strong> word, definition, language
+          <strong>სვეტები:</strong> word, definition, language, tags
           <span>language ცარიელი თუა, ზემოთ არჩეული ენა გამოიყენება.</span>
+          <span>tags არასავალდებულოა და მძიმეებით გამოყოფილ თეგებს იღებს.</span>
         </div>
 
         {rows.length ? (
@@ -279,7 +295,7 @@ function AddWords() {
             <div className="add-words-table-wrap">
               <table>
                 <thead>
-                  <tr><th>#</th><th>სიტყვა</th><th>განმარტება</th><th>ენა</th><th>სტატუსი</th></tr>
+                  <tr><th>#</th><th>სიტყვა</th><th>განმარტება</th><th>ენა</th><th>თეგები</th><th>სტატუსი</th></tr>
                 </thead>
                 <tbody>
                   {rows.slice(0, 100).map((row) => {
@@ -287,7 +303,7 @@ function AddWords() {
                     return (
                       <tr key={`${row.line}-${row.word}`} className={valid ? "" : "is-invalid"}>
                         <td>{row.line}</td><td>{row.word || "—"}</td>
-                        <td>{row.definition || "—"}</td><td>{row.language || "—"}</td>
+                        <td>{row.definition || "—"}</td><td>{row.language || "—"}</td><td>{row.tags || "—"}</td>
                         <td>{valid ? "მზადაა" : "შეავსე ველები"}</td>
                       </tr>
                     );
