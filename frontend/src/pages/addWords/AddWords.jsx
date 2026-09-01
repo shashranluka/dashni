@@ -54,8 +54,8 @@ const parseWordFile = (text, fallbackLanguage) => {
   const definitionIndex = hasHeader
     ? Math.max(firstCells.indexOf("definition"), firstCells.indexOf("translation"))
     : 1;
-  const languageIndex = hasHeader ? firstCells.indexOf("language") : 2;
-  const tagsIndex = hasHeader ? firstCells.indexOf("tags") : 3;
+  const tagsIndex = hasHeader ? firstCells.indexOf("tags") : 2;
+  const languageIndex = hasHeader ? firstCells.indexOf("language") : 3;
 
   return lines.slice(hasHeader ? 1 : 0).map((line, index) => {
     const cells = parseDelimitedLine(line, delimiter);
@@ -280,7 +280,7 @@ function AddWords() {
         </div>
 
         <div className="add-words-format">
-          <strong>სვეტები:</strong> word, definition, language, tags
+          <strong>სვეტები:</strong> word, definition, tags, language
           <span>language ცარიელი თუა, ზემოთ არჩეული ენა გამოიყენება.</span>
           <span>tags არასავალდებულოა და მძიმეებით გამოყოფილ თეგებს იღებს.</span>
         </div>
@@ -295,7 +295,7 @@ function AddWords() {
             <div className="add-words-table-wrap">
               <table>
                 <thead>
-                  <tr><th>#</th><th>სიტყვა</th><th>განმარტება</th><th>ენა</th><th>თეგები</th><th>სტატუსი</th></tr>
+                  <tr><th>#</th><th>სიტყვა</th><th>განმარტება</th><th>თეგები</th><th>ენა</th><th>სტატუსი</th></tr>
                 </thead>
                 <tbody>
                   {rows.slice(0, 100).map((row) => {
@@ -303,7 +303,7 @@ function AddWords() {
                     return (
                       <tr key={`${row.line}-${row.word}`} className={valid ? "" : "is-invalid"}>
                         <td>{row.line}</td><td>{row.word || "—"}</td>
-                        <td>{row.definition || "—"}</td><td>{row.language || "—"}</td><td>{row.tags || "—"}</td>
+                        <td>{row.definition || "—"}</td><td>{row.tags || "—"}</td><td>{row.language || "—"}</td>
                         <td>{valid ? "მზადაა" : "შეავსე ველები"}</td>
                       </tr>
                     );
