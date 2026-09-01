@@ -113,11 +113,15 @@ function AnkiLikeGame({ words, direction = "translation-to-word" }) {
   };
 
   const handleNeedsLearning = () => {
+    setSaveError(null);
+    setSaveSuccess(false);
     addUniqueWord(setNeedsLearningWords, currentWord);
     goToNextWord();
   };
 
   const handleLearned = () => {
+    setSaveError(null);
+    setSaveSuccess(false);
     addUniqueWord(setLearnedWords, currentWord);
     goToNextWord();
   };
@@ -252,6 +256,22 @@ function AnkiLikeGame({ words, direction = "translation-to-word" }) {
           </div>
         )}
       </div>
+        <button
+          type="button"
+          onClick={handleSaveResults}
+          className="restart-btn"
+          disabled={
+            isSaving || learnedWords.length + needsLearningWords.length === 0
+          }
+        >
+          {isSaving ? "ინახება..." : "შენახვა"}
+        </button>
+        {saveError ? (
+          <p className="save-error">შენახვა ვერ მოხერხდა: {saveError}</p>
+        ) : null}
+        {saveSuccess && !isSaving ? (
+          <p className="save-success">შენახულია</p>
+        ) : null}
     </div>
   );
 }
