@@ -1,5 +1,5 @@
 # env files
-# .env
+.env
 .env.save
 .env.local
 .env.development.local

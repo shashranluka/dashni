@@ -1,6 +1,12 @@
 manual_scripts/
 .claude/
-dashni_db*.sql
-dashni_db.sql
-dashni_db_backup.sql
 .DS_Store
+
+# ბაზის dump-ები — რეპოს ძირში არსებული ყველა .sql ფაილი.
+# migrations/ საქაღალდეებს არ ეხება, რადგან pattern რეპოს ძირზეა მიბმული.
+/*.sql
+
+# env ფაილები — მხოლოდ .env.example ინახება git-ში.
+.env
+.env.*
+!.env.example
