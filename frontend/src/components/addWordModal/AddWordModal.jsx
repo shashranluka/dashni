@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import newRequest from "../../utils/newRequest";
+import { useAuth } from "../../hooks/useAuth";
+import { isPrivateContributorUser } from "../../utils/roles";
 import "./AddWordModal.scss";
 
 const LANGUAGE_OPTIONS = [
@@ -13,7 +15,8 @@ function AddWordModal({ open, initialWord = "", initialDefinition = "", onClose,
   const [language, setLanguage] = useState(LANGUAGE_OPTIONS[0].value);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
-  const [isPrivateContributor, setIsPrivateContributor] = useState(false);
+  const { user } = useAuth();
+  const isPrivateContributor = isPrivateContributorUser(user);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const dragRef = useRef({
     dragging: false,
@@ -25,15 +28,6 @@ function AddWordModal({ open, initialWord = "", initialDefinition = "", onClose,
   const wasOpenRef = useRef(false);
   const prevInitialWordRef = useRef("");
   const prevInitialDefinitionRef = useRef("");
-
-  useEffect(() => {
-    try {
-      const user = JSON.parse(localStorage.getItem("currentUser") || "null");
-      setIsPrivateContributor(user?.is_private_contributor === true);
-    } catch {
-      setIsPrivateContributor(false);
-    }
-  }, []);
 
   useEffect(() => {
     if (!open) {

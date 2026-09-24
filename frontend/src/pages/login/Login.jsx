@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import newRequest from '../../utils/newRequest';
-// ...existing code...
+import { useAuth } from '../../hooks/useAuth';
 import './Login.scss';
 
 function Login() {
+  const { refresh } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -17,14 +18,13 @@ function Login() {
     setLoading(true);
 
     try {
-      const res = await newRequest.post('auth/login', { email, password });
-      
-      localStorage.setItem('currentUser', JSON.stringify(res.data));
-      
-      
-      console.log('წარმატებული შესვლა:', res.data);
+      await newRequest.post('auth/login', { email, password });
+
+      // მომხმარებელს სერვერიდან ვკითხულობთ და არა login-ის პასუხიდან —
+      // ასე ერთი წყარო რჩება და როლიც ყოველთვის აქტუალურია.
+      await refresh();
+
       navigate('/');
-      window.location.reload();
     } catch (err) {
       console.error('შესვლის შეცდომა:', err);
       setError(err.response?.data?.message || 'შესვლა ვერ მოხერხდა');

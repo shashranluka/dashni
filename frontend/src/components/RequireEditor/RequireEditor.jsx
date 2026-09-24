@@ -1,27 +1,23 @@
-import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
-import newRequest from "../../utils/newRequest";
+import PropTypes from "prop-types";
+import { useAuth } from "../../hooks/useAuth";
 import { isEditorUser } from "../../utils/roles";
 
+// Route guard — მხოლოდ editor-ს ან admin-ს უშვებს.
+// მონაცემებს AuthContext-იდან იღებს, ანუ საკუთარ /auth/me მოთხოვნას აღარ აგზავნის.
 function RequireEditor({ children }) {
-  const [status, setStatus] = useState("loading");
+  const { user, loading } = useAuth();
 
-  useEffect(() => {
-    newRequest
-      .get("/auth/me")
-      .then((res) => {
-        setStatus(isEditorUser(res.data) ? "ok" : "forbidden");
-      })
-      .catch((err) => {
-        setStatus(err?.response?.status === 401 ? "unauth" : "forbidden");
-      });
-  }, []);
-
-  if (status === "loading") return null;
-  if (status === "unauth") return <Navigate to="/login" replace />;
-  if (status === "forbidden") return <Navigate to="/" replace />;
+  // სანამ პასუხი არ მოსულა, არაფერს ვასახავთ — თორემ გვერდი გაიელვებდა.
+  if (loading) return null;
+  if (!user) return <Navigate to="/login" replace />;
+  if (!isEditorUser(user)) return <Navigate to="/" replace />;
 
   return children;
 }
+
+RequireEditor.propTypes = {
+  children: PropTypes.node,
+};
 
 export default RequireEditor;
