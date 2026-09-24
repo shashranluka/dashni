@@ -13,7 +13,7 @@ const KEYBOARD_KINDS = {
 };
 const KEYBOARD_STORAGE_KEY = "editor:keyboardKind";
 
-const AUDIO_FILE = "src/assets/audio_files/adas_mier_moyolili_zghapari.m4a";
+const AUDIO_FILE = "/audio_files/adas_mier_moyolili_zghapari.m4a";
 
 function EditorPage() {
   const [segments, setSegments] = useState([]);

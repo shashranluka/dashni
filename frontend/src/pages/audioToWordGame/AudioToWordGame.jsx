@@ -21,7 +21,7 @@ function AudioToWordGame() {
   const hasFetchedAudio = useRef(false);
   const hasFetchedResults = useRef(false);
   const audiofilePath = useRef(
-    "src/assets/audio_files/adas_mier_moyolili_zghapari.m4a",
+    "/audio_files/adas_mier_moyolili_zghapari.m4a",
   );
 
   useEffect(() => {
