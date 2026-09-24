@@ -3,9 +3,10 @@ import AudioPlayer from "../../components/AudioPlayer/AudioPlayer";
 import EpisodePicker from "../../components/EpisodePicker/EpisodePicker";
 import newRequest from "../../utils/newRequest";
 import ExtraSymbolKeyboard from "../../components/ExtraSymbolKeyboard/ExtraSymbolKeyboard";
+import audioFileUrl from "../../assets/audio_files/adas_mier_moyolili_zghapari.m4a";
 import "./Poligon.scss";
 
-const AUDIO_FILE = "/audio_files/adas_mier_moyolili_zghapari.m4a";
+const AUDIO_FILE = audioFileUrl;
 
 const toSeconds = (timeStr) => {
   if (!timeStr) return 0;

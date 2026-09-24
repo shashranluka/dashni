@@ -3,6 +3,7 @@ import newRequest from "../../utils/newRequest";
 import WordGamePanel from "../../components/WordGamePanel/WordGamePanel";
 import AudioPlayer from "../../components/AudioPlayer/AudioPlayer";
 import EpisodePicker from "../../components/EpisodePicker/EpisodePicker";
+import audioFileUrl from "../../assets/audio_files/adas_mier_moyolili_zghapari.m4a";
 import "./AudioToWordGame.scss";
 
 function AudioToWordGame() {
@@ -20,9 +21,7 @@ function AudioToWordGame() {
 
   const hasFetchedAudio = useRef(false);
   const hasFetchedResults = useRef(false);
-  const audiofilePath = useRef(
-    "/audio_files/adas_mier_moyolili_zghapari.m4a",
-  );
+  const audiofilePath = useRef(audioFileUrl);
 
   useEffect(() => {
     const fetchAudioData = async () => {
