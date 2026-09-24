@@ -5,7 +5,7 @@ import newRequest from "../../utils/newRequest";
 import ExtraSymbolKeyboard from "../../components/ExtraSymbolKeyboard/ExtraSymbolKeyboard";
 import "./Poligon.scss";
 
-const AUDIO_FILE = "src/assets/audio_files/adas_mier_moyolili_zghapari.m4a";
+const AUDIO_FILE = "/audio_files/adas_mier_moyolili_zghapari.m4a";
 
 const toSeconds = (timeStr) => {
   if (!timeStr) return 0;
