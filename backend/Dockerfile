@@ -20,5 +20,8 @@ COPY . .
 # Expose port
 EXPOSE 8800
 
+# ცხადად ვაფიქსირებთ: შეცდომის დეტალები გარეთ არ უნდა გავიდეს.
+ENV NODE_ENV=production
+
 # Start application
 CMD ["node", "server.js"]

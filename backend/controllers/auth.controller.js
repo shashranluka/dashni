@@ -3,6 +3,31 @@ import jwt from "jsonwebtoken";
 import { pool } from "../server.js";
 import { toPublicUser } from "../middleware/auth.middleware.js";
 
+// bcrypt-ის cost. ყოველი ერთეული აორმაგებს გამოთვლის დროს, ანუ 12 ნიშნავს
+// 5-თან შედარებით 128-ჯერ მეტ სამუშაოს პაროლის გამოცნობის მცდელობაზე.
+const BCRYPT_COST = 12;
+
+// არარსებულ მომხმარებელზეც რომ იმდენივე დრო დაიხარჯოს, რამდენიც არსებულზე.
+// ამის გარეშე პასუხის სიჩქარე ამჟღავნებს, დარეგისტრირებულია თუ არა email.
+const TIMING_DUMMY_HASH = bcrypt.hashSync("timing-equalizer", BCRYPT_COST);
+
+// ერთი და იგივე შეტყობინება ორივე შემთხვევისთვის.
+const INVALID_CREDENTIALS_MESSAGE = "ელ-ფოსტა ან პაროლი არასწორია";
+
+// წარმატებული შესვლისას ძველი, სუსტი cost-ით შენახული hash ჩუმად ნახლდება —
+// პაროლი ზუსტად ამ მომენტშია ხელში. მომხმარებელი ვერაფერს ამჩნევს.
+const upgradeHashIfWeak = async (user, plainPassword) => {
+  try {
+    if (bcrypt.getRounds(user.password) >= BCRYPT_COST) return;
+
+    const strongerHash = await bcrypt.hash(plainPassword, BCRYPT_COST);
+    await pool.query('UPDATE users SET password = $1 WHERE id = $2', [strongerHash, user.id]);
+  } catch (err) {
+    // წარუმატებელმა განახლებამ შესვლა არ უნდა ჩაშალოს.
+    console.error('Password rehash error:', err);
+  }
+};
+
 const logAuth = async (event_type, { user_id = null, email = null, reason = null, userAgent = null }) => {
   try {
     await pool.query(
@@ -33,12 +58,13 @@ export const register = async (req, res, next) => {
       return res.status(409).json({ message: "მომხმარებელი უკვე არსებობს" });
     }
 
-    // Hash password
-    const hash = bcrypt.hashSync(password, 5);
+    // Hash password. async ვერსია აუცილებელია — hashSync cost 12-ზე ~300ms-ით
+    // ბლოკავს Node-ის ერთადერთ ძაფს და ამ დროს სერვერი სხვას ვერავის პასუხობს.
+    const hash = await bcrypt.hash(password, BCRYPT_COST);
 
     // Insert new user
     const newUser = await pool.query(
-      'INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING uuid, username, email, created_at',
+      'INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING id, uuid, username, email, created_at',
       [username, email, hash]
     );
 
@@ -64,18 +90,22 @@ export const login = async (req, res, next) => {
       [email]
     );
 
+    // არარსებულ მომხმარებელზე და არასწორ პაროლზე პასუხი იდენტური უნდა იყოს —
+    // როგორც ტექსტი, ისე სტატუსი და დახარჯული დრო. წინააღმდეგ შემთხვევაში
+    // პაროლის ცოდნის გარეშე შეიძლება გაირკვეს, ვინ არის დარეგისტრირებული.
     if (user.rows.length === 0) {
+      await bcrypt.compare(password ?? "", TIMING_DUMMY_HASH);
       await logAuth('login_failed', { email, reason: 'user_not_found', userAgent: req.headers['user-agent'] });
-      return res.status(404).json({ message: "მომხმარებელი ვერ მოიძებნა" });
+      return res.status(401).json({ message: INVALID_CREDENTIALS_MESSAGE });
     }
 
     const foundUser = user.rows[0];
 
     // Check password
-    const isCorrect = bcrypt.compareSync(password, foundUser.password);
+    const isCorrect = await bcrypt.compare(password ?? "", foundUser.password);
     if (!isCorrect) {
       await logAuth('login_failed', { user_id: foundUser.id, email, reason: 'invalid_password', userAgent: req.headers['user-agent'] });
-      return res.status(400).json({ message: "პაროლი არასწორია" });
+      return res.status(401).json({ message: INVALID_CREDENTIALS_MESSAGE });
     }
 
     if (!foundUser.is_active) {
@@ -92,7 +122,8 @@ export const login = async (req, res, next) => {
       { expiresIn: process.env.JWT_EXPIRES_IN || "7d" }
     );
 
-    console.log('Login successful for user:', foundUser.username);
+    await upgradeHashIfWeak(foundUser, password);
+
     await logAuth('login_success', { user_id: foundUser.id, email: foundUser.email, userAgent: req.headers['user-agent'] });
     res
       .cookie("accessToken", token, {

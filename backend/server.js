@@ -60,15 +60,31 @@ app.get("/health", async (req, res) => {
 });
 
 // Error handler
+//
+// შეგნებულად "development"-ზეა შემოწმება და არა "production"-ზე: თუ NODE_ENV
+// საერთოდ არ არის დაყენებული, დეტალები ავტომატურად იმალება. პირიქით რომ იყოს,
+// დაყენების დავიწყება მგრძნობიარე ინფორმაციას გარეთ გაიტანდა.
+const isDevelopment = process.env.NODE_ENV === "development";
+
 app.use((err, req, res, next) => {
   const errorStatus = err.status || 500;
-  const errorMessage = err.message || "Something went wrong!";
+
+  // სრული შეცდომა ყოველთვის რჩება სერვერის ლოგში.
+  console.error(`[${req.method} ${req.path}]`, err);
+
+  // 500-ის ტექსტი შეიძლება შიდა დეტალებს შეიცავდეს (მაგ. PostgreSQL-ის
+  // შეცდომას), ამიტომ გარეთ ზოგადით ჩანაცვლდება. შეგნებულად დაბრუნებული
+  // 4xx შეტყობინებები მომხმარებლისთვისაა და უცვლელი რჩება.
+  const errorMessage = errorStatus >= 500 && !isDevelopment
+    ? "სერვერის შეცდომა"
+    : (err.message || "Something went wrong!");
 
   return res.status(errorStatus).json({
     success: false,
     status: errorStatus,
     message: errorMessage,
-    stack: err.stack,
+    // stack მხოლოდ development-ში — თორემ სერვერის შიდა სტრუქტურა გარეთ გადის.
+    ...(isDevelopment ? { stack: err.stack } : {}),
   });
 });
 
