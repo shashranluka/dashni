@@ -5,6 +5,7 @@ import ExtraSymbolKeyboard from "../../components/ExtraSymbolKeyboard/ExtraSymbo
 import LexiconSearch from "../../components/LexiconSearch/LexiconSearch";
 import newRequest from "../../utils/newRequest";
 import { toDisplayText } from "../../utils/georgiaNormalize";
+import audioFileUrl from "../../assets/audio_files/adas_mier_moyolili_zghapari.m4a";
 import "./EditorPage.scss";
 
 const KEYBOARD_KINDS = {
@@ -13,7 +14,7 @@ const KEYBOARD_KINDS = {
 };
 const KEYBOARD_STORAGE_KEY = "editor:keyboardKind";
 
-const AUDIO_FILE = "/audio_files/adas_mier_moyolili_zghapari.m4a";
+const AUDIO_FILE = audioFileUrl;
 
 function EditorPage() {
   const [segments, setSegments] = useState([]);
