@@ -1,0 +1,61 @@
+name: PR checks
+
+# Deploy workflow მხოლოდ main-ში merge-ის შემდეგ ეშვება, ანუ შეცდომა
+# მაშინღა ჩანს, როცა უკვე პროდაქშენისკენ მიდის. ეს workflow იმავე
+# შემოწმებებს PR-ზე უშვებს, რომ პრობლემა merge-მდე დაიჭიროს.
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  frontend:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      # npm ci (და არა install) — package-lock-ს ზუსტად მიჰყვება და
+      # ვერსიებს თვითნებურად ვერ შეცვლის.
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Lint
+        working-directory: frontend
+        run: npm run lint
+
+      - name: Build
+        working-directory: frontend
+        run: npm run build
+
+  backend:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: backend
+        run: npm ci
+
+      # backend-ს ჯერ არც lint აქვს და არც build. სანამ ისინი დაემატება,
+      # მინიმუმ სინტაქსურ შეცდომას ვიჭერთ — ასეთი ფაილი პროდაქშენში
+      # კონტეინერის გაშვებისთანავე ჩავარდებოდა.
+      - name: Syntax check
+        working-directory: backend
+        run: |
+          set -e
+          find . -name "*.js" \
+            -not -path "./node_modules/*" \
+            -not -path "./manual_scripts/*" \
+            -print0 | xargs -0 -n1 node --check

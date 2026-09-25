@@ -1,0 +1,2 @@
+ALTER TABLE private_words
+ADD COLUMN IF NOT EXISTS tags TEXT[] NOT NULL DEFAULT '{}';
