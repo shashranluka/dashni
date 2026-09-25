@@ -44,9 +44,6 @@ function Navbar() {
 
               {open && (
                 <div className="dropdown">
-                  <Link to="/my-page" onClick={() => setOpen(false)}>
-                    ჩემი გვერდი
-                  </Link>
                   {isPrivateContributorUser(currentUser) && (
                     <>
                       <Link to="/add-words" onClick={() => setOpen(false)}>

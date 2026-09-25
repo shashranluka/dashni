@@ -16,6 +16,7 @@ import LexiconSearchPage from "./pages/lexiconSearch/LexiconSearchPage";
 import MyWords from "./pages/myWords/MyWords";
 import AddWords from "./pages/addWords/AddWords";
 import RequirePrivateContributor from "./components/RequirePrivateContributor/RequirePrivateContributor";
+import NotFound from "./pages/notFound/NotFound";
 import { AuthProvider } from "./context/AuthContext";
 import "./App.scss";
 
@@ -57,15 +58,15 @@ function AppContent() {
               </RequireEditor>
             }
           />
+          <Route path="/lexicon-search" element={<LexiconSearchPage />} />
           <Route
-            path="/lexicon-search"
+            path="/my-words"
             element={
-              // <RequireEditor>
-                <LexiconSearchPage />
-              // </RequireEditor>
+              <RequirePrivateContributor>
+                <MyWords />
+              </RequirePrivateContributor>
             }
           />
-          <Route path="/my-words" element={<MyWords />} />
           <Route
             path="/add-words"
             element={
@@ -74,6 +75,8 @@ function AppContent() {
               </RequirePrivateContributor>
             }
           />
+          {/* ყველა დანარჩენი მისამართი — ბოლო უნდა იყოს. */}
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
     </>
