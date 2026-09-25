@@ -1,31 +1,20 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import newRequest from "../../utils/newRequest";
+import { useAuth } from "../../hooks/useAuth";
 import { isEditorUser, isAdminUser, isPrivateContributorUser } from "../../utils/roles";
 import "./Navbar.scss";
 
 function Navbar() {
-  const [currentUser, setCurrentUser] = useState(null);
+  const { user: currentUser, logout } = useAuth();
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const user = localStorage.getItem("currentUser");
-    if (user) {
-      setCurrentUser(JSON.parse(user));
-    }
-  }, []);
-
   const handleLogout = async () => {
-    try {
-      await newRequest.post("auth/logout");
-      localStorage.removeItem("currentUser");
-      setCurrentUser(null);
-      navigate("/");
-      window.location.reload();
-    } catch (err) {
-      console.error("Logout error:", err);
-    }
+    setOpen(false);
+    await logout();
+    // context-ი თავად განაახლებს ინტერფეისს, ამიტომ გვერდის გადატვირთვა
+    // (window.location.reload) აღარ არის საჭირო.
+    navigate("/");
   };
 
   return (

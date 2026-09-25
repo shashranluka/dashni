@@ -1,29 +1,23 @@
-import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
-import newRequest from "../../utils/newRequest";
+import PropTypes from "prop-types";
+import { useAuth } from "../../hooks/useAuth";
 import { isPrivateContributorUser } from "../../utils/roles";
 
-// არსებული route guard-ების მსგავსად children React-ის ჩადგმული კონტენტია.
-// eslint-disable-next-line react/prop-types
+// Route guard — მხოლოდ private contributor-ს ან admin-ს უშვებს.
+// მონაცემებს AuthContext-იდან იღებს, ანუ საკუთარ /auth/me მოთხოვნას აღარ აგზავნის.
 function RequirePrivateContributor({ children }) {
-  const [status, setStatus] = useState("loading");
+  const { user, loading } = useAuth();
 
-  useEffect(() => {
-    newRequest
-      .get("/auth/me")
-      .then((res) => {
-        setStatus(isPrivateContributorUser(res.data) ? "ok" : "forbidden");
-      })
-      .catch((err) => {
-        setStatus(err?.response?.status === 401 ? "unauth" : "forbidden");
-      });
-  }, []);
-
-  if (status === "loading") return null;
-  if (status === "unauth") return <Navigate to="/login" replace />;
-  if (status === "forbidden") return <Navigate to="/" replace />;
+  // სანამ პასუხი არ მოსულა, არაფერს ვასახავთ — თორემ გვერდი გაიელვებდა.
+  if (loading) return null;
+  if (!user) return <Navigate to="/login" replace />;
+  if (!isPrivateContributorUser(user)) return <Navigate to="/" replace />;
 
   return children;
 }
+
+RequirePrivateContributor.propTypes = {
+  children: PropTypes.node,
+};
 
 export default RequirePrivateContributor;

@@ -3,6 +3,8 @@ import newRequest from "../../utils/newRequest";
 import "./LexiconSearch.scss";
 import AddWordModal from "../addWordModal/AddWordModal";
 import ExtraSymbolKeyboard from "../ExtraSymbolKeyboard/ExtraSymbolKeyboard";
+import { useAuth } from "../../hooks/useAuth";
+import { isPrivateContributorUser } from "../../utils/roles";
 
 const LEXICON_OPTIONS = [
   { value: "", label: "ყველა" },
@@ -22,16 +24,8 @@ function LexiconSearch() {
   const [results, setResults] = useState([]);
   const [searched, setSearched] = useState(false);
   const [selectionBadge, setSelectionBadge] = useState(null);
-  const [isPrivateContributor, setIsPrivateContributor] = useState(false);
-
-  useEffect(() => {
-    try {
-      const user = JSON.parse(localStorage.getItem("currentUser") || "null");
-      setIsPrivateContributor(user?.is_private_contributor === true);
-    } catch {
-      setIsPrivateContributor(false);
-    }
-  }, []);
+  const { user } = useAuth();
+  const isPrivateContributor = isPrivateContributorUser(user);
 
   useEffect(() => {
     if (!isPrivateContributor) {

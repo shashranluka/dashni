@@ -16,12 +16,10 @@ import LexiconSearchPage from "./pages/lexiconSearch/LexiconSearchPage";
 import MyWords from "./pages/myWords/MyWords";
 import AddWords from "./pages/addWords/AddWords";
 import RequirePrivateContributor from "./components/RequirePrivateContributor/RequirePrivateContributor";
-// ...existing code...
+import { AuthProvider } from "./context/AuthContext";
 import "./App.scss";
 
 function AppContent() {
-  // ...existing code...
-
   return (
     <>
       <div style={{ minHeight: "100vh" }}>
@@ -85,7 +83,9 @@ function AppContent() {
 function App() {
   return (
     <Router>
-      <AppContent />
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
     </Router>
   );
 }

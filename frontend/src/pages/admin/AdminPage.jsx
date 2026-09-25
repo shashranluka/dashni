@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import newRequest from "../../utils/newRequest";
 import LexiconsForAdmin from "../../components/lexiconsForAdmin/LexiconsForAdmin";
+import { useAuth } from "../../hooks/useAuth";
 import "./AdminPage.scss";
 
 // ადმინ პანელი — ყველა მომხმარებლის სია is_active toggle-ითა და role dropdown-ით.
@@ -13,19 +14,13 @@ const AdminPage = () => {
   // saving — ობიექტი { [userId]: true/false }, რათა თითოეულ row-ს ცალ-ცალკე
   // ჰქონდეს loading მდგომარეობა შენახვის დროს.
   const [saving, setSaving] = useState({});
-  // currentUserId — საჭიროა საკუთარი row-ის გასათიშად.
-  const [currentUserId, setCurrentUserId] = useState(null);
-  // სრული currentUser ობიექტი LexiconsForAdmin-სთვის
-  const [currentUser, setCurrentUser] = useState(null);
+  // მიმდინარე მომხმარებელი AuthContext-იდან — საკუთარი row-ის გასათიშად
+  // და LexiconsForAdmin-სთვის. ცალკე /auth/me მოთხოვნა აღარ არის საჭირო.
+  const { user: currentUser } = useAuth();
+  const currentUserId = currentUser?.id ?? null;
 
-  // კომპონენტის mount-ზე პარალელურად ვიღებთ:
-  // 1) /auth/me — მიმდინარე ადმინის id, isSelf-ის გამოსათვლელად.
-  // 2) /auth/users — ყველა მომხმარებლის სია ცხრილისთვის.
+  // მომხმარებლების სია ცხრილისთვის.
   useEffect(() => {
-    newRequest.get("/auth/me").then((res) => {
-      setCurrentUserId(res.data?.id);
-      setCurrentUser(res.data);
-    });
     newRequest
       .get("/auth/users")
       .then((res) => setUsers(res.data))
