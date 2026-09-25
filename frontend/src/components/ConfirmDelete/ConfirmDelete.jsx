@@ -4,7 +4,7 @@ export default function ConfirmDelete({ label, onConfirm, onCancel }) {
     return (
         <div className="confirm-delete" role="alert">
             <p className="confirm-delete-message">
-                ნამდვილად გინდა <strong>„{label}"</strong>-ის წაშლა?
+                ნამდვილად გინდა <strong>„{label}“</strong>-ის წაშლა?
             </p>
             <div className="confirm-delete-actions">
                 <button

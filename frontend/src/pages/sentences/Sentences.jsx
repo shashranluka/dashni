@@ -1,4 +1,4 @@
-import React from 'react';
+
 import './Sentences.scss';
 
 function Sentences() {

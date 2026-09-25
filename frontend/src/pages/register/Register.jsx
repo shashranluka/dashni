@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import newRequest from '../../utils/newRequest';
 // ...existing code...
 import './Register.scss';

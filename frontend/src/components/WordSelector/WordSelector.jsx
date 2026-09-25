@@ -6,11 +6,9 @@ export default function WordSelector({
   allWords,
   savedLearnedIds = [],
   savedNeedsIds = [],
-  allWordCount,
   onSettingsChange,
   settingsTopContent = null,
   isOpen = false,
-  onToggle,
   showSourceFilter = false,
 }) {
   const [selectionMode, setSelectionMode] = useState("sequential");

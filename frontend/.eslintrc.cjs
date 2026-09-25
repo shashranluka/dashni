@@ -16,5 +16,17 @@ module.exports = {
       'warn',
       { allowConstantExport: true },
     ],
+    // prop-types თანამედროვე React-ში პრაქტიკულად მიტოვებულია (მის ადგილას
+    // TypeScript გამოიყენება) და პროექტში არასდროს დაცულა — 100-ზე მეტი
+    // შენიშვნა რეალურ პრობლემებს ფარავდა. სადაც უკვე აღწერილია, ისე რჩება.
+    'react/prop-types': 'off',
   },
+  overrides: [
+    {
+      // კონფიგის ფაილები Node-ში სრულდება, სადაც process სტანდარტულია.
+      // ამის გარეშე ESLint მათ ბრაუზერის კოდად თვლიდა და ცრუ განგაშს იძლეოდა.
+      files: ['vite.config.js', '*.config.js', '*.cjs'],
+      env: { node: true, browser: false },
+    },
+  ],
 }

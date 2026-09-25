@@ -1,6 +1,7 @@
-import { createContext, useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import newRequest from "../utils/newRequest";
+import { AuthContext } from "./auth-context";
 
 // ავტორიზაციის ერთადერთი წყარო მთელ აპლიკაციაში.
 //
@@ -11,8 +12,6 @@ import newRequest from "../utils/newRequest";
 //
 // ახლა წყარო სერვერია: /auth/me ერთხელ გამოიძახება და შედეგს ყველა კომპონენტი
 // იზიარებს.
-export const AuthContext = createContext(null);
-
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   // loading აუცილებელია: მის გარეშე guard-ები პირველ რენდერზე მომხმარებელს
