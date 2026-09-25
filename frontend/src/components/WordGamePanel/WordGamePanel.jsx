@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect, useRef } from "react";
+import { useCallback, useMemo, useState, useEffect, useRef } from "react";
 import { toDisplayText } from "../../utils/georgiaNormalize";
 import AnkiLikeGame from "../AnkiLikeGame/AnkiLikeGame";
 import MessyDictionary from "../messyDictionary/MessyDictionary";
@@ -80,14 +80,19 @@ export default function WordGamePanel({
     clearSoundRef.current.currentTime = 0;
   }, [isSoundEnabled]);
 
-  const resolveWordSource = (word) => {
-    if (typeof getWordSource === "function") {
-      return getWordSource(word);
-    }
-    if (word?.source === "private") return "private";
-    if (word?.is_private === true) return "private";
-    return "public";
-  };
+  // useCallback-ში იმიტომ, რომ ქვემოთ useMemo-ები მასზეა დამოკიდებული —
+  // ჩვეულებრივი ფუნქცია ყოველ რენდერზე ახლად იქმნებოდა და memo აზრს კარგავდა.
+  const resolveWordSource = useCallback(
+    (word) => {
+      if (typeof getWordSource === "function") {
+        return getWordSource(word);
+      }
+      if (word?.source === "private") return "private";
+      if (word?.is_private === true) return "private";
+      return "public";
+    },
+    [getWordSource],
+  );
 
   const learnedSourceSet = useMemo(
     () =>
@@ -155,6 +160,7 @@ export default function WordGamePanel({
     learnedIdSet,
     needsSourceSet,
     needsIdSet,
+    resolveWordSource,
   ]);
 
   const selectorLearnedIds = useMemo(
@@ -168,7 +174,7 @@ export default function WordGamePanel({
           return learnedSourceSet.size ? learnedSourceSet.has(key) : learnedIdSet.has(id);
         })
         .map((word) => word.id),
-    [words, learnedSourceSet, learnedIdSet],
+    [words, learnedSourceSet, learnedIdSet, resolveWordSource],
   );
 
   const selectorNeedsIds = useMemo(
@@ -182,7 +188,7 @@ export default function WordGamePanel({
           return needsSourceSet.size ? needsSourceSet.has(key) : needsIdSet.has(id);
         })
         .map((word) => word.id),
-    [words, needsSourceSet, needsIdSet],
+    [words, needsSourceSet, needsIdSet, resolveWordSource],
   );
 
   const getWordsBySelectionMode = () => {
@@ -346,7 +352,6 @@ export default function WordGamePanel({
         <WordSelector
           savedLearnedIds={selectorLearnedIds}
           savedNeedsIds={selectorNeedsIds}
-          allWordCount={words.length}
           allWords={words}
           onSettingsChange={setSelectorSettings}
           showSourceFilter={caller === "myWords"}

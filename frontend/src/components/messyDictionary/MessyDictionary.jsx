@@ -16,7 +16,6 @@ function getShuffled(array) {
 export default function MessyDictionary({
   words,
   direction = "translation-to-word",
-  gameMode = "random",
   gameType = "cards",
   isSoundEnabled = true,
 }) {

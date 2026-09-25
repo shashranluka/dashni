@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { toDisplayText } from "../../utils/georgiaNormalize";
 import "./Words.scss";
 
